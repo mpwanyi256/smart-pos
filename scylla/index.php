@@ -74,22 +74,44 @@
       $ItemQuantityAndPrice = mysqli_query($con, "SELECT order_item_id,menu_item_price, quantity,notes,status,shift_note from order_items WHERE menu_item_id=".$MenuItemId." AND order_id=".$OrderId." ");
       $TotalQuantity =0;
       $ItemTotalCost = 0;
+      $itemStatus = 1;
+      $ItemsAppend = array();
+
       while ($ItemCost = mysqli_fetch_array($ItemQuantityAndPrice)) {
         $ItemPrice = $ItemCost['menu_item_price'];
         $Quantity = $ItemCost['quantity'];
+        $ItemStatus = $ItemCost['status'];
+        $ItemId = $ItemCost['order_item_id'];
+        $notes = $ItemCost['notes'];
         $ItemTotalCost+=$ItemPrice;
         $TotalQuantity+=$Quantity;
+
+        // Append items
+        $ItemListing = new stdClass(); 
+        $ItemListing->id = $ItemId;
+        $ItemListing->notes = $notes;
+        $ItemListing->quantity = $Quantity;
+        $ItemListing->amount = number_format($ItemPrice);
+        $ItemListing->name = $ItemName;
+
+        array_push($ItemsAppend, $ItemListing);
+
+        if ($ItemStatus == 0) {
+          $itemStatus = 0;
+        }
       }
       
       $OrdersItem = new stdClass();  
 
       $OrdersItem->item_name = $ItemName;
-      $OrdersItem->amount   = (float)$ItemTotalCost;
+      $OrdersItem->amount   = number_format((float)$ItemTotalCost);
       $OrdersItem->quantity = (float)$TotalQuantity;
-      $OrdersItem->status = 1;
+      $OrdersItem->status = $itemStatus;
       $OrdersItem->notes = '';
       $OrdersItem->id = $MenuItemId;
       $OrdersItem->shift_note = '';
+      $OrdersItem->items_list = $ItemsAppend;
+
       array_push($Items, $OrdersItem);
       // Calcular
       $MenuItemAmount = ($ItemTotalCost);
