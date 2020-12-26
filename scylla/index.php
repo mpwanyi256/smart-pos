@@ -378,4 +378,48 @@
     $sales->data = $response;
     echo json_encode($sales);
 
-  }
+  } else if (isset($_POST['get_menu_items'])) {
+    $MenuItemId = html_entity_decode(mysqli_real_escape_string($con, $_POST['get_menu_items']));
+
+    if ($MenuItemId == 0 || $MenuItemId == null) {
+      $query = "SELECT * FROM menu_items WHERE hide=0 ORDER BY item_name ASC";
+    } else {
+      $query = "SELECT * FROM menu_items WHERE hide=0 AND item_id=".$MenuItemId." ORDER BY item_name ASC";
+    }
+
+    $menuItems = new stdClass();
+    $menuItems->error = false;
+    $MenuItems = array();
+
+    $DbItems = mysqli_query($con, $query);
+    while($Item = mysqli_fetch_array($DbItems)) {
+      $dbItem = new stdClass();
+      $dbItem->id = $Item['item_id'];
+      $dbItem->name = $Item['item_name'];
+      $dbItem->price = $Item['item_price'];
+      $dbItem->category_id = $Item['item_category_id'];
+      $dbItem->display = $Item['display'];
+      
+      array_push($MenuItems, $dbItem);
+    }
+    $menuItems->data = $MenuItems;
+    echo json_encode($menuItems);
+  
+  } else if (isset($_POST['get_departments'])) {
+    $response = new stdClass();
+    $response->error = false;
+
+    $DepartmentsArray = array();
+    $Departments = mysqli_query($con, "SELECT * FROM store_departments WHERE sd_name NOT IN('VAT') ORDER BY sd_name ASC ");
+    while($Dept  = mysqli_fetch_array($Departments)) {
+      $DeptItem  = new stdClass();
+      $DeptItem->id = $Dept[sd_id];
+      $DeptItem->name = $Dept[sd_name];
+
+      array_push($DepartmentsArray, $DeptItem);
+    }
+
+    $response->data = $DepartmentsArray;
+
+    echo json_encode($response);
+  } 
