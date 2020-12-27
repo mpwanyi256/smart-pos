@@ -422,4 +422,145 @@
     $response->data = $DepartmentsArray;
 
     echo json_encode($response);
-  } 
+
+  } else if (isset($_POST['fetch_items_sold']) && isset($_POST['from']) && isset($_POST['to'])) {
+    $MenuItemId = html_entity_decode(mysqli_real_escape_string($con, $_POST['fetch_items_sold']));
+    $Department = html_entity_decode(mysqli_real_escape_string($con, $_POST['department_id']));
+    $From       = html_entity_decode(mysqli_real_escape_string($con, $_POST['from']));
+    $To         = html_entity_decode(mysqli_real_escape_string($con, $_POST['to']));
+
+    if ($MenuItemId == 0) {
+      if ($Department == 0) {
+        $ItemsSold = "SELECT DISTINCT order_items.menu_item_id AS menu_item_id,menu_items.item_name
+                      FROM order_items
+                      INNER JOIN menu_items ON menu_items.item_id=order_items.menu_item_id
+                      INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
+                      WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' ORDER BY menu_items.item_name ASC ";
+      } else {
+      $ItemsSold = "SELECT DISTINCT order_items.menu_item_id AS menu_item_id,menu_items.item_name
+                    FROM order_items
+                    INNER JOIN menu_items ON menu_items.item_id=order_items.menu_item_id
+                    INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
+                    WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND menu_items.display=".$Department." ORDER BY menu_items.item_name ASC ";
+      }
+    } else {
+      $ItemsSold = "SELECT DISTINCT order_items.menu_item_id AS menu_item_id,menu_items.item_name
+                    FROM order_items
+                    INNER JOIN menu_items ON menu_items.item_id=order_items.menu_item_id
+                    INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
+                    WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND menu_items.item_id=".$MenuItemId." ORDER BY menu_items.item_name ASC ";
+    }
+
+    $response = new stdClass();
+
+    if ($MenuItemId == null || $Department == null || $From == null || $To == null) {
+      $response->error = true;
+      $response->message = 'Missing params';
+    }
+
+    $ItemsSoldArray = array();
+    $DbItems        = mysqli_query($con, $ItemsSold);
+    while($ItemSale = mysqli_fetch_array($DbItems)) {
+      $ItemId = $ItemSale['menu_item_id'];
+
+      $ItemSold     = new stdClass();
+      $ItemSold->item_id = $ItemId;
+      $ItemSold->item_name = $ItemSale['item_name'];
+
+      // Get total amount sold
+      $ItemTotalSale = mysqli_query($con, "SELECT SUM(order_items.menu_item_price) AS item_sale FROM order_items
+        INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
+        WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND order_items.menu_item_id=".$ItemId." AND client_orders.status NOT IN(0) ");
+      $ItemSaleValue = mysqli_fetch_array($ItemTotalSale);
+      $ItemSold->amount_sold = number_format($ItemSaleValue['item_sale']);
+
+
+      // Get total quantity sold
+      $QuantitySold = mysqli_query($con, "SELECT SUM(order_items.quantity) AS item_quantity FROM order_items
+        INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
+        WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND order_items.menu_item_id=".$ItemId." AND client_orders.status NOT IN(0) ");
+      $itemQuantitySold = mysqli_fetch_array($QuantitySold);
+      $ItemSold->quantity_sold = number_format($itemQuantitySold['item_quantity']);
+
+
+      // Get Settlements
+      $SettlementsArray = array();
+      $DbSettlements    = mysqli_query($con, "SELECT * FROM settlements ORDER BY settlement ASC");
+      while($Settlement = mysqli_fetch_array($DbSettlements)) {
+        $SettlementId   = $Settlement['settlement_id'];
+        $Settlement     = $Settlement['settlement'];
+
+        // Get total amount sold
+        $ItemTotalSale1 = mysqli_query($con, "SELECT SUM(order_items.menu_item_price) AS item_sale FROM order_items
+        INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
+        WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND order_items.menu_item_id=".$ItemId." AND client_orders.status IN(".$SettlementId.") ");
+        $ItemSaleValue1 = mysqli_fetch_array($ItemTotalSale1);
+
+        // Get total quantity sold
+        $QuantitySold1 = mysqli_query($con, "SELECT SUM(order_items.quantity) AS item_quantity FROM order_items
+          INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
+          WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND order_items.menu_item_id=".$ItemId." AND client_orders.status IN(".$SettlementId.") ");
+        $itemQuantitySold1 = mysqli_fetch_array($QuantitySold1);
+
+        $settlementInfo = new stdClass();
+        $settlementInfo->settlement = $Settlement;
+        $settlementInfo->amount = number_format($ItemSaleValue1['item_sale']);
+        $settlementInfo->quantity = number_format($itemQuantitySold1['item_quantity']);
+
+        array_push($SettlementsArray, $settlementInfo);
+      }
+
+      $ItemSold->settlement = $SettlementsArray;
+
+      array_push($ItemsSoldArray, $ItemSold);
+    }
+    $response->data = $ItemsSoldArray;
+    echo json_encode($response);
+
+  } else if ( isset($_POST['fetch_sales_summary']) && isset($_POST['sales_from']) && isset($_POST['sales_to']) ) {
+    $SalesFrom = html_entity_decode(mysqli_real_escape_string($con, $_POST['sales_from']));
+    $SalesTo   = html_entity_decode(mysqli_real_escape_string($con, $_POST['sales_to']));
+
+    $response  = new stdClass();
+    $SalesArray= array(); 
+
+    if (strlen($SalesFrom) == 0 || $SalesFrom == null) {
+      $response->error = true;
+      $response->message = 'Date from is required';
+    } else if (strlen($SalesTo) == 0 || $SalesTo == null) {
+      $response->error = true;
+      $response->message = 'Date to is required';
+    } else {
+      $StartDate = $SalesFrom;
+      while($StartDate <= $SalesTo) {
+        // Get Sales this date
+        $Sale = new stdClass();
+        $Sale->day = $StartDate;
+
+        $DbSettlements    = mysqli_query($con, "SELECT * FROM settlements WHERE settlement NOT IN('SPLIT SETTLEMENT') ORDER BY settlement ASC");
+        $SettlementArray  = array();
+        while($Settlement = mysqli_fetch_array($DbSettlements)) {
+          $SettlementId   = $Settlement['settlement_id'];
+          $Settlement     = $Settlement['settlement'];
+          $DaySales = new stdClass();
+
+          $CashSales  = mysqli_query($con, "SELECT SUM(order_settements.amount_settled) AS total_cash FROM order_settements INNER JOIN client_orders ON client_orders.order_id = order_settements.order_id
+                      WHERE order_settements.settlement_type=".$SettlementId." AND client_orders.date='".$StartDate."' ");
+          $FetchCash  = mysqli_fetch_array($CashSales);
+          $TotalSale  = number_format($FetchCash['total_cash']);
+          $DaySales->settlement = $Settlement;
+          $DaySales->settlement_id = $SettlementId;
+          $DaySales->amount = $TotalSale;
+          array_push($SettlementArray, $DaySales);
+        }
+        $Sale->settlement = $SettlementArray;
+
+        array_push($SalesArray, $Sale);
+        // Next day
+        $StartDate = date('Y-m-d', strtotime($StartDate . '+1 day'));
+      }
+    }
+
+    $response->data = $SalesArray;
+    echo json_encode($response);
+  }
