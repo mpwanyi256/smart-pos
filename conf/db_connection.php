@@ -6,8 +6,8 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 error_reporting(0);
 
 $servername = "127.0.0.1";
-$username = "mpwanyi";
-$password = "0772";
+$username = "root";
+$password = "";
 $database = "nawab"; // Change this later
 $db_license = "mysql";
 $port = "80";

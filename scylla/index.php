@@ -28,26 +28,26 @@
         $BillTotal = mysqli_fetch_array($billSum);
 
         $OrdersItem = new stdClass();
-        $OrdersItem->bill_sum = (float)$BillTotal[bill_sum];
-        $OrdersItem->bill_sum_display = number_format($BillTotal[bill_sum]);
-        $OrdersItem->order_id = $order[order_id];
-        $OrdersItem->bill_no = $order[bill_No];
-        $OrdersItem->table = $order[table_name];
-        $OrdersItem->date = $order[date];
-        $OrdersItem->time = $order[time];
-        $OrdersItem->status = (int)$order[status];
-        $OrdersItem->description = $order[description];
-        $OrdersItem->waiter = $order[waiter];
-        $OrdersItem->client_name = $order[client_name];
+        $OrdersItem->bill_sum = (float)$BillTotal['bill_sum'];
+        $OrdersItem->bill_sum_display = number_format($BillTotal['bill_sum']);
+        $OrdersItem->order_id = $order['order_id'];
+        $OrdersItem->bill_no = $order['bill_No'];
+        $OrdersItem->table = $order['table_name'];
+        $OrdersItem->date = $order['date'];
+        $OrdersItem->time = $order['time'];
+        $OrdersItem->status = (int)$order['status'];
+        $OrdersItem->description = $order['description'];
+        $OrdersItem->waiter = $order['waiter'];
+        $OrdersItem->client_name = $order['client_name'];
 
         // Client info
         $MyClient = new stdClass();
-        $MyClient->firstname = $order[client_name];
-        $MyClient->lasname = $order[last_name];
-        $MyClient->tin = $order[tin];
-        $MyClient->address = $order[address];
-        $MyClient->email = $order[email_id];
-        $MyClient->contact_number = $order[contact_number];
+        $MyClient->firstname = $order['client_name'];
+        $MyClient->lasname = $order['last_name'];
+        $MyClient->tin = $order['tin'];
+        $MyClient->address = $order['address'];
+        $MyClient->email = $order['email_id'];
+        $MyClient->contact_number = $order['contact_number'];
 
         $OrdersItem->client_info = $MyClient;
 
@@ -60,12 +60,82 @@
 
         $OrdersItem->discount = number_format($BillDiscount);
         $OrdersItem->discount_reason = $DiscountReason;
-        $OrdersItem->final_amount = number_format(($BillTotal[bill_sum] - $BillDiscount));
+        $OrdersItem->final_amount = number_format(($BillTotal['bill_sum'] - $BillDiscount));
 
         array_push($OrdersList, $OrdersItem);
       }
+
+      //TOTAL SALE
+      $mTotalSaleCumm = 0;
+      $TotalSale = mysqli_query($con, "SELECT SUM(order_settements.amount_settled) AS total_sale FROM order_settements INNER JOIN client_orders ON client_orders.order_id = order_settements.order_id WHERE order_settements.settlement_type IN(1,2,4,10,11,12) AND client_orders.date='".$DayOpen."' ");
+      $mTotalSale = mysqli_fetch_array($TotalSale);
+      $DayTotalSale = number_format($mTotalSale['total_sale']);
+
+      // Settlements
+      $PaymentSettlements = array();
+      $Settlements = new stdClass();
+
+      // Get All settlement Options
+      $DbSettlements = mysqli_query($con, "SELECT * FROM settlements WHERE settlement NOT IN('SPLIT SETTLEMENT', 'EFT', 'CHEQUE', 'PENDING') ORDER BY settlement ASC");
+      while($settlement = mysqli_fetch_array($DbSettlements)) {
+        $SettlementId   = $settlement['settlement_id'];
+        $Settlement     = $settlement['settlement'];
+
+        $AmountSettled  = mysqli_query($con, "SELECT SUM(order_settements.amount_settled) AS total_amount FROM order_settements INNER JOIN client_orders ON client_orders.order_id = order_settements.order_id WHERE order_settements.settlement_type=".$SettlementId." AND client_orders.date='".$DayOpen."' ");
+        $FetchSettlement= mysqli_fetch_array($AmountSettled);
+        $TotalAmount    = number_format($FetchSettlement['total_amount']);
+
+        $Info = new stdClass();
+        $Info->settlement_name = $Settlement;
+        $Info->settlement_id = $SettlementId;
+        $Info->amount = $TotalAmount;
+
+        array_push($PaymentSettlements, $Info);
+      }
+
+      // Discounts
+      $Disc       = mysqli_query($con, "SELECT SUM(order_settements.amount_settled) AS total_Dicsount FROM order_settements INNER JOIN client_orders ON client_orders.order_id = order_settements.order_id WHERE order_settements.settlement_type IN(88) AND client_orders.date='".$DayOpen."' ");
+      $FetchDisc  = mysqli_fetch_array($Disc);
+      $Discount   = number_format($FetchDisc['total_Dicsount']*(-1));
+      $DiscountInfo = new stdClass();
+      $DiscountInfo->settlement_name = 'Discounts';
+      $DiscountInfo->settlement_id = 88;
+      $DiscountInfo->amount = $Discount;
+      array_push($PaymentSettlements, $DiscountInfo);
+
+      // Get departments
+      $DepartmentSettlements = array();
+      $DbDepartments    = mysqli_query($con, "SELECT * FROM store_departments WHERE sd_name NOT IN ('VAT') ");
+      while($department = mysqli_fetch_array($DbDepartments)) {
+        $DepartmentId   = (int)$department['sd_id'];
+        $DeptName       = $department['sd_name'];
+
+        $DepartmentSales= new stdClass();
+        $TotalSale      = mysqli_query($con, "SELECT SUM(order_items.menu_item_price) AS department_sale FROM order_items INNER JOIN menu_items ON order_items.menu_item_id=menu_items.item_id INNER JOIN client_orders ON order_items.order_id=client_orders.order_id WHERE client_orders.date='".$DayOpen."' AND client_orders.status NOT IN(0,9) AND menu_items.display=".$DepartmentId." ");
+        $Data           = mysqli_fetch_array($TotalSale);
+        $Sale           = (float)$Data['department_sale'];
+
+        $DepartmentSales->name   = $DeptName;
+        $DepartmentSales->id     = $DepartmentId;
+        $DepartmentSales->amount = number_format($Sale);
+
+        array_push($DepartmentSettlements, $DepartmentSales);
+      }
+
+      //Open Dish
+      $DbOpenDishSold = mysqli_query($con, "SELECT SUM(order_items.menu_item_price) AS total_Sold FROM order_items INNER JOIN menu_items ON menu_items.item_id=order_items.menu_item_id INNER JOIN client_orders ON client_orders.order_id=order_items.order_id WHERE client_orders.date='".$DayOpen."' AND menu_items.department_head_id=-8 AND client_orders.status NOT IN(0,9) ");
+      $FetchOpenDish  = mysqli_fetch_array($DbOpenDishSold);
+      $TotalOpen = number_format($FetchOpenDish['total_Sold']);
+      $openDishEntry = new stdClass();
+      $openDishEntry->id = -8;
+      $openDishEntry->name = 'OPEN DISH';
+      $openDishEntry->amount = $TotalOpen;
+      array_push($DepartmentSettlements, $openDishEntry);
       
       $sales->orders = $OrdersList;
+      $sales->total_sale = $DayTotalSale;
+      $sales->settlements = $PaymentSettlements;
+      $sales->departments_settlement = $DepartmentSettlements;
       $object->data = $sales;
     }
     echo json_encode($object);
@@ -203,9 +273,6 @@
       array_push($DepartmentSettlements, $DepartmentSales);
     }
 
-
-
-
     $response = new stdClass();
     $response->settlements = $PaymentSettlements;
     $response->departments = $DepartmentSettlements;
@@ -275,12 +342,12 @@
       $Query = mysqli_query($con, $Clients);
       while($client = mysqli_fetch_array($Query)) {
         $ClientData = new stdClass();
-        $ClientData->id = $client[clientCompany_id];
-        $ClientData->full_name = $client[company_name] .' '. $client[last_name];
-        $ClientData->tin = $client[tin];
-        $ClientData->address = $client[address];
-        $ClientData->email = $client[email_id];
-        $ClientData->contact = $client[contact_number];
+        $ClientData->id = $client['clientCompany_id'];
+        $ClientData->full_name = $client['company_name'] .' '. $client['last_name'];
+        $ClientData->tin = $client['tin'];
+        $ClientData->address = $client['address'];
+        $ClientData->email = $client['email_id'];
+        $ClientData->contact = $client['contact_number'];
 
         array_push($ClientsArray, $ClientData);
       }
@@ -333,27 +400,27 @@
       $BillTotal = mysqli_fetch_array($billSum);
 
       $OrdersItem = new stdClass();
-      $OrdersItem->bill_no = $order[bill_No];
-      $OrdersItem->order_id = $order[order_id];
-      $OrdersItem->table = $order[table_name];
-      $OrdersItem->date = date('d-M-y', strtotime($order[date]));
-      $OrdersItem->time = $order[time];
-      $OrdersItem->bill_sum = (float)$BillTotal[bill_sum];
-      $OrdersItem->bill_sum_display = number_format($BillTotal[bill_sum]);
-      $OrdersItem->status = (int)$order[status];
-      $OrdersItem->waiter = $order[waiter];
-      $OrdersItem->client_name = $order[client_name];
-      $OrdersItem->description = (String)$order[description];
-      $OrdersItem->settlement = $order[settlement];
+      $OrdersItem->bill_no = $order['bill_No'];
+      $OrdersItem->order_id = $order['order_id'];
+      $OrdersItem->table = $order['table_name'];
+      $OrdersItem->date = date('d-M-y', strtotime($order['date']));
+      $OrdersItem->time = $order['time'];
+      $OrdersItem->bill_sum = (float)$BillTotal['bill_sum'];
+      $OrdersItem->bill_sum_display = number_format($BillTotal['bill_sum']);
+      $OrdersItem->status = (int)$order['status'];
+      $OrdersItem->waiter = $order['waiter'];
+      $OrdersItem->client_name = $order['client_name'];
+      $OrdersItem->description = (String)$order['description'];
+      $OrdersItem->settlement = $order['settlement'];
 
       // Client info
       $MyClient = new stdClass();
-      $MyClient->firstname = $order[client_name];
-      $MyClient->lasname = $order[last_name];
-      $MyClient->tin = $order[tin];
-      $MyClient->address = $order[address];
-      $MyClient->email = $order[email_id];
-      $MyClient->contact_number = $order[contact_number];
+      $MyClient->firstname = $order['client_name'];
+      $MyClient->lasname = $order['last_name'];
+      $MyClient->tin = $order['tin'];
+      $MyClient->address = $order['address'];
+      $MyClient->email = $order['email_id'];
+      $MyClient->contact_number = $order['contact_number'];
 
       $OrdersItem->client_info = $MyClient;
 
@@ -366,7 +433,7 @@
 
       $OrdersItem->discount = number_format($BillDiscount);
       $OrdersItem->discount_reason = $DiscountReason;
-      $OrdersItem->final_amount = number_format(($BillTotal[bill_sum] - $BillDiscount));
+      $OrdersItem->final_amount = number_format(($BillTotal['bill_sum'] - $BillDiscount));
 
       array_push($OrdersList, $OrdersItem);
 
@@ -413,8 +480,8 @@
     $Departments = mysqli_query($con, "SELECT * FROM store_departments WHERE sd_name NOT IN('VAT') ORDER BY sd_name ASC ");
     while($Dept  = mysqli_fetch_array($Departments)) {
       $DeptItem  = new stdClass();
-      $DeptItem->id = $Dept[sd_id];
-      $DeptItem->name = $Dept[sd_name];
+      $DeptItem->id = $Dept['sd_id'];
+      $DeptItem->name = $Dept['sd_name'];
 
       array_push($DepartmentsArray, $DeptItem);
     }
@@ -464,15 +531,17 @@
       $ItemId = $ItemSale['menu_item_id'];
 
       $ItemSold     = new stdClass();
-      $ItemSold->item_id = $ItemId;
-      $ItemSold->item_name = $ItemSale['item_name'];
 
       // Get total amount sold
       $ItemTotalSale = mysqli_query($con, "SELECT SUM(order_items.menu_item_price) AS item_sale FROM order_items
         INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
         WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND order_items.menu_item_id=".$ItemId." AND client_orders.status NOT IN(0) ");
       $ItemSaleValue = mysqli_fetch_array($ItemTotalSale);
-      $ItemSold->amount_sold = number_format($ItemSaleValue['item_sale']);
+      if ($ItemTotalSale > 0) {
+        $ItemSold->item_id = $ItemId;
+        $ItemSold->item_name = $ItemSale['item_name'];
+        $ItemSold->amount_sold = number_format($ItemSaleValue['item_sale']);
+      }
 
 
       // Get total quantity sold
