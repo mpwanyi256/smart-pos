@@ -465,7 +465,8 @@
       $dbItem->name = $Item['item_name'];
       $dbItem->price = $Item['item_price'];
       $dbItem->category_id = $Item['item_category_id'];
-      $dbItem->display = $Item['display'];
+      $dbItem->display = (int)$Item['display'];
+      $dbItem->status = (int)$Item['hide'];
       
       array_push($MenuItems, $dbItem);
     }
