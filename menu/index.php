@@ -73,7 +73,7 @@
     $response = new stdClass();
     $Categories = array();
     // $ItemCategoryId = html_entity_decode(mysqli_real_escape_string($con, $_POST['get_menu_categories']));
-    $Query = mysqli_query($con, "SELECT * FROM categoriies ORDER BY category ASC");
+    $Query = mysqli_query($con, "SELECT * FROM categoriies WHERE category NOT IN('OPEN DISH, VAT') ORDER BY category ASC");
 
     while($Cat       = mysqli_fetch_array($Query)) {
       $CatItem       = new stdClass();
