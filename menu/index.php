@@ -116,4 +116,32 @@
     }
 
     echo json_encode($response);
+
+  } else if(isset($_POST['create_new_item'])) {
+    $response   = new stdClass(); 
+    $Name       = html_entity_decode(mysqli_real_escape_string($con, $_POST['item_name']));
+    $CategoryId = html_entity_decode(mysqli_real_escape_string($con, $_POST['category_id']));
+    $DisplayId  = html_entity_decode(mysqli_real_escape_string($con, $_POST['display']));
+    $ItemPrice  = html_entity_decode(mysqli_real_escape_string($con, $_POST['item_price']));
+    $CompanyId  = html_entity_decode(mysqli_real_escape_string($con, $_POST['company_id']));
+
+    $Check = mysqli_query($con, "SELECT * FROM menu_items WHERE item_name='".$Name."' AND item_category_id=".$CategoryId." ");
+    if (mysqli_num_rows($Check) == 0) {
+      $AddItem = mysqli_query($con, "INSERT INTO menu_items(item_name,item_price,item_category_id,display,company_id) 
+      VALUES('".$Name."',".$ItemPrice.",".$CategoryId.",".$DisplayId.",".$CompanyId.") ");
+
+      if ($AddItem) {
+        $response->error = false;
+        $response->message = 'Success';
+      } else {
+        $response->error = true;
+        $response->message = 'Something went wrogng '.$Name.','.$ItemPrice.','.$CategoryId.','.$DisplayId.','.$CompanyId.'';
+      }
+
+    } else {
+      $response->error = true;
+      $response->message = 'Sorry Item already exists';
+    }
+
+    echo json_encode($response);
   }
