@@ -25,6 +25,7 @@
       $authData->id = (int)$UserData[user_id];
       $authData->user_name = $UserData[user_name];
       $authData->role = (int)$UserData[user_role];
+      $authData->company_id = $UserData[company_id];
 
       //Get day open
       $DBDay      = mysqli_query($con, "SELECT MAX(day_open) AS System_Opener FROM day_open LIMIT 1 ");

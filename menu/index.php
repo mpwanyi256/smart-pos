@@ -5,9 +5,14 @@
     $DepartmentId = html_entity_decode(mysqli_real_escape_string($con, $_POST['get_menu_items']));
 
     if ($DepartmentId == 0 || $DepartmentId == null) {
-      $query = "SELECT * FROM menu_items ORDER BY item_name ASC LIMIT 50";
+      // $query = "SELECT * FROM menu_items ORDER BY item_name ASC LIMIT 50";
+      $query = "SELECT menu_items.*, categoriies.category FROM menu_items 
+                INNER JOIN categoriies ON menu_items.item_category_id=categoriies.category_id
+                WHERE categoriies.category NOT IN('OPEN DISH') ORDER BY item_name ASC LIMIT 50";
     } else {
-      $query = "SELECT * FROM menu_items WHERE display=".$DepartmentId." ORDER BY item_name ASC";
+      $query = "SELECT menu_items.*, categoriies.category FROM menu_items 
+                INNER JOIN categoriies ON menu_items.item_category_id=categoriies.category_id
+                WHERE categoriies.category NOT IN('OPEN DISH') AND menu_items.display=".$DepartmentId." ORDER BY item_name ASC";
     }
 
     $menuItems = new stdClass();
@@ -24,6 +29,7 @@
       $dbItem->category_id = $Item['item_category_id'];
       $dbItem->display = (int)$Item['display'];
       $dbItem->status = (int)$Item['hide'];
+      $dbItem->category = (int)$Item['category'];
       
       array_push($MenuItems, $dbItem);
     }
@@ -77,7 +83,7 @@
 
     while($Cat       = mysqli_fetch_array($Query)) {
       $CatItem       = new stdClass();
-      $CatItem->id   = $Cat['category_id'];
+      $CatItem->id   = (int)$Cat['category_id'];
       $CatItem->name = $Cat['category'];
       $CatItem->department_id = $Cat['department_id'];
       $CatItem->status = $Cat['status'];
@@ -86,6 +92,28 @@
 
     $response->error = false;
     $response->data = $Categories;
+
+    echo json_encode($response);
+
+  } else if (isset($_POST['update_item'])) {
+    $Itemid     = html_entity_decode(mysqli_real_escape_string($con, $_POST['item_id']));
+    $ItemName   = html_entity_decode(mysqli_real_escape_string($con, $_POST['item_name']));
+    $Price      = html_entity_decode(mysqli_real_escape_string($con, $_POST['price']));
+    $CategoryId = html_entity_decode(mysqli_real_escape_string($con, $_POST['category_id']));
+    $Display    = html_entity_decode(mysqli_real_escape_string($con, $_POST['display']));
+
+    $UpdateItem = mysqli_query($con, "UPDATE menu_items 
+      SET item_name='".$ItemName."', item_price=".$Price.",item_category_id=".$CategoryId.",display=".$Display." 
+      WHERE item_id=".$Itemid." ");
+
+    $response = new stdClass();
+    if ($UpdateItem) {
+      $response->error = false;
+      $response->message = 'Success';
+    } else {
+      $response->error = true;
+      $response->message = 'Something went wrong';
+    }
 
     echo json_encode($response);
   }
