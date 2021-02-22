@@ -29,7 +29,7 @@
       $dbItem->category_id = $Item['item_category_id'];
       $dbItem->display = (int)$Item['display'];
       $dbItem->status = (int)$Item['hide'];
-      $dbItem->category = (int)$Item['category'];
+      $dbItem->category = $Item['category'];
       
       array_push($MenuItems, $dbItem);
     }
