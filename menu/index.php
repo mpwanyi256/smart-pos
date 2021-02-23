@@ -4,19 +4,28 @@
   if (isset($_POST['get_menu_items'])) {
     $DepartmentId = html_entity_decode(mysqli_real_escape_string($con, $_POST['get_menu_items']));
 
-    if ($DepartmentId == 0 || $DepartmentId == null) {
+    if($DepartmentId == 'download') {
+      // Download all menu items
+      $query = "SELECT menu_items.*, categoriies.category,store_departments.sd_name AS display_name FROM menu_items 
+                INNER JOIN categoriies ON menu_items.item_category_id=categoriies.category_id
+                INNER JOIN store_departments ON store_departments.sd_id=menu_items.display
+                WHERE categoriies.category NOT IN('OPEN DISH', 'VAT') ORDER BY menu_items.item_name ASC";
+    } else if ($DepartmentId == 0 || $DepartmentId == null) {
       // $query = "SELECT * FROM menu_items ORDER BY item_name ASC LIMIT 50";
-      $query = "SELECT menu_items.*, categoriies.category FROM menu_items 
+      $query = "SELECT menu_items.*, categoriies.category,store_departments.sd_name AS display_name FROM menu_items
                 INNER JOIN categoriies ON menu_items.item_category_id=categoriies.category_id
-                WHERE categoriies.category NOT IN('OPEN DISH') ORDER BY item_name ASC LIMIT 50";
+                INNER JOIN store_departments ON store_departments.sd_id=menu_items.display
+                WHERE categoriies.category NOT IN('OPEN DISH', 'VAT') ORDER BY item_name ASC LIMIT 50";
     } else {
-      $query = "SELECT menu_items.*, categoriies.category FROM menu_items 
+      $query = "SELECT menu_items.*, categoriies.category,store_departments.sd_name AS display_name FROM menu_items 
                 INNER JOIN categoriies ON menu_items.item_category_id=categoriies.category_id
-                WHERE categoriies.category NOT IN('OPEN DISH') AND menu_items.display=".$DepartmentId." ORDER BY item_name ASC";
+                INNER JOIN store_departments ON store_departments.sd_id=menu_items.display
+                WHERE categoriies.category NOT IN('OPEN DISH', 'VAT') AND menu_items.display=".$DepartmentId." ORDER BY item_name ASC";
     }
 
     $menuItems = new stdClass();
     $menuItems->error = false;
+    $menuItems->filter = $DepartmentId;
     $MenuItems = array();
 
     $DbItems = mysqli_query($con, $query);
@@ -28,6 +37,7 @@
       $dbItem->price_display = number_format($Item['item_price']);
       $dbItem->category_id = $Item['item_category_id'];
       $dbItem->display = (int)$Item['display'];
+      $dbItem->display_name = $Item['display_name'];
       $dbItem->status = (int)$Item['hide'];
       $dbItem->category = $Item['category'];
       
