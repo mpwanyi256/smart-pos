@@ -12,7 +12,7 @@
     } else { // Auth by username and password
       $query = mysqli_query($con, "SELECT pos_companies.user_id, pos_companies.user_name, pos_companies.user_role,company.* FROM pos_companies INNER JOIN company ON pos_companies.company_id=company.company_id WHERE pos_companies.user_name='".$Username."' AND pos_companies.user_key='".$Password."' AND pos_companies.is_active=1");
     }
-    
+
     $UserCount = (int)mysqli_num_rows($query);
 
     if ($UserCount == 0) {
@@ -65,4 +65,15 @@
       $object->data = $authData;
     }
     echo json_encode($object);
+  } else if (isset($_POST['day_open'])) {
+    $response = new stdClass();
+
+    $DBDay      = mysqli_query($con, "SELECT day_open AS System_Opener FROM day_open WHERE day_close_status=0 ORDER BY day_id DESC LIMIT 1 ");
+    $FetchDay   = mysqli_fetch_array($DBDay);
+    $DayOpen    = $FetchDay['System_Opener'];
+
+    $response->data = $DayOpen;
+    $response->day_display = date('d M, Y', strtotime($DayOpen));
+
+    echo json_encode($response);
   }
