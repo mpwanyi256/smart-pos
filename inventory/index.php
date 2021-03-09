@@ -26,6 +26,7 @@
         $Item->id = (int)$Store['item_id'];
         $Item->name = $Store['item_name'];
         $Item->unit_price = (int)$Store['unit_price'];
+        $Item->unit_price_display = number_format($Store['unit_price']);
         $Item->pack_size = (int)$Store['pack_size'];
         $Item->min_stock = (int)$Store['minimum_stock'];
         $Item->unit_measure = $Store['measurement'];
