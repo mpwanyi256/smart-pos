@@ -131,7 +131,7 @@
       $openDishEntry->name = 'OPEN DISH';
       $openDishEntry->amount = $TotalOpen;
       array_push($DepartmentSettlements, $openDishEntry);
-      
+
       $sales->orders = $OrdersList;
       $sales->total_sale = $DayTotalSale;
       $sales->settlements = $PaymentSettlements;
@@ -181,7 +181,7 @@
         $TotalQuantity+=$Quantity;
 
         // Append items
-        $ItemListing = new stdClass(); 
+        $ItemListing = new stdClass();
         $ItemListing->id = $ItemId;
         $ItemListing->notes = $notes;
         $ItemListing->quantity = $Quantity;
@@ -194,8 +194,8 @@
           $itemStatus = 0;
         }
       }
-      
-      $OrdersItem = new stdClass();  
+
+      $OrdersItem = new stdClass();
       $OrdersItem->item_name = $ItemName;
       $OrdersItem->amount   = number_format((float)$ItemTotalCost);
       $OrdersItem->quantity = (float)$TotalQuantity;
@@ -331,7 +331,7 @@
         $Clients = "SELECT * FROM client_companies ORDER BY company_name ASC";
       } else {
         $Clients = "SELECT * FROM client_companies WHERE company_name LIKE
-                    '%".$ClientName."%' 
+                    '%".$ClientName."%'
                     OR company_name LIKE '%".$ClientName."%'
                     OR tin LIKE '%".$ClientName."%'
                     OR email_id LIKE '%".$ClientName."%'
@@ -369,7 +369,7 @@
                 client_companies.last_name,client_companies.tin,client_companies.address,client_companies.email_id,client_companies.contact_number,client_orders.order_id,client_orders.time, client_orders.bill_No,restaurant_tables.table_name,client_orders.date,client_orders.status,client_orders.description,pos_companies.user_name AS waiter FROM client_orders INNER JOIN restaurant_tables ON client_orders.table_id=restaurant_tables.table_id
                 LEFT JOIN pos_companies ON client_orders.waiter=pos_companies.user_id
                 LEFT JOIN client_companies ON client_orders.client_company_id=client_companies.clientCompany_id WHERE client_orders.bill_No='".$BillNumber."' ORDER BY client_orders.order_id DESC";
-    
+
     } else if (strlen($BillNumber) == 0 && $ClientId == 0) { // Search by date
       $sales->error = false;
       $Query = "SELECT client_companies.company_name AS client_name, settlements.settlement,
@@ -383,14 +383,14 @@
       $Query = "SELECT client_companies.company_name AS client_name, settlements.settlement,
                 client_companies.last_name,client_companies.tin,client_companies.address,client_companies.email_id,client_companies.contact_number,client_orders.order_id,client_orders.time, client_orders.bill_No,restaurant_tables.table_name,client_orders.date,client_orders.status,client_orders.description,pos_companies.user_name AS waiter FROM client_orders INNER JOIN restaurant_tables ON client_orders.table_id=restaurant_tables.table_id
                 LEFT JOIN pos_companies ON client_orders.waiter=pos_companies.user_id
-                LEFT JOIN client_companies ON client_orders.client_company_id=client_companies.clientCompany_id 
-                LEFT JOIN settlements ON client_orders.status=settlements.settlement_id 
+                LEFT JOIN client_companies ON client_orders.client_company_id=client_companies.clientCompany_id
+                LEFT JOIN settlements ON client_orders.status=settlements.settlement_id
                 WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND client_orders.client_company_id=".$ClientId." ORDER BY client_orders.order_id DESC";
     } else {
       $sales->error = true;
       $sales->message = 'Invalid search params';
     }
-    
+
     $OrdersList = array();
     $OrdersFilter = mysqli_query($con, $Query);
     while($order = mysqli_fetch_array($OrdersFilter)) {
@@ -437,8 +437,8 @@
 
       array_push($OrdersList, $OrdersItem);
 
-    } 
-    
+    }
+
     $response = new stdClass();
     $response->orders = $OrdersList;
 
@@ -467,12 +467,12 @@
       $dbItem->category_id = $Item['item_category_id'];
       $dbItem->display = (int)$Item['display'];
       $dbItem->status = (int)$Item['hide'];
-      
+
       array_push($MenuItems, $dbItem);
     }
     $menuItems->data = $MenuItems;
     echo json_encode($menuItems);
-  
+
   } else if (isset($_POST['get_departments'])) {
     $response = new stdClass();
     $response->error = false;
@@ -534,10 +534,13 @@
       $ItemSold     = new stdClass();
 
       // Get total amount sold
-      $ItemTotalSale = mysqli_query($con, "SELECT SUM(order_items.menu_item_price) AS item_sale FROM order_items
+      $ItemTotalSale = mysqli_query($con, "SELECT SUM(order_items.menu_item_price) AS item_sale
+        FROM order_items
         INNER JOIN client_orders ON order_items.order_id=client_orders.order_id
-        WHERE client_orders.date BETWEEN '".$From."' AND '".$To."' AND order_items.menu_item_id=".$ItemId." AND client_orders.status NOT IN(0) ");
+        WHERE client_orders.date BETWEEN '".$From."' AND '".$To."'
+        AND order_items.menu_item_id=".$ItemId." AND client_orders.status NOT IN(0) ");
       $ItemSaleValue = mysqli_fetch_array($ItemTotalSale);
+
       if ($ItemTotalSale > 0) {
         $ItemSold->item_id = $ItemId;
         $ItemSold->item_name = $ItemSale['item_name'];
@@ -592,7 +595,7 @@
     $SalesTo   = html_entity_decode(mysqli_real_escape_string($con, $_POST['sales_to']));
 
     $response  = new stdClass();
-    $SalesArray= array(); 
+    $SalesArray= array();
 
     if (strlen($SalesFrom) == 0 || $SalesFrom == null) {
       $response->error = true;

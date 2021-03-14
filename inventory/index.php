@@ -13,12 +13,12 @@
 
     $ItemsArray = array();
 
-    $query = mysqli_query($con, "SELECT store_items.item_id,store_items.item_name, store_items.unit_price,
-      store_items.pack_size, store_items.minimum_stock,store_items.measurement_id AS item_measure_id, unit_measurements.measurement,
-      store_item_categories.category_name FROM store_items
-      INNER JOIN unit_measurements ON unit_measurements.measure_id=store_items.measurement_id
-      INNER JOIN store_item_categories ON store_item_categories.category_id=store_items.item_categoryid
-      WHERE store_items.company_id=".$CompanyId." ORDER BY store_items.item_name ASC ");
+    $query = mysqli_query($con, "SELECT inv_store_items.item_id,inv_store_items.item_name, inv_store_items.unit_price,
+      inv_store_items.pack_size, inv_store_items.minimum_stock,inv_store_items.measurement_id AS item_measure_id, unit_measurements.measurement,
+      inv_store_item_categories.name, inv_store_item_categories.id AS category_id FROM inv_store_items
+      INNER JOIN unit_measurements ON unit_measurements.measure_id=inv_store_items.measurement_id
+      INNER JOIN inv_store_item_categories ON inv_store_item_categories.id=inv_store_items.item_categoryid
+      WHERE inv_store_items.company_id=".$CompanyId." ORDER BY inv_store_items.item_name ASC ");
 
 
       while($Store = mysqli_fetch_array($query)) {
@@ -30,7 +30,8 @@
         $Item->pack_size = (int)$Store['pack_size'];
         $Item->min_stock = (int)$Store['minimum_stock'];
         $Item->unit_measure = $Store['measurement'];
-        $Item->category = $Store['category_name'];
+        $Item->category = $Store['name'];
+        $Item->category_id = (int)$Store['category_id'];
         $Item->measure_id = (int)$Store['item_measure_id'];
 
         array_push($ItemsArray, $Item);
@@ -55,12 +56,47 @@
 
     $response->data = $AllMeasures;
 
+  } else if(isset($_POST['get_store_categories'])) {
+    $CategoryId    = html_entity_decode(mysqli_real_escape_string($con, $_POST['get_store_categories']));
+    $Categories    = array();
+
+    if ($CategoryId == 'all' || $CategoryId == null) {
+      $query = mysqli_query($con, "SELECT * FROM inv_store_item_categories ORDER BY name ASC");
+    } else {
+      $query = mysqli_query($con, "SELECT * FROM inv_store_item_categories WHERE id=".$CategoryId." ORDER BY name ASC");
+    }
+
+    while($Cat = mysqli_fetch_array($query)) {
+      $CatItem = new stdClass();
+      $CatItem->id = (int)$Cat['id'];
+      $CatItem->name = $Cat['name'];
+
+      array_push($Categories, $CatItem);
+    }
+
+    $response->data = $Categories;
+
+
   } else if(isset($_POST['update_store_item'])) {
-    $ItemId    = html_entity_decode(mysqli_real_escape_string($con, $_POST['update_store_item']));
-    $Name      = html_entity_decode(mysqli_real_escape_string($con, $_POST['item_name']));
-    $PackSize  = html_entity_decode(mysqli_real_escape_string($con, $_POST['pack_size']));
-    $MeasureId = html_entity_decode(mysqli_real_escape_string($con, $_POST['unit_measure_id']));
-    $UnitPrice = html_entity_decode(mysqli_real_escape_string($con, $_POST['unit_price']));
+    $ItemId     = html_entity_decode(mysqli_real_escape_string($con, $_POST['update_store_item']));
+    $Name       = html_entity_decode(mysqli_real_escape_string($con, $_POST['name']));
+    $PackSize   = html_entity_decode(mysqli_real_escape_string($con, $_POST['pack_size']));
+    $MeasureId  = html_entity_decode(mysqli_real_escape_string($con, $_POST['unit_measure_id']));
+    $UnitPrice  = html_entity_decode(mysqli_real_escape_string($con, $_POST['unit_price']));
+    $CategoryId = html_entity_decode(mysqli_real_escape_string($con, $_POST['category_id']));
+    $MinStock   = html_entity_decode(mysqli_real_escape_string($con, $_POST['minimum_stock']));
+
+    $UpdateItem = mysqli_query($con, "UPDATE inv_store_items SET item_name='".$Name."', item_categoryid=".$CategoryId.",
+                  unit_price=".$UnitPrice.", measurement_id=".$MeasureId.", pack_size=".$PackSize.", minimum_stock=".$MinStock."
+                  WHERE item_id=".$ItemId." ");
+
+    if (UpdateItem) {
+      $response->error = false;
+      $response->message = 'Success';
+    } else {
+      $response->error = true;
+      $response->message = 'Updade failed';
+    }
 
   }
 
