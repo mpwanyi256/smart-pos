@@ -98,6 +98,46 @@
       $response->message = 'Updade failed';
     }
 
+  } else if (isset($_POST['create_store_item'])) {
+    $Name       = html_entity_decode(mysqli_real_escape_string($con, $_POST['name']));
+    $PackSize   = html_entity_decode(mysqli_real_escape_string($con, $_POST['pack_size']));
+    $MeasureId  = html_entity_decode(mysqli_real_escape_string($con, $_POST['unit_measure_id']));
+    $UnitPrice  = html_entity_decode(mysqli_real_escape_string($con, $_POST['unit_price']));
+    $CategoryId = html_entity_decode(mysqli_real_escape_string($con, $_POST['category_id']));
+    $MinStock   = html_entity_decode(mysqli_real_escape_string($con, $_POST['minimum_stock']));
+    $company_id = html_entity_decode(mysqli_real_escape_string($con, $_POST['company_id']));
+
+    $CheckItem  = mysqli_query($con, "SELECT * FROM inv_store_items WHERE item_name='".$Name."' 
+                  AND item_categoryid=".$CategoryId." AND company_id=".$company_id." ");
+    
+    if (mysqli_num_rows($CheckItem) == 0) {
+      $InsertItem = mysqli_query($con, "INSERT INTO inv_store_items(item_name,item_categoryid,unit_price,measurement_id,pack_size,minimum_stock,company_id)
+                    VALUES('".$Name."',".$CategoryId.",".$UnitPrice.",".$MeasureId.",".$PackSize.",".$MinStock.",".$company_id.") ");
+
+      if ($InsertItem) {
+        $response->error = false;
+        $response->message = 'Success';
+      } else {
+        $response->error = true;
+        $response->message = 'Sorry, something went wrong';
+      }
+    } else {
+      $response->error = true;
+      $response->message = 'Sorry, Item already exists';
+    }
+
+  } else if(isset($_POST['delete_store_item'])) {
+    $ItemId = html_entity_decode(mysqli_real_escape_string($con, $_POST['delete_store_item']));
+    $DropItem = mysqli_query($con, "DELETE FROM inv_store_items WHERE item_id=".$ItemId." ");
+
+    // Refactor later when finished with invoices creation
+    if ($DropItem) {
+      $response->error = false;
+      $response->message = 'Success';
+    } else {
+      $response->error = true;
+      $response->message = 'Sorry, delete failed';
+    }
   }
 
 
