@@ -216,7 +216,7 @@ export default {
       filters.append('company_id', localStorage.getItem('smart_company_id'));
 
       const Orders = await API.smart(SALES, filters);
-      if (!Orders.error) commit('setOrders', Orders.data.orders);
+      if (!Orders.error && !payload.running) commit('setOrders', Orders.data.orders);
       commit('toggleLoading', false);
       return Orders;
     },

@@ -2,17 +2,17 @@ module.exports = {
   transpileDependencies: [
     'vuetify',
   ],
-  // publicPath: '/smartAdmin',
+  // publicPath: '/smartPOS',
 };
 
 /*
 .htaccess
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /smartAdmin
-    RewriteRule ^smartAdmin/index\.html$ - [L]
+    RewriteBase /smartPOS
+    RewriteRule ^smartPOS/index\.html$ - [L]
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule . /smartAdmin/index.html [L]
+    RewriteRule . /smartPOS/index.html [L]
 </IfModule>
 */

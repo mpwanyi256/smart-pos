@@ -5,7 +5,7 @@
           <span>
             <v-avatar size="26">
               <img
-                src="../../assets/uganda.png"
+                src="../../assets/logo.png"
                 alt="uganda"
               >
             </v-avatar>

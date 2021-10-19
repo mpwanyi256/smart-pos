@@ -13,13 +13,12 @@
                 <div>
                     <small v-if="!showPreparationTime">
                       <span :class="`${iconColor}--text`">
-                        <v-icon left :class="`${iconColor}--text`">mdi-clock</v-icon>
                         {{ timeGone }}
                       </span>
                     </small>
-                    <!-- <small v-else>
-                        {{ menuItem.preparation_time }}min
-                    </small> -->
+                    <small v-else>
+                      {{ getHours(menuItem.preparation_time) }}
+                    </small>
                 </div>
             </div>
             <p v-if="menuItem.notes"
@@ -54,7 +53,7 @@ export default {
   computed: {
     timeGone() {
       const minutes = this.menuItem.minutes_gone;
-      return minutes > 0 ? `${minutes}` : 'Now';
+      return minutes > 0 ? this.getHours(minutes) : 'Now';
     },
     minutesGone() {
       return this.menuItem.minutes_gone;
@@ -78,6 +77,22 @@ export default {
           color = 'grey';
       }
       return color;
+    },
+  },
+
+  methods: {
+    getHours(minutes) {
+      let hrs;
+      if (minutes < 60) {
+        hrs = `${minutes} mins`;
+      } else if (minutes >= 60) {
+        const Hrs = minutes / 60;
+        const mins = minutes % 60;
+
+        hrs = `${Math.round(Hrs)}Hrs ${Math.round(mins)}mins`;
+      }
+
+      return hrs;
     },
   },
 };
@@ -136,7 +151,8 @@ export default {
             }
 
             >div:last-child {
-              direction: rtl;
+              // direction: rtl;
+              text-align: right;
               padding-right: 5px;
             }
         }

@@ -110,6 +110,10 @@ export default {
     ...mapGetters('auth', ['user']),
     ...mapGetters('pos', ['runningOrderId', 'orders']),
 
+    outletId() {
+      return this.user.outlet_id;
+    },
+
     companyId() {
       return this.user ? this.user.company_id : 0;
     },
@@ -268,6 +272,7 @@ export default {
         to: this.dayOpen,
         client_id: 0,
         status: 1,
+        outlet_id: this.outletId,
       });
       if (!orders.error) this.setRunning(orders.data.orders);
     },

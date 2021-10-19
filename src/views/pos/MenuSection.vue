@@ -95,7 +95,7 @@ export default {
       });
       if (!order.error) {
         await this.$eventBus.$emit('fetch-orders');
-        this.setRunningOrderId(order.order_id);
+        // this.setRunningOrderId(order.order_id);
         this.filterOrders({
           bill_no: order.order_id,
           from: '',

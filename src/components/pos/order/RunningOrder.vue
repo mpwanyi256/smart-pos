@@ -97,6 +97,10 @@ export default {
     ...mapGetters('pos', ['runningOrder', 'runningOrderId', 'orders']),
     ...mapGetters('auth', ['user']),
 
+    outletId() {
+      return this.user.outlet_id;
+    },
+
     itemsCount() {
       return this.orderItems.length;
     },
@@ -161,6 +165,8 @@ export default {
           from: '',
           to: '',
           client_id: '',
+          outlet_id: this.outletId,
+          running: true,
         }).then((orders) => {
           const OrderFetched = orders.data.orders;
           if (!OrderFetched.length) return;

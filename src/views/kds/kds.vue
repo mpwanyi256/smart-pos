@@ -7,11 +7,6 @@
             </div>
             <div>
                 <div>
-                  <v-btn icon small @click="fetchRunningOrders(true)">
-                    <v-icon>mdi-refresh</v-icon>
-                  </v-btn>
-                </div>
-                <div>
                     <v-select
                         outlined dense
                         :items="departments"
@@ -19,6 +14,11 @@
                         item-value="id"
                         v-model="selectedDepartment"
                     />
+                </div>
+                <div>
+                  <v-btn x-small fab @click="fetchRunningOrders(true)">
+                    <v-icon>mdi-refresh</v-icon>
+                  </v-btn>
                 </div>
             </div>
         </div>
@@ -286,17 +286,17 @@ export default {
         }
 
         > div:last-child {
-            direction: rtl;
             padding-right: 10px;
+            text-align: right;
 
             > div {
-                display: inline-flex;
-                justify-content: center;
-                direction: ltr;
-                align-items: center;
-                max-width: 350px;
-                margin-top: 5px;
-                margin-right: 5px;
+              display: inline-flex;
+              justify-content: center;
+              align-items: center;
+              gap: 5px;
+              max-width: 350px;
+              margin-top: 5px;
+              margin-right: 5px;
             }
         }
     }
