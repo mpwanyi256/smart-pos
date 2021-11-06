@@ -88,5 +88,23 @@ export default {
       },
       component: () => import('@/views/Settings/CompanyDepartments.vue'),
     },
+    {
+      path: 'settings_menu_items',
+      name: 'settings_menu_categories',
+      meta: {
+        authrequired: true,
+        title: 'SmartPOS :: Menu Categories',
+      },
+      component: () => import('@/views/dashboard/sales/MenuCategories.vue'),
+    },
+    {
+      path: 'settings_menu_items',
+      name: 'settings_menu_items',
+      meta: {
+        authrequired: true,
+        title: 'SmartPOS :: Menu Items',
+      },
+      component: () => import('@/views/dashboard/sales/MenuItems.vue'),
+    },
   ],
 };

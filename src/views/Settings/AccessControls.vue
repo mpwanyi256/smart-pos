@@ -6,6 +6,13 @@
                     <th>
                       <div class="search_field">
                         <BaseTextfield v-model="search" placeholder="Search ..." />
+                        <v-select small-chips outlined dense
+                          :items="outlets"
+                          item-text="name"
+                          item-value="id"
+                          label="Outlet"
+                          v-model="selectedOutlet"
+                        />
                       </div>
                     </th>
                     <th>STATUS</th>
@@ -16,14 +23,14 @@
                     <td>
                       <p>
                         <strong>
-                          {{ setting.title.toUpperCase() }} {{ setting.set_code }}
+                          {{ setting.title.toUpperCase() }}
                         </strong>
                       </p>
                       <div class="setting_description" v-html="setting.description" />
                     </td>
                     <td>
                       <v-btn
-                        @click="toggleAction(!setting.status, setting.id)"
+                        @click="toggleAction(!setting.status, setting)"
                         :disabled="loading"
                         :color="setting.status ? 'green' : 'red'"
                         dark
@@ -37,7 +44,7 @@
     </div>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import Table from '@/components/generics/new/Table.vue';
 import BaseTextfield from '@/components/generics/BaseTextfield.vue';
 
@@ -51,27 +58,58 @@ export default {
     return {
       search: '',
       loading: false,
+      outlets: [],
+      selectedOutlet: null,
+      accessControls: [],
     };
   },
   computed: {
-    ...mapGetters('settings', ['controls']),
+    // ...mapGetters('settings', ['controls']),
 
     filteredControls() {
-      return this.controls.filter((Setting) => Setting.description.toLowerCase()
-        .match(this.search.toLowerCase()));
+      return this.accessControls.filter((Setting) => Setting.description.toLowerCase()
+        .includes(this.search.toLowerCase()));
+    },
+  },
+  async created() {
+    await this.getOutlets();
+    // await this.getAccessControls();
+  },
+  watch: {
+    selectedOutlet: {
+      handler(outlet) {
+        if (outlet) this.getAccessControls();
+      },
+      immediate: true,
     },
   },
   methods: {
-    ...mapActions('settings', ['fetch', 'post']),
+    ...mapActions('settings', ['fetch', 'post', 'fetchOutletSettings']),
 
-    async getAccessControls() {
-      await this.fetch({ get_access_controls: 'all' });
+    async getOutlets() {
+      const OUTLETS = await this.post({ fetch_company_outlets: 'all' }).catch(() => null);
+      if (OUTLETS) this.outlets = OUTLETS.data;
+      // eslint-disable-next-line prefer-destructuring
+      this.selectedOutlet = this.outlets[0].id;
     },
 
-    async toggleAction(status, settingId) {
+    async getAccessControls() {
+      this.loading = true;
+      const controls = await this.fetchOutletSettings(
+        { get_access_controls: 'all', outlet: this.selectedOutlet },
+      );
+      console.log('controls', controls, this.selectedOutlet);
+      if (!controls.error) this.accessControls = controls.data;
+      this.loading = false;
+    },
+
+    async toggleAction(status, setting) {
+      console.log('Toggled action');
       this.loading = true;
       const filter = {
-        update_access_setting: settingId,
+        update_access_setting: setting.outlet_access_id,
+        setting_id: setting.id,
+        outlet_id: this.selectedOutlet,
         status: status ? 'YES' : 'NO',
       };
       await this.post(filter);
@@ -103,6 +141,8 @@ export default {
   bottom: 0;
   margin: 0;
   padding: 0 !important;
+  display: inline-flex;
+  gap: 16px;
 }
 
 .setting_description {

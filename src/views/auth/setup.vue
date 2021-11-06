@@ -28,7 +28,7 @@ import { mapActions, mapGetters } from 'vuex';
 import BaseAlert from '@/components/alerts/BaseAlert.vue';
 
 export default {
-  name: 'LoginForm',
+  name: 'IpSetup',
 
   components: {
     BaseAlert,
@@ -52,12 +52,14 @@ export default {
     },
 
     setIPaddress() {
-      if (this.ipAddress.split('.').length <= 2) {
-        this.setError('Invalid IP Address set');
-      } else {
-        localStorage.setItem('smartpos_ipaddress_set', this.ipAddress);
-        this.$router.replace({ name: 'login' });
-      }
+      localStorage.setItem('smartpos_ipaddress_set', this.ipAddress);
+      this.$router.replace({ name: 'login' });
+      // if (this.ipAddress.split('.').length <= 2) {
+      //   this.setError('Invalid IP Address set');
+      // } else {
+      //   localStorage.setItem('smartpos_ipaddress_set', this.ipAddress);
+      //   this.$router.replace({ name: 'login' });
+      // }
     },
 
   },

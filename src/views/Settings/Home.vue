@@ -33,8 +33,16 @@ export default {
         { name: 'Outlets', icon: 'mdi-home-city', path: 'company_outlets' },
         { name: 'Printer settings', icon: 'mdi-printer', path: 'company_departments' },
         { name: 'Sections and tables', icon: 'mdi-table-arrow-right', path: 'sections_and_tables' },
+        { name: 'Menu Categories', icon: 'mdi-book-open-page-variant', path: 'settings_menu_categories' },
+        { name: 'Menu Items', icon: 'mdi-book-open-variant', path: 'settings_menu_items' },
       ],
     };
+  },
+  computed: {
+    // sortedLinks() {
+    //   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+    //   return this.links.sort((a, b) => a.name - b.name);
+    // },
   },
 };
 </script>

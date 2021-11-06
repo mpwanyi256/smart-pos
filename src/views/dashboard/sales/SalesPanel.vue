@@ -29,8 +29,8 @@ export default {
         { name: 'Sales summary', icon: 'mdi-sale', path: 'salessammary' },
         { name: 'Items Sold', icon: 'mdi-cart', path: 'itemwisesale' },
         { name: 'Find A Bill', icon: 'mdi-magnify', path: 'findbill' },
-        { name: 'Menu Categories', icon: 'mdi-book-open-page-variant', path: 'menu_categories' },
-        { name: 'Menu Items', icon: 'mdi-book-open-variant', path: 'menu_items' },
+        // { name: 'Menu Categories', icon: 'mdi-book-open-page-variant', path: 'menu_categories' },
+        // { name: 'Menu Items', icon: 'mdi-book-open-variant', path: 'menu_items' },
         { name: 'Discounts', icon: 'mdi-bell-check', path: 'discounts_report' },
       ],
     };

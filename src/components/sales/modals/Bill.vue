@@ -128,7 +128,7 @@ import PrintMixin from '@/mixins/PrintingMixin';
 import PageAlert from '@/components/alerts/PageAlert.vue';
 
 export default {
-  name: 'BillModal',
+  name: 'Bill',
   mixins: [PrintMixin],
   components: {
     Basemodal,
