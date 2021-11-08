@@ -59,6 +59,7 @@ export default {
     runningOrders: {
       type: Array,
       required: true,
+      default: () => [],
     },
   },
 
@@ -67,11 +68,11 @@ export default {
       if (!this.runningOrders.length) return [];
       let kots = [];
       if (column === 'New orders') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time <= 10)
+        kots = this.runningOrders.filter((Order) => (Order.delay_time < 10)
         && this.hasPendingItems(Order.items));
       } else if (column === 'Running Late') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time > 15)
-        && (Order.delay_time <= 7) && this.hasPendingItems(Order.items));
+        kots = this.runningOrders.filter((Order) => (Order.delay_time > 10)
+        && (Order.delay_time <= 15) && this.hasPendingItems(Order.items));
       } else if (column === 'Pick up') {
         kots = this.runningOrders.filter((Order) => Order.has_ready_orders);
       } else if (column === 'Delayed') {

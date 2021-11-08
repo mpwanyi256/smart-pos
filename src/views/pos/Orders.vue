@@ -6,7 +6,8 @@
         >
           <v-btn text
             v-if="timeNow"
-            @click="actions = true"
+            :disabled="!canViewActions"
+            @click="openActionsModal"
             class="time_display"
             :class="daysLeft < 10 ? 'days_warning' : ''"
           >
@@ -135,6 +136,10 @@ export default {
       return (this.user && this.user.company_info) ? this.user.role : 0;
     },
 
+    canViewActions() {
+      return !![1, 5].includes(this.userRole);
+    },
+
     activeSections() {
       return this.sections.filter((Section) => Section.hidden === false);
     },
@@ -199,6 +204,15 @@ export default {
     ...mapActions('reports', ['getReport']),
     ...mapActions('email', ['sendEmail']),
 
+    openActionsModal() {
+      if (!this.canViewActions) {
+        this.$eventBus.$emit('show-snackbar',
+          'Sorry, Restricted access to manager and super user!');
+        return;
+      }
+      this.actions = true;
+    },
+
     closeLicenseModal() {
       this.openLicenseModal = false;
     },
@@ -238,15 +252,16 @@ export default {
       this.getReport({
         close_day: this.dayOpen,
         open_day: datePicked,
-      }).then((response) => {
-        this.errorMessage = response.message;
-        setTimeout(() => {
+      }).then((res) => {
+        this.$eventBus.$emit('show-snackbar', res.message);
+        this.errorMessage = '';
+        this.getUserById();
+        this.loading = false;
+      })
+        .catch(() => this.$eventBus.$emit('show-snackbar', 'Error in fetching sales report'))
+        .finally(() => {
           this.switchDay = false;
-          this.errorMessage = '';
-          this.getUserById();
-          this.loading = false;
-        }, 1000);
-      });
+        });
     },
 
     async fetchTables() {

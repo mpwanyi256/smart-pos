@@ -6,7 +6,7 @@
             <div class="item_name_pane">
                 <div>
                     <p>
-                        {{ menuItem.quantity }}
+                      <span>{{ menuItem.quantity }}</span>
                         {{ menuItem.name.toUpperCase() }}
                     </p>
                 </div>
@@ -141,24 +141,34 @@ export default {
         padding-left: 5px;
 
         .item_name_pane {
-            display: grid;
-            grid-template-columns: 70% 30%;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
             font-weight: 400;
 
             >div {
+              padding: 3px;
               p {
                 width: 100%;
-                display: inline-flex;
                 justify-content: left;
                 align-items: center;
-                color: $kds-text-header-color;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                color: $black;
+                font-weight: 450;
                 font-style: normal;
                 font-size: 16px;
                 line-height: 150%;
                 letter-spacing: -0.005em;
+                margin: 0;
+
+                span {
+                  font-weight: 600;
+                  color: $white;
+                  background-color: $black;
+                  padding: 2px;
+                  border: 1px solid $black;
+                  border-radius: 50%;
+                  margin: 5px;
+                }
               }
             }
 

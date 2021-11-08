@@ -20,8 +20,8 @@ export default {
         report_date: reportDate,
         save_sales_report: reportDate,
       };
-      const res = await this.generatePdf(params).catch((e) => {
-        console.log('Error generating pdf', e);
+      const res = await this.generatePdf(params).catch(() => {
+        this.$eventBus.$emit('show-snackbar', 'Error generating pdf');
         return null;
       });
       if (res && !res.error) {
@@ -39,6 +39,7 @@ export default {
           this.$eventBus.$emit('show-snackbar', 'Success! Email was sent.');
         }
       } else {
+        if (message === 'END OF DAY SALES REPORT') this.$emit('switch', this.selectedDate);
         this.errorMessage = res.message;
       }
       this.sendingEmail = false;

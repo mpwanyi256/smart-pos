@@ -43,37 +43,6 @@
           :selected-department="selectedDepartment"
           @reload="fetchRunningOrders"
          />
-        <!-- <div class="orders_pane">
-            <template v-if="loading">
-                <div v-for="column in displayRows" :key="`column-${column.name}`">
-                    <div class="column_header" :class="displayColorCode(column.name)">
-                        <h1>{{ column.name }}</h1>
-                    </div>
-                    <LoadingKds />
-                </div>
-            </template>
-            <template v-else>
-                <div v-for="column in displayRows" :key="`column-${column.name}`">
-                    <div class="column_header" :class="displayColorCode(column.name)">
-                        <h1>{{ column.name }}</h1>
-                    </div>
-                    <div class="kot_list">
-                        <template v-for="kot in columnKots(column.name)">
-                            <KOTOrder
-                                v-if="columnKots(column.name).length > 0"
-                                :key="kot.id"
-                                :kot="kot"
-                                :column="column.name"
-                                :checkoutId="column.checkout_id"
-                                :department="selectedDepartment"
-                                :columnClass="displayColorCode(column.name)"
-                                @reload="fetchRunningOrders"
-                            />
-                        </template>
-                    </div>
-                </div>
-            </template>
-        </div> -->
     </div>
 </template>
 <script>
@@ -133,6 +102,7 @@ export default {
       loading: true,
       polling: null,
       errorMessage: '',
+      fetchingKDS: false,
     };
   },
   computed: {
@@ -162,6 +132,17 @@ export default {
     },
     routeName(val) {
       if (val !== 'kds') clearInterval(this.polling);
+    },
+    runningOrders: {
+      handler(newlyLoaded, Prev) {
+        const newItems = newlyLoaded && newlyLoaded.length ? newlyLoaded.map((i) => i.items) : 0;
+        const prevItems = Prev && Prev.length ? Prev.map((i) => i.items) : 0;
+
+        if (newItems !== 0 && prevItems !== 0) {
+          if (newItems.length > prevItems.length) this.$eventBus.$emit('show-snackbar', 'New order!...');
+        }
+      },
+      deep: true,
     },
   },
   beforeDestroy() {
@@ -218,8 +199,9 @@ export default {
     },
 
     async fetchRunningOrders(showLoader = false) {
-      if (!this.dayOpen) return;
+      if (!this.dayOpen || this.fetchingKDS) return;
       if (showLoader) this.loading = true;
+      this.fetchingKDS = true;
       this.queryKds({
         get_pending_kots: this.dayOpen,
         department_id: this.selectedDepartment,
@@ -232,6 +214,7 @@ export default {
         return { data: [] };
       }).finally(() => {
         this.loading = false;
+        this.fetchingKDS = false;
       });
     },
   },
