@@ -133,7 +133,8 @@ export default {
     ...mapActions('settings', ['fetch', 'post']),
 
     async getAccessControls() {
-      await this.fetch({ get_access_controls: 'all' });
+      const OUTLET = localStorage.getItem('smart_outlet_id');
+      await this.fetch({ get_access_controls: 'all', outlet: OUTLET });
     },
 
     getSetting(CODE) {

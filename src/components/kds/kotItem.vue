@@ -1,6 +1,6 @@
 <template>
     <div class="kot_item"
-        @click="$emit('mark-as-served', menuItem)"
+        @click="moveItem"
     >
         <div class="item_name">
             <div class="item_name_pane">
@@ -29,6 +29,7 @@
     </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import AddOns from '@/components/generics/AddOns.vue';
 
 export default {
@@ -51,6 +52,12 @@ export default {
     AddOns,
   },
   computed: {
+    ...mapGetters('auth', ['user']),
+
+    isAllowedToMoveItem() {
+      return this.user ? this.user.role === 4 : false;
+    },
+
     timeGone() {
       const minutes = this.menuItem.minutes_gone;
       return minutes > 0 ? this.getHours(minutes) : 'Now';
@@ -81,6 +88,11 @@ export default {
   },
 
   methods: {
+    moveItem() {
+      if (this.isAllowedToMoveItem) this.$emit('mark-as-served', this.menuItem);
+      else this.$eventBus.$emit('show-snackbar', 'Sorry, you cannot perfom actions on KDS');
+    },
+
     getHours(minutes) {
       let hrs;
       if (minutes < 60) {

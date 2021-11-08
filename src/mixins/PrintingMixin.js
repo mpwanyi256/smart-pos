@@ -45,9 +45,20 @@ export default {
         run_kot_print_job: true,
       };
 
+      // Refactor :: Fetch all comp. Departments
+      // Then send print operations to all
+
       await this.printBarKot(params);
       await this.printKitchen(params);
+      await this.printOtherKot(params);
       await this.confirmOrder();
+    },
+
+    async printOtherKot(params) {
+      this.sendKotJob({ ...params, department_id: 4 })
+        .catch(() => {
+          this.errorMessage = 'Check bar printer';
+        });
     },
 
     async printBarKot(params) {

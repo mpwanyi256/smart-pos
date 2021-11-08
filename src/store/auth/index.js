@@ -206,8 +206,18 @@ export default {
           return;
         }
 
-        if ([1, 2, 3].includes(PACKAGE)) {
-          router.push({ name: 'pos' });
+        dispatch('settings/fetchOutletSettings',
+          { get_access_controls: 'all', outlet: userInfo.outlet_id }, { root: true });
+
+        if (payload === 'new account') {
+          router.push({ name: 'company_settings' });
+        } else if ([1, 2, 3].includes(PACKAGE)) {
+          if (userInfo.role === 4) {
+            router.push({ name: 'kds' });
+          } else {
+            router.push({ name: 'pos' });
+            console.log('ELSE PART', userInfo);
+          }
           dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
         } else if (PACKAGE === 4) {
           router.push({ name: 'tenants' });
@@ -253,12 +263,21 @@ export default {
           return;
         }
 
+        dispatch('settings/fetchOutletSettings',
+          { get_access_controls: 'all', outlet: userInfo.outlet_id }, { root: true });
+
         const CurrentPath = window.location.pathname;
         if (CurrentPath === '/') {
           if (payload === 'new account') {
             router.push({ name: 'company_settings' });
           } else if ([1, 2, 3].includes(PACKAGE)) {
-            router.push({ name: 'pos' });
+            if (userInfo.role === 4) {
+              router.push({ name: 'kds' });
+              console.log('userInfo.role', userInfo);
+            } else {
+              router.push({ name: 'pos' });
+              console.log('ELSE PART', userInfo);
+            }
             dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
           } else if (PACKAGE === 4) {
             router.push({ name: 'tenants' });

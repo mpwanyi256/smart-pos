@@ -85,7 +85,7 @@ export default {
     ...mapGetters('auth', ['user']),
     isValidPassword() {
       return this.fullname.length > 3 && this.password.length > 3
-      && this.firstName.length > 3 && this.lastName.length > 3
+      && this.firstName.length > 2 && this.lastName.length > 2
       && (this.password === this.passwordConfirm && this.employeeOutletId !== 0);
     },
   },

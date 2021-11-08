@@ -4,16 +4,30 @@
         <div class="toggle_display">
             <div>
               <h1 v-if="dayOpenDisplay">{{ `Display Screen ${dayOpenDisplay}`}}</h1>
+              <BaseAlert
+                v-if="errorMessage"
+                :message="errorMessage"
+                type="error"
+              />
             </div>
             <div>
                 <div>
-                    <v-select
-                        outlined dense
-                        :items="departments"
-                        item-text="name"
-                        item-value="id"
-                        v-model="selectedDepartment"
-                    />
+                  <v-select
+                    outlined dense
+                    label="Display type"
+                    :items="columns"
+                    item-text="name"
+                    item-value="id"
+                    v-model="selectedDisplayColumn"
+                  />
+                  <v-select
+                    outlined dense
+                    label="Department"
+                    :items="departments"
+                    item-text="name"
+                    item-value="id"
+                    v-model="selectedDepartment"
+                  />
                 </div>
                 <div>
                   <v-btn x-small fab @click="fetchRunningOrders(true)">
@@ -22,7 +36,14 @@
                 </div>
             </div>
         </div>
-        <div class="orders_pane">
+        <OrdersDisplayScreen
+          :loading="loading"
+          :display-rows="selectedDisplayColumn == 0 ?displayRows : pickUpColumns"
+          :runningOrders="runningOrders"
+          :selected-department="selectedDepartment"
+          @reload="fetchRunningOrders"
+         />
+        <!-- <div class="orders_pane">
             <template v-if="loading">
                 <div v-for="column in displayRows" :key="`column-${column.name}`">
                     <div class="column_header" :class="displayColorCode(column.name)">
@@ -52,27 +73,49 @@
                     </div>
                 </div>
             </template>
-        </div>
+        </div> -->
     </div>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import moment from 'moment';
 import NavBar from '@/components/nav/Navbar.vue';
-import KOTOrder from '@/components/kds/KOTOrder.vue';
-import LoadingKds from '@/components/kds/LoadingKds.vue';
+import BaseAlert from '@/components/generics/new/BaseAlert.vue';
+import OrdersDisplayScreen from '@/components/kds/OrdersDisplayScreen.vue';
 
 export default {
   name: 'KDS',
   components: {
     NavBar,
-    KOTOrder,
-    LoadingKds,
+    BaseAlert,
+    OrdersDisplayScreen,
   },
   data() {
     return {
       runningOrders: [],
       selectedDepartment: 0,
+      selectedDisplayColumn: 0,
+      columns: [
+        {
+          name: 'Pending',
+          id: 0,
+        },
+        {
+          name: 'Ready',
+          id: 1,
+        },
+      ],
+      pickUpColumns: [
+        {
+          name: 'Pick up', min: 8, max: 1000000, checkout_id: 1,
+        },
+        {
+          name: 'Getting Delayed', min: 8, max: 1000000, checkout_id: 1,
+        },
+        {
+          name: 'Delayed Pick up', min: 8, max: 1000000, checkout_id: 1,
+        },
+      ],
       displayRows: [
         {
           name: 'New orders', min: 0, max: 5, checkout_id: 1,
@@ -89,6 +132,7 @@ export default {
       ],
       loading: true,
       polling: null,
+      errorMessage: '',
     };
   },
   computed: {
@@ -110,8 +154,11 @@ export default {
     },
   },
   watch: {
+    async selectedDisplayColumn() {
+      this.fetchRunningOrders(true);
+    },
     async selectedDepartment() {
-      await this.fetchRunningOrders(true);
+      this.fetchRunningOrders(true);
     },
     routeName(val) {
       if (val !== 'kds') clearInterval(this.polling);
@@ -119,6 +166,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.polling);
+    this.polling = null;
   },
   async created() {
     await this.fetchRunningOrders(true);
@@ -149,42 +197,42 @@ export default {
 
     columnKots(column) {
       if (!this.runningOrders.length) return [];
-      let kots;
+      let kots = [];
       if (column === 'New orders') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time <= 5)
+        kots = this.runningOrders.filter((Order) => (Order.delay_time <= 10)
         && this.hasPendingItems(Order.items));
       } else if (column === 'Running Late') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time > 5)
+        kots = this.runningOrders.filter((Order) => (Order.delay_time > 15)
         && (Order.delay_time <= 7) && this.hasPendingItems(Order.items));
       } else if (column === 'Ready') {
         kots = this.runningOrders.filter((Order) => Order.has_ready_orders);
       } else if (column === 'Delayed') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time > 7)
+        kots = this.runningOrders.filter((Order) => (Order.delay_time > 15)
         && this.hasPendingItems(Order.items));
       }
       return kots;
     },
 
     hasPendingItems(kotItems) {
-      let hasPending;
-      kotItems.forEach((el) => {
-        if (el.status === 0) hasPending = true;
-      });
-      return hasPending;
+      return !!kotItems.filter((Order) => Order.status === 0).length;
     },
 
     async fetchRunningOrders(showLoader = false) {
       if (!this.dayOpen) return;
       if (showLoader) this.loading = true;
-      const KOTs = await this.queryKds({
+      this.queryKds({
         get_pending_kots: this.dayOpen,
         department_id: this.selectedDepartment,
-      }).catch((e) => {
-        console.log('Error fetching kds', e);
+        kds_type: this.selectedDisplayColumn,
+      }).then((KOTS) => {
+        this.runningOrders = KOTS.data;
+        this.errorMessage = KOTS.error_message;
+      }).catch(() => {
+        this.errorMessage = 'Error fetching kds';
         return { data: [] };
+      }).finally(() => {
+        this.loading = false;
       });
-      if (!KOTs.error_message.length) this.runningOrders = KOTs.data;
-      this.loading = false;
     },
   },
 };
@@ -193,13 +241,14 @@ export default {
 @import '../../styles/constants.scss';
 
 .kds {
-    width: 100vw;
+    width: 100%;
     height: 100vh;
     margin: 0;
     background-color: $bg_color;
     display: flex;
     flex-direction: column;
     font-family: $font-style !important;
+    overflow: hidden;
 
     ::-webkit-scrollbar{
         width: 5px;

@@ -16,7 +16,7 @@
   </v-app>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: 'App',
@@ -25,28 +25,27 @@ export default {
       polling: null,
       snackMessage: '',
       snackbar: false,
+      loading: false,
     };
   },
   computed: {
     ...mapGetters('auth', ['user', 'company']),
   },
   watch: {
-    user(val) {
+    async user(val) {
       if (val && val.company_id) {
-        this.getFirebaseInfo();
-        this.togglePolling();
+        this.loadHomeDefaults();
       }
     },
   },
   async created() {
     if (this.user && this.user.company_info) {
-      await this.getActiveLicense(this.user.company_info.company_email);
-      await this.getFirebaseInfo();
-      this.togglePolling();
+      this.loadHomeDefaults();
     }
   },
   beforeDestroy() {
-    clearInterval(this.polling);
+    // clearInterval(this.polling);
+    // this.polling = null;
   },
 
   eventBusCallbacks: {
@@ -55,6 +54,25 @@ export default {
 
   methods: {
     ...mapActions('auth', ['getDayOpen', 'getActiveLicense', 'getFirebaseInfo']),
+    ...mapActions('settings', ['fetchOutletSettings']),
+    ...mapMutations('settings', ['setColtrols']),
+
+    async loadHomeDefaults() {
+      await this.getAccessControls();
+      await this.getDayOpen(this.user.company_id);
+      await this.getActiveLicense(this.user.company_info.company_email);
+      await this.getFirebaseInfo();
+    },
+
+    async getAccessControls() {
+      this.loading = true;
+      const OUTLET = localStorage.getItem('smart_outlet_id');
+      const controls = await this.fetchOutletSettings(
+        { get_access_controls: 'all', outlet: OUTLET },
+      );
+      if (!controls.error) this.setColtrols(controls.data);
+      this.loading = false;
+    },
 
     showSnackBar(message) {
       this.snackMessage = message;

@@ -23,7 +23,7 @@
                     <td>
                       <p>
                         <strong>
-                          {{ setting.title.toUpperCase() }}
+                          {{ setting.title }} {{ setting.set_code }}
                         </strong>
                       </p>
                       <div class="setting_description" v-html="setting.description" />
@@ -44,7 +44,7 @@
     </div>
 </template>
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 import Table from '@/components/generics/new/Table.vue';
 import BaseTextfield from '@/components/generics/BaseTextfield.vue';
 
@@ -64,7 +64,6 @@ export default {
     };
   },
   computed: {
-    // ...mapGetters('settings', ['controls']),
 
     filteredControls() {
       return this.accessControls.filter((Setting) => Setting.description.toLowerCase()
@@ -73,7 +72,6 @@ export default {
   },
   async created() {
     await this.getOutlets();
-    // await this.getAccessControls();
   },
   watch: {
     selectedOutlet: {
@@ -85,6 +83,7 @@ export default {
   },
   methods: {
     ...mapActions('settings', ['fetch', 'post', 'fetchOutletSettings']),
+    ...mapMutations('settings', ['setColtrols']),
 
     async getOutlets() {
       const OUTLETS = await this.post({ fetch_company_outlets: 'all' }).catch(() => null);
@@ -98,13 +97,12 @@ export default {
       const controls = await this.fetchOutletSettings(
         { get_access_controls: 'all', outlet: this.selectedOutlet },
       );
-      console.log('controls', controls, this.selectedOutlet);
       if (!controls.error) this.accessControls = controls.data;
+      this.setColtrols(controls.data);
       this.loading = false;
     },
 
     async toggleAction(status, setting) {
-      console.log('Toggled action');
       this.loading = true;
       const filter = {
         update_access_setting: setting.outlet_access_id,
@@ -112,9 +110,15 @@ export default {
         outlet_id: this.selectedOutlet,
         status: status ? 'YES' : 'NO',
       };
-      await this.post(filter);
-      await this.getAccessControls();
-      this.loading = false;
+      this.post(filter)
+        .then(async () => {
+          await this.getAccessControls();
+        })
+        .catch((e) => {
+          console.log('Error in toggling action', e);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
   },
 };

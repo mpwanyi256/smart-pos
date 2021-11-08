@@ -59,7 +59,7 @@ new Vue({
     const LoggedInUser = localStorage.getItem('smart_user_id');
     if (LoggedInUser) {
       store.dispatch('auth/getUserById');
-      store.dispatch('settings/fetch', { get_access_controls: 'all' });
+      // store.dispatch('settings/fetch', { get_access_controls: 'all' });
       // firebase.firestore().collection('licenses')
       //   .onSnapshot(async () => {
       //     const compEmail = localStorage.getItem('smart_company_email');
