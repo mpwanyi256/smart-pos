@@ -90,10 +90,10 @@
                 v-model="selectedRoom"
             />
             <BaseTooltip
-                @button="addUnit = true"
-                message="Add unit"
-                icon="plus"
-                color="blue"
+              @button="addUnit = true"
+              message="Add unit"
+              icon="plus"
+              color="blue"
             />
           </div>
         </v-toolbar>

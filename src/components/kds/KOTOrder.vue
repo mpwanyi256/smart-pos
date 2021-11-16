@@ -28,7 +28,8 @@
         </div>
         <div class="kots_list">
             <KotItem
-                v-for="item in runnungOrders"
+                v-for="(item, i) in runnungOrders"
+                :highlighted="i %2 == 0"
                 :key="`kot-${item.id}`"
                 :menuItem="item"
                 :showPreparationTime="isReadyColumn"
@@ -77,7 +78,7 @@ export default {
       required: true,
     },
     department: {
-      type: Number,
+      type: [Number, String],
       required: true,
     },
   },
@@ -182,7 +183,7 @@ export default {
     border: 0.5px solid $border-color;
     display: flex;
     flex-direction: column;
-    // border-radius: 15px;
+    gap: 15px;
 
     .kot_head {
         display: grid;
@@ -222,7 +223,7 @@ export default {
     }
 
     .kots_list {
-        height: 100%;
+      height: 100%;
     }
 
     .just_in {

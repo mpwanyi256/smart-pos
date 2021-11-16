@@ -4,13 +4,13 @@
         :size="800" @close="$emit('close')">
         <div class="settle">
             <v-tabs class="tab-head" v-model="tab" color="basil" grow>
-            <v-tab class="tab-item"
-                v-for="(item, index) in options"
-                :key="`settlement-option${index}`"
-                :class="isActiveTab(index) ? 'active' : ''"
-            >
-                {{ item.name }}
-            </v-tab>
+              <v-tab class="tab-item"
+                  v-for="(item, index) in options"
+                  :key="`settlement-option${index}`"
+                  :class="isActiveTab(index) ? 'active' : ''"
+              >
+                  {{ item.name }}
+              </v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab">
                 <v-tab-item>

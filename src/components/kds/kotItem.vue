@@ -1,5 +1,6 @@
 <template>
-    <div class="kot_item"
+    <div
+      :class="highlighted ? 'highlight kot_item' : 'kot_item'"
         @click="moveItem"
     >
         <div class="item_name">
@@ -17,7 +18,7 @@
                       </span>
                     </small>
                     <small v-else>
-                      {{ getHours(menuItem.preparation_time) }}
+                      {{ getHours(menuItem.delay_time) }}
                     </small>
                 </div>
             </div>
@@ -25,7 +26,10 @@
             class="notes">Notes: {{ menuItem.notes }}</p>
         </div>
         <!-- TO DO :: implement Addons -->
-        <AddOns v-if="false" />
+        <AddOns
+          v-if="menuItem.addons.length"
+          :addons="menuItem.addons"
+        />
     </div>
 </template>
 <script>
@@ -35,6 +39,10 @@ import AddOns from '@/components/generics/AddOns.vue';
 export default {
   name: 'KotItem',
   props: {
+    highlighted: {
+      type: Boolean,
+      required: true,
+    },
     showPreparationTime: {
       type: Boolean,
       required: true,
@@ -59,7 +67,7 @@ export default {
     },
 
     timeGone() {
-      const minutes = this.menuItem.minutes_gone;
+      const minutes = this.menuItem.delay_time;
       return minutes > 0 ? this.getHours(minutes) : 'Now';
     },
     minutesGone() {
@@ -111,6 +119,10 @@ export default {
 </script>
 <style scoped lang="scss">
 @import '../../styles/constants.scss';
+
+.highlight {
+  background-color: $gray-90;
+}
 
 .kot_item {
   min-height: 50px;
@@ -205,7 +217,7 @@ export default {
 }
 
 .kot_item:hover {
-  background-color: $light-grey;
+  // background-color: $light-grey;
   color: $black-text;
   cursor: pointer;
 }

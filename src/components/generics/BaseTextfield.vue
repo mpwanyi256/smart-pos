@@ -67,7 +67,7 @@ export default {
       -webkit-appearance: none !important;
   }
 
-  .search_field, .search_field:focus {
+  .search_field, .search_field:focus, .search_field:active {
     height: 40px;
     width: 100%;
     border: 1px solid $white;

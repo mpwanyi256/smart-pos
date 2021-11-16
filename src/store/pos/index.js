@@ -51,6 +51,17 @@ export default {
   },
   actions: {
 
+    post({ commit }, payload) {
+      commit('toggleLoading', true);
+      const params = new FormData();
+      const updateKeys = Object.keys(payload);
+      updateKeys.forEach((key) => {
+        params.append(key, payload[`${key}`]);
+      });
+      commit('toggleLoading', false);
+      return API.smart(PATH, params);
+    },
+
     setWorkingTable({ commit }, payload) {
       commit('setWorkingTable', payload);
     },

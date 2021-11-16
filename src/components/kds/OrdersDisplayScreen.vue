@@ -16,14 +16,14 @@
                     <div class="kot_list">
                         <template v-for="kot in columnKots(column.name)">
                             <KOTOrder
-                                v-if="columnKots(column.name).length > 0"
-                                :key="kot.id"
-                                :kot="kot"
-                                :column="column.name"
-                                :checkoutId="column.checkout_id"
-                                :department="selectedDepartment"
-                                :columnClass="displayColorCode(column.name)"
-                                @reload="$emit('reload')"
+                              v-if="columnKots(column.name).length > 0"
+                              :key="kot.id"
+                              :kot="kot"
+                              :column="column.name"
+                              :checkoutId="column.checkout_id"
+                              :department="selectedDepartment"
+                              :columnClass="displayColorCode(column.name)"
+                              @reload="$emit('reload')"
                             />
                         </template>
                     </div>
@@ -65,18 +65,18 @@ export default {
 
   methods: {
     columnKots(column) {
-      if (!this.runningOrders.length) return [];
+      if (!this.runningOrders || !this.runningOrders.length) return [];
       let kots = [];
       if (column === 'New orders') {
         kots = this.runningOrders.filter((Order) => (Order.delay_time < 10)
         && this.hasPendingItems(Order.items));
       } else if (column === 'Running Late') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time > 10)
+        kots = this.runningOrders.filter((Order) => (Order.delay_time >= 11)
         && (Order.delay_time <= 15) && this.hasPendingItems(Order.items));
       } else if (column === 'Pick up') {
         kots = this.runningOrders.filter((Order) => Order.has_ready_orders);
       } else if (column === 'Delayed') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time > 15)
+        kots = this.runningOrders.filter((Order) => (Order.delay_time >= 16)
         && this.hasPendingItems(Order.items));
       }
       return kots;

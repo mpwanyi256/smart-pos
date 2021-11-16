@@ -4,24 +4,53 @@
         @click="$emit('viewItems', item)"
     >
         <div class="item_name">
+            <p>
             <strong class="mr-2">
               {{ item.quantity }}
             </strong>
             {{ item.item_name }}
+            <br>
+            <small>
+                <span>
+                    <v-btn
+                        class="notes"
+                        x-small text
+                        @click="$emit('delete', item)">
+                        <v-icon class="icon" left>mdi-book-open-blank-variant</v-icon>
+                        {{ item.notes }}
+                    </v-btn>
+                </span>
+            </small>
+            </p>
         </div>
-        <div class="item_price">
-            {{ item.amount }}
+        <div class="item_price pt-3">
+            <BaseTooltip small v-if="isPending"
+              @button="$emit('delete', item)"
+              message="Delete addon"
+              icon="delete"
+              color="red"
+            />
         </div>
     </div>
 </template>
 <script>
+import BaseTooltip from '@/components/generics/BaseTooltip.vue';
+
 export default {
-  name: 'OrderItem',
+  name: 'AddonItem',
   props: {
     item: {
       type: Object,
       required: true,
     },
+    isPending: {
+      type: Boolean,
+      required: true,
+    },
+  },
+
+  components: {
+    BaseTooltip,
   },
 };
 </script>
@@ -29,7 +58,7 @@ export default {
 @import '@/styles/pos.scss';
 
     .order_item {
-        height: 50px;
+        height: auto;
         width: inherit;
         background-color: $white;
         border-bottom: 0.5px solid $header;
@@ -42,7 +71,7 @@ export default {
 
         .item_name {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             justify-content: left;
             padding-left: 10px;
             line-height: 1.5;
@@ -51,6 +80,12 @@ export default {
             width: 100%;
             white-space: nowrap;
             padding-right: 5px;
+
+            .notes, .notes .icon {
+                color: $black;
+                size: 14px;
+                text-transform: capitalize;
+            }
         }
 
         .item_price {
@@ -60,7 +95,7 @@ export default {
 
         .item_name, .item_actions, .item_price {
             display: flex;
-            align-items: center;
+            // align-items: center;
         }
 
         .item_actions {

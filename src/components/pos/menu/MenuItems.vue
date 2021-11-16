@@ -24,19 +24,19 @@
     <div class="menu_items_list">
       <div class="menu">
         <template v-if="loading">
-        <LoadingKds
-          v-for="i in 4"
-          :key="`cat-holder-key-${i}`"
-          :count="8"
-        />
-      </template>
-      <template v-else>
-        <MenuItem
-          v-for="item in items" :key="item.id"
-          :item="item"
-          @addItem="$emit('addItem', $event)"
-        />
-      </template>
+          <LoadingKds
+            v-for="i in 4"
+            :key="`cat-holder-key-${i}`"
+            :count="8"
+          />
+        </template>
+        <template v-else>
+          <MenuItem
+            v-for="item in items" :key="item.id"
+            :item="item"
+            @addItem="$emit('addItem', $event)"
+          />
+        </template>
       </div>
     </div>
     <CreateClientMOdal

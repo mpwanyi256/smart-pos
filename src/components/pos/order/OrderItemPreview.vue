@@ -62,11 +62,11 @@
                   icon="note"
                 />
                 <!-- TO DO :: implement addons -->
-                <!-- <BaseTooltip
-                  @button="cancelOrderItem = true"
-                  message="Select addon"
-                  icon="plus"
-                /> -->
+                <BaseTooltip
+                  @button="showAddons = true"
+                  message="Add addons"
+                  icon="blur"
+                />
               </template>
               <template v-else>
                 <BaseTooltip
@@ -84,6 +84,13 @@
                   message="Shift item"
                   icon="arrow-expand"
                 />
+                <BaseTooltip
+                  v-if="orderItem.addons_count > 0"
+                  @button="showAddonItemsList = true"
+                  color="blue"
+                  :message="`View ${orderItem.addons_count} addons`"
+                  icon="blur"
+                />
                 <!-- TO DO :: Check if user is alllowed to perform this action -->
               </template>
             </div>
@@ -99,6 +106,16 @@
               @close="shiftItem = false"
               @shift="shiftOrderItemHandler"
             />
+            <MenuItemAddons
+              v-if="showAddons"
+              :order-item="orderItem"
+              @close="showAddons = false"
+            />
+            <MenuitemAddonsDisplay
+              v-if="showAddonItemsList"
+              :order-item="orderItem"
+              @close="showAddonItemsList = false"
+            />
         </div>
     </div>
 </template>
@@ -107,6 +124,9 @@ import { mapActions } from 'vuex';
 import BaseTooltip from '@/components/generics/BaseTooltip.vue';
 import ConfirmModal from '@/components/generics/ConfirmModal.vue';
 import ShiftOrderItem from '@/components/pos/order/manage/ShiftOrderItem.vue';
+import MenuItemAddons from '@/components/pos/order/manage/MenuItemAddons.vue';
+import MenuitemAddonsDisplay from '@/components/pos/order/manage/MenuitemAddonsDisplay.vue';
+
 import TimezoneMixin from '@/mixins/TimezoneMixin';
 import ControlsMixin from '@/mixins/ControlsMixin';
 
@@ -123,6 +143,8 @@ export default {
     BaseTooltip,
     ConfirmModal,
     ShiftOrderItem,
+    MenuItemAddons,
+    MenuitemAddonsDisplay,
   },
   data() {
     return {
@@ -131,6 +153,8 @@ export default {
       confirmAction: false,
       cancelOrderItem: false,
       shiftItem: false,
+      showAddons: false,
+      showAddonItemsList: false,
     };
   },
   computed: {
