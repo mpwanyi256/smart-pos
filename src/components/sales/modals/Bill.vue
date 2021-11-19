@@ -21,7 +21,7 @@
                 </tr>
                 <tr style="text-align:center;font-size:14px;">
                     <td colspan="4"><small>
-                        <strong>TAX INVOICE {{ order.bill_no}}</strong></small>
+                        <strong>BILL NUMBER {{ order.bill_no}}</strong></small>
                     </td>
                 </tr>
                 <tr><td colspan="4"><hr></td></tr>
@@ -91,15 +91,36 @@
                     </td>
                 </tr>
                 <tr>
-                <td
-                    style="text-align:left; margin-right:0px;" colspan="3">
-                    <small>DISCOUNT</small>
-                </td>
-                <td style="text-align:right;">
-                    <small>{{ order.discount }}</small>
-                </td>
+                    <td style="text-align:left; margin-right:0px;" colspan="3">
+                        VAT INCL
+                    </td>
+                    <td style="text-align:right;">
+                        {{ vatAddedAmount }}
+                    </td>
                 </tr>
-                <tr>
+                <tr><td colspan="4"><br><hr></td></tr>
+                <template v-if="order.discount > 0">
+                    <tr>
+                    <td
+                        style="text-align:left; margin-right:0px;" colspan="3">
+                        <small>DISCOUNT</small>
+                    </td>
+                    <td style="text-align:right;">
+                        <small>{{ order.discount }}</small>
+                    </td>
+                    </tr>
+                    <!-- <tr>
+                        <td
+                            style="text-align:left; margin-right:0px;" colspan="3">
+                            <strong>BILL TOTAL</strong>
+                        </td>
+                        <td style="text-align:right;">
+                            <strong>{{ order.final_amount }}
+                            </strong>
+                        </td>
+                    </tr> -->
+                </template>
+                <tr v-if="vatAddedAmount && vatAddedAmount != '0' || order.discount > 0">
                     <td
                         style="text-align:left; margin-right:0px;" colspan="3">
                         <strong>BILL TOTAL</strong>
@@ -126,10 +147,11 @@ import { mapActions, mapGetters } from 'vuex';
 import Basemodal from '@/components/generics/Basemodal.vue';
 import PrintMixin from '@/mixins/PrintingMixin';
 import PageAlert from '@/components/alerts/PageAlert.vue';
+import ControlsMixin from '@/mixins/ControlsMixin';
 
 export default {
   name: 'Bill',
-  mixins: [PrintMixin],
+  mixins: [PrintMixin, ControlsMixin],
   components: {
     Basemodal,
     PageAlert,
@@ -153,6 +175,11 @@ export default {
     ...mapGetters('auth', ['user']),
     company() {
       return this.user ? this.user.company_info : null;
+    },
+
+    vatAddedAmount() {
+      // Add vat added to bill incase allowAddVAT == true
+      return (this.showVatCalcular && !this.allowAddVAT) ? this.order.vat_included : 0;
     },
   },
   watch: {

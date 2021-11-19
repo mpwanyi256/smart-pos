@@ -9,12 +9,12 @@
                 <p>
                     {{ order.date }}
                     <span>
-                        <v-icon small class="clock_icon">mdi-clock</v-icon>
+                        <v-icon small class="clock_icon">mdi-clock-outline</v-icon>
                     </span>
                     {{ order.time }}
                     <span v-if="order.waiter">
-                      <v-icon small class="clock_icon">mdi-account</v-icon>
-                      {{ order.waiter ? order.waiter.split(' ')[0] : '' }}
+                      <v-icon small class="clock_icon">mdi-account-outline</v-icon>
+                      {{ order && order.waiter ? order.waiter.split(' ')[0] : '' }}
                     </span>
                     <span v-if="clientName">
                       {{ clientName }}
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="order_sum_info">
-            <OrderTotalCacular :order="order" />
+            <OrderTotalCacular v-if="order" :order="order" />
             <OrderItemsList
               v-if="showItems && orderItemSelected"
               @close="showItems = false"

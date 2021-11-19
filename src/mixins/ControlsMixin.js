@@ -36,6 +36,16 @@ export default {
       return this.user ? this.user.company_info.day_open : null;
     },
 
+    allowAddVAT() {
+      const setting = this.getSetting('ENVAT');
+      return setting ? setting.status : false;
+    },
+
+    showVatCalcular() {
+      const setting = this.getSetting('SVATCALC');
+      return setting ? setting.status : false;
+    },
+
     managerCanViewSales() {
       const setting = this.getSetting(this.allowManagerViewSales);
       return (this.userRole === 1 && setting.status) || this.isSuperUser;

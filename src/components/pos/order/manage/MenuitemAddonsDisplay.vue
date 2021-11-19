@@ -1,7 +1,7 @@
 <template>
     <Basemodal
         :title="`${orderItem.name} addons`"
-        :size="700" @close="$emit('close')">
+        :size="500" @close="$emit('close')">
         <div class="addons">
             <MenuItemAddonsList
               :orderItem="orderItem"

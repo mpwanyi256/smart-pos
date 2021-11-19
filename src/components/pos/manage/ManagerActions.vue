@@ -1,7 +1,7 @@
 <template>
     <Basemodal
       :title="`Actions`"
-      :size="700" @close="$emit('close')">
+      :size="850" @close="$emit('close')">
       <div class="manager_actions">
           <div class="actions_list">
             <template v-for="(action, i) in actions">
@@ -32,6 +32,7 @@ export default {
         { name: 'Extend License', action: 'license' },
         { name: 'Cloud sync', action: 'cloud' },
         { name: 'Credit payment', action: 'payment' },
+        { name: 'Sync POS', action: 'sync-pos' },
       ],
     };
   },

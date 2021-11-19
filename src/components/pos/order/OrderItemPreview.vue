@@ -6,7 +6,7 @@
         <div class="item_name_display">
           <p>
             <span><strong>({{ orderItem.quantity }})</strong></span>
-            {{ `${orderItem.name.toUpperCase()}` }}
+            {{ `${orderItem.name}` }}
             <br>
               <span class="item_amount">
                 {{ orderItem.amount }}
@@ -179,6 +179,7 @@ export default {
         date: this.dayOpen,
         time: this.time,
         table_id: table.id,
+        outlet_id: this.user.outlet_id,
       };
       const shiftInfo = {
         table_order_id: table.order.id,
@@ -273,6 +274,7 @@ export default {
               color: $black;
               font-size: 16px;
               width: 100%;
+              text-transform: capitalize;
 
               span {
                 font-weight: bold;

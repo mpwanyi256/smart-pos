@@ -79,10 +79,11 @@ import SwitchDayModal from '@/components/pos/manage/SwitchDayModal.vue';
 import LicenseModal from '@/components/pos/manage/LicenseModal.vue';
 import SyncDataModal from '@/components/cloud/SyncDataModal.vue';
 import TimezoneMixin from '@/mixins/TimezoneMixin';
+import posSync from '@/mixins/posSync';
 
 export default {
   name: 'Orders',
-  mixins: [TimezoneMixin],
+  mixins: [TimezoneMixin, posSync],
   components: {
     SectionsPane,
     ManagerActions,
@@ -238,6 +239,9 @@ export default {
           break;
         case 'cloud':
           this.syncData = true;
+          break;
+        case 'sync-pos':
+          this.performPOSsync();
           break;
         default:
           console.log('Invalid action');

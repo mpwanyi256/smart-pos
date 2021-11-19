@@ -5,7 +5,10 @@
             <div v-for="addon in addons" :key="`addon-item-${addon.id}`">
                 <div class="notes-chip">
                     <v-icon dark>mdi-bell</v-icon>
-                    {{ `${addon.quantity} ${addon.item_name} (${addon.notes})` }}
+                    {{ `${addon.quantity} ${addon.item_name}`}}
+                    <span class="notes" v-if="addon.notes">
+                        <i>{{ `( ${addon.notes} )` }}</i>
+                    </span>
                 </div>
             </div>
         </div>
@@ -36,13 +39,17 @@ export default {
     padding: 3px;
     border-radius: 15px;
     border: 1px solid $blue;
+
+    .notes {
+        font-weight: 300;
+    }
 }
 
 .addons_display {
     display: flex;
     flex-direction: column;
     gap: 0;
-    border-top: 1px solid $border-color;
+    border-bottom: 1px solid $border-color;
     // background-color: $gray-90;
     margin-bottom: 10px;
     padding-bottom: 10px;

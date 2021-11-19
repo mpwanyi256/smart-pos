@@ -19,6 +19,8 @@ export default {
         waiter: this.order.waiter,
         exceptions_category_id: this.user.exception_category_id || 0,
         receipt_message: this.company.company_receipt,
+        show_vat_calcular: this.showVatCalcular ? 1 : 0,
+        add_vat_to_bill: this.allowAddVAT ? 1 : 0,
       };
       this.sendPrintJob(bill)
         .then((res) => {

@@ -2,7 +2,7 @@
     <div class="stats_header">
         <StatsCard
           v-for="i in stats"
-          :key="i.value"
+          :key="`stats-head-${i.value}`"
           :stat="i"
         />
     </div>

@@ -216,7 +216,6 @@ export default {
             router.push({ name: 'kds' });
           } else {
             router.push({ name: 'pos' });
-            console.log('ELSE PART', userInfo);
           }
           dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
         } else if (PACKAGE === 4) {
@@ -276,7 +275,6 @@ export default {
               console.log('userInfo.role', userInfo);
             } else {
               router.push({ name: 'pos' });
-              console.log('ELSE PART', userInfo);
             }
             dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
           } else if (PACKAGE === 4) {

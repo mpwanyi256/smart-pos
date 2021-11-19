@@ -31,10 +31,11 @@ export default {
   data() {
     return {
       actions: [
-        { name: 'Confirm', icon: 'mdi-thumb-up', allow: true },
-        { name: 'Bill', icon: 'mdi-note', allow: this.waiterCanPrintBill },
-        { name: 'Settle', icon: 'mdi-credit-card', allow: true },
+        { name: 'Confirm', icon: 'mdi-thumb-up-outline', allow: true },
+        { name: 'Bill', icon: 'mdi-note-outline', allow: this.waiterCanPrintBill },
+        { name: 'Settle', icon: 'mdi-credit-card-outline', allow: true },
         { name: 'Discount', icon: 'mdi-sale', allow: true },
+        { name: 'VAT', icon: 'mdi-bookmark-minus-outline', allow: this.allowAddVAT },
       ],
       errorMessage: '',
     };
@@ -98,7 +99,7 @@ export default {
     addWaiterAction() {
       if (this.companyType === 1) {
         this.actions.unshift(
-          { name: 'Waiter', icon: 'mdi-account' },
+          { name: 'Waiter', icon: 'mdi-account-outline' },
         );
       }
     },
@@ -118,6 +119,9 @@ export default {
         case 'Discount':
           allowed = this.userCanDiscount;
           break;
+        case 'VAT':
+          allowed = this.allowAddVAT;
+          break;
         default:
           allowed = true;
           break;
@@ -127,7 +131,7 @@ export default {
 
     listen(action) {
       if (!this.order) {
-        this.errorMessage = 'Select order';
+        this.$eventBus.$emit('show-snackbar', 'Please select order');
         return;
       }
       this.$eventBus.$emit('fetch-orders');
@@ -149,7 +153,7 @@ export default {
           this.$eventBus.$emit('add-waiter');
           break;
         default:
-          console.log('Invalid action');
+          this.$eventBus.$emit('show-snackbar', `Sorry ${action} action will be available soon!.`);
           break;
       }
     },

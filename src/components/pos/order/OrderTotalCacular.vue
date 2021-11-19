@@ -5,26 +5,34 @@
                 Total
             </div>
             <div class="item_price">
-                {{ order ? order.bill_sum_display : '' }}
+                {{ order.bill_sum_display }}
             </div>
             <div class="item_actions">
                 &nbsp;
             </div>
         </div>
-        <div class="order_summmary">
+        <div v-if="order.vat_included != '0'" class="order_summmary">
+            <div class="item_name">
+                VAT INCL
+            </div>
+            <div class="item_price">
+                {{ order.vat_included }}
+            </div>
+        </div>
+        <div v-if="order.discount != '0'" class="order_summmary">
             <div class="item_name">
                 Discount
             </div>
             <div class="item_price">
-                {{ order ? order.discount : '' }}
+                {{ order.discount }}
             </div>
         </div>
-        <div class="order_summmary">
+        <div v-if="order.discount != '0' || order.vat_included != '0'" class="order_summmary">
             <div class="item_name">
                 BILL
             </div>
             <div class="item_price">
-                {{ order ? order.final_amount : '' }}
+                {{ order.final_amount }}
             </div>
         </div>
     </div>

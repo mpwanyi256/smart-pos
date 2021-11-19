@@ -12,7 +12,7 @@
               :small="true"
               class="float-right"
             />
-            {{ `${kot.table_name} #${kot.kot_id} (${kot.waiter})` }}
+            {{ `T:${kot.table_name} #${kot.kot_id} (${kot.waiter})` }}
             </div>
             <div class="text-right">
                 <!-- <BaseTooltip
