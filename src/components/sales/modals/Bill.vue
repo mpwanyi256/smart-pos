@@ -90,16 +90,18 @@
                         <strong>{{ order.bill_sum_display }}</strong>
                     </td>
                 </tr>
-                <tr>
-                    <td style="text-align:left; margin-right:0px;" colspan="3">
-                        VAT INCL
-                    </td>
-                    <td style="text-align:right;">
-                        {{ vatAddedAmount }}
-                    </td>
-                </tr>
-                <tr><td colspan="4"><br><hr></td></tr>
-                <template v-if="order.discount > 0">
+                <template v-if="showVATCalc">
+                    <tr>
+                        <td style="text-align:left; margin-right:0px;" colspan="3">
+                            VAT INCL
+                        </td>
+                        <td style="text-align:right;">
+                            {{ vatAddedAmount }}
+                        </td>
+                    </tr>
+                    <tr><td colspan="4"><br><hr></td></tr>
+                </template>
+                <template v-if="order.discount != '0'">
                     <tr>
                     <td
                         style="text-align:left; margin-right:0px;" colspan="3">
@@ -109,7 +111,9 @@
                         <small>{{ order.discount }}</small>
                     </td>
                     </tr>
-                    <!-- <tr>
+                </template>
+                <template v-if="showVATCalc || order.discount != '0'">
+                    <tr>
                         <td
                             style="text-align:left; margin-right:0px;" colspan="3">
                             <strong>BILL TOTAL</strong>
@@ -118,19 +122,9 @@
                             <strong>{{ order.final_amount }}
                             </strong>
                         </td>
-                    </tr> -->
+                    </tr>
+                    <tr><td colspan="4"><hr></td></tr>
                 </template>
-                <tr v-if="vatAddedAmount && vatAddedAmount != '0' || order.discount > 0">
-                    <td
-                        style="text-align:left; margin-right:0px;" colspan="3">
-                        <strong>BILL TOTAL</strong>
-                    </td>
-                    <td style="text-align:right;">
-                        <strong>{{ order.final_amount }}
-                        </strong>
-                    </td>
-                </tr>
-                <tr><td colspan="4"><hr></td></tr>
                 <tr><td colspan="4" style="text-align:center;">
                     <small>Powered By PRODEV GROUP | +256 (706) 523078
                         <br> {{ company.company_receipt }}
@@ -160,6 +154,11 @@ export default {
     order: {
       type: Object,
       required: true,
+    },
+    showVATCalc: {
+      type: Boolean,
+      required: false,
+      default: () => false,
     },
   },
   data() {
