@@ -63,7 +63,15 @@ export default {
         cancelled_by: this.user.id,
       };
       const cancelled = await this.updateRunningOrder(itemCanceled);
-      if (!cancelled.error) this.$eventBus.$emit('reload-order');
+      if (!cancelled.error) {
+        this.$eventBus.$emit('reload-order');
+        const CancelledItemId = cancelled.cancelled_item_id;
+        this.$eventBus.$emit('print-cancellation-kot',
+          {
+            cancel_id: CancelledItemId,
+            reason: item.reason.toUpperCase(),
+          });
+      }
       // TO DO :: add email notification
     },
 

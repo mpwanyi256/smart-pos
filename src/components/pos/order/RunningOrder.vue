@@ -43,7 +43,11 @@
             </div>
         </div>
         <div class="order_sum_info">
-            <OrderTotalCacular v-if="order" :order="order" />
+            <OrderTotalCacular
+              v-if="order"
+              :order="order"
+              :show-vat="showVatCalcular"
+            />
             <OrderItemsList
               v-if="showItems && orderItemSelected"
               @close="showItems = false"
@@ -66,9 +70,11 @@ import OrderItemsList from '@/components/pos/order/OrderItemsList.vue';
 import PageAlert from '@/components/alerts/PageAlert.vue';
 import BaseTooltip from '@/components/generics/BaseTooltip.vue';
 import ShiftTable from '@/components/pos/order/manage/ShiftTable.vue';
+import ControlsMixin from '@/mixins/ControlsMixin';
 
 export default {
   name: 'RunningOrder',
+  mixins: [ControlsMixin],
   props: {
     order: {
       type: Object,

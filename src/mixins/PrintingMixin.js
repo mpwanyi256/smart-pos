@@ -5,6 +5,9 @@ export default {
   computed: {
     ...mapGetters('auth', ['user']),
   },
+  eventBusCallbacks: {
+    'print-cancellation-kot': 'printCancelledKotItem',
+  },
   methods: {
     ...mapActions('print', ['sendPrintJob', 'sendKotJob']),
 
@@ -33,6 +36,30 @@ export default {
         });
     },
 
+    printCancelledKotItem(cancelledItem) {
+      // eslint-disable-next-line camelcase
+      const { cancel_id, reason } = cancelledItem;
+      // eslint-disable-next-line camelcase
+      const { waiter, table, bill_no } = this.order;
+
+      const params = {
+        print_cancelled_kot: cancel_id,
+        reason,
+        cancelled_by: this.user.user_name,
+        company_name: this.company.company_name,
+        location: this.company.company_location,
+        tin: this.company.company_tin,
+        contact_number: this.company.company_mobile,
+        waiter,
+        table,
+        bill_number: bill_no,
+      };
+      this.sendKotJob(params)
+        .catch(() => {
+          this.errorMessage = 'Check bar printer';
+        });
+    },
+
     async performKotPrint() {
       const params = {
         print_kot: this.order.order_id,
@@ -56,21 +83,21 @@ export default {
       await this.confirmOrder();
     },
 
-    async printOtherKot(params) {
+    printOtherKot(params) {
       this.sendKotJob({ ...params, department_id: 4 })
         .catch(() => {
-          this.errorMessage = 'Check bar printer';
+          this.errorMessage = 'Check printer';
         });
     },
 
-    async printBarKot(params) {
+    printBarKot(params) {
       this.sendKotJob({ ...params, department_id: 1 })
         .catch(() => {
           this.errorMessage = 'Check bar printer';
         });
     },
 
-    async printKitchen(params) {
+    printKitchen(params) {
       this.sendKotJob({ ...params, department_id: 2 })
         .catch(() => {
           this.errorMessage = 'Check kitchen printer';

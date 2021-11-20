@@ -21,7 +21,7 @@
                 </tr>
                 <tr style="text-align:center;font-size:14px;">
                     <td colspan="4"><small>
-                        <strong>BILL NUMBER {{ order.bill_no}}</strong></small>
+                        <strong>TAX INVOICE {{ order.bill_no}}</strong></small>
                     </td>
                 </tr>
                 <tr><td colspan="4"><hr></td></tr>

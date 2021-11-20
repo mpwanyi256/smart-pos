@@ -54,12 +54,12 @@
                   "
                   @button="$emit('delete', orderItem.id)"
                   message="Delete item"
-                  icon="delete"
+                  icon="delete-outline"
                 />
                 <BaseTooltip
                   @button="addNote = !addNote"
                   message="Add notes"
-                  icon="note"
+                  icon="note-outline"
                 />
                 <!-- TO DO :: implement addons -->
                 <BaseTooltip
@@ -167,10 +167,6 @@ export default {
   },
   methods: {
     ...mapActions('pos', ['updateRunningOrder', 'updateOrder']),
-
-    dropAddon() {
-      console.log('Drop add on');
-    },
 
     async shiftOrderItemHandler(table) {
       const tableOrder = {

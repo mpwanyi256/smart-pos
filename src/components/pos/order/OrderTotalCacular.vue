@@ -11,7 +11,7 @@
                 &nbsp;
             </div>
         </div>
-        <div v-if="order.vat_included != '0'" class="order_summmary">
+        <div v-if="showVat" class="order_summmary">
             <div class="item_name">
                 VAT INCL
             </div>
@@ -27,7 +27,7 @@
                 {{ order.discount }}
             </div>
         </div>
-        <div v-if="order.discount != '0' || order.vat_included != '0'" class="order_summmary">
+        <div v-if="order.discount != '0' || showVat" class="order_summmary">
             <div class="item_name">
                 BILL
             </div>
@@ -45,7 +45,12 @@ export default {
   props: {
     order: {
       type: Object,
+      required: true,
+    },
+    showVat: {
+      type: Boolean,
       required: false,
+      default: () => false,
     },
   },
 };
