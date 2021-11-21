@@ -285,7 +285,6 @@ export default {
     },
     showEvent({ event }) {
     //   this.selectedEventId = event.booking_id;
-      console.log('View event', event);
       this.selectedEventId = event;
       this.viewBooking = true;
       //   this.selectedElement = nativeEvent.target;

@@ -56,9 +56,11 @@ export default {
     ...mapActions('auth', ['getDayOpen', 'getActiveLicense', 'getFirebaseInfo']),
     ...mapActions('settings', ['fetchOutletSettings']),
     ...mapMutations('settings', ['setColtrols']),
+    ...mapActions('menu', ['getDepartments']),
 
     async loadHomeDefaults() {
       await this.getAccessControls();
+      await this.getDepartments('all');
       await this.getDayOpen(this.user.company_id);
       await this.getActiveLicense(this.user.company_info.company_email);
       await this.getFirebaseInfo();

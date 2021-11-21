@@ -4,6 +4,11 @@ export default {
   name: 'PrintMixin',
   computed: {
     ...mapGetters('auth', ['user']),
+    ...mapGetters('menu', ['departments']),
+
+    actualDepartments() {
+      return this.departments.filter((dept) => dept.id > 0);
+    },
   },
   eventBusCallbacks: {
     'print-cancellation-kot': 'printCancelledKotItem',
@@ -77,9 +82,16 @@ export default {
       // Refactor :: Fetch all comp. Departments
       // Then send print operations to all
 
-      await this.printBarKot(params);
-      await this.printKitchen(params);
-      await this.printOtherKot(params);
+      this.actualDepartments.forEach(async (dept) => {
+        await this.sendKotJob({ ...params, department_id: dept.id })
+          .catch(() => {
+            this.$eventBus.$emit('show-snackbar', `Please check ${dept.name} printer.`);
+          });
+      });
+
+      // await this.printBarKot(params);
+      // await this.printKitchen(params);
+      // await this.printOtherKot(params);
       await this.confirmOrder();
     },
 
