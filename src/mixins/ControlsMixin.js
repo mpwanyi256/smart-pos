@@ -136,7 +136,7 @@ export default {
   },
 
   async created() {
-    // await this.getAccessControls();
+    await this.getAccessControls();
   },
 
   methods: {

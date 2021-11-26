@@ -90,7 +90,7 @@
                         <strong>{{ order.bill_sum_display }}</strong>
                     </td>
                 </tr>
-                <template v-if="showVATCalc">
+                <template v-if="showVatCalcular">
                     <tr>
                         <td style="text-align:left; margin-right:0px;" colspan="3">
                             VAT INCL
