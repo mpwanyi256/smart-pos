@@ -58,11 +58,12 @@ export default {
       openLicenseModal: false,
       viewMode: 1,
       idb_key: 'smart_auth',
+      loading: false,
     };
   },
 
   computed: {
-    ...mapGetters('auth', ['loading', 'error', 'user', 'license']),
+    ...mapGetters('auth', ['error', 'user', 'license']),
 
     userId() {
       return localStorage.getItem('smart_user_id');
@@ -93,11 +94,13 @@ export default {
       const lastStep = await idb.get(this.idb_key);
       this.viewMode = lastStep ? lastStep.step : 1;
       if (LoggedInUser) {
+        this.loading = true;
         this.getUserById(this.routeOn);
         if (this.error.message === 'Sorry, your license expired') {
           await this.getLicense();
           this.openLicenseModal = true;
         }
+        this.loading = false;
       }
     });
   },
@@ -131,6 +134,7 @@ export default {
       } else if (this.Username.Password <= 5) {
         this.setError('Sorry, Password Must be atleast 6 Characters long');
       } else {
+        this.loading = true;
         const credentials = {
           username: this.Username,
           password: this.Password,
@@ -139,6 +143,7 @@ export default {
         if (this.error.message === 'Sorry, your license expired') {
           this.getLicense();
         }
+        this.loading = false;
       }
     },
 

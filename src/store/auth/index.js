@@ -180,8 +180,11 @@ export default {
       params.append('username', payload.username);
       params.append('password', payload.password);
 
-      const authData = await API.smart(PATH, params);
-      if (authData.error) {
+      const authData = await API.smart(PATH, params).catch((e) => {
+        commit('toggleLoading', false);
+        return null;
+      });
+      if (authData && authData.error) {
         commit('toggleLoading', false);
         dispatch('setError', authData.message);
       } else {
@@ -237,8 +240,11 @@ export default {
       commit('toggleLoading', true);
       const params = new FormData();
       params.append('auth_by_id', loggedinUser);
-      const authData = await API.smart(PATH, params);
-      if (authData.error) {
+      const authData = await API.smart(PATH, params).catch((e) => {
+        commit('toggleLoading', false);
+        return null;
+      });
+      if (authData && authData.error) {
         dispatch('setError', authData.message);
         router.push({ name: 'login' });
       } else {
