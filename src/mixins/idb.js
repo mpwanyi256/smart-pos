@@ -1,3 +1,7 @@
+// const INDEX_DB_NAME = 'smart_client_pos';
+// const INDEXED_DB_VERSION = 1;
+// const COLLECTION_NAME = 'smart_pos';
+
 const INDEX_DB_NAME = 'smart_client_pos';
 const INDEXED_DB_VERSION = 1;
 const COLLECTION_NAME = 'smart_pos';
@@ -11,7 +15,7 @@ const idb = {
       const request = window.indexedDB.open(INDEX_DB_NAME, INDEXED_DB_VERSION);
 
       request.onerror = (e) => {
-        reject(new Error('Error opening db', e));
+        reject(new Error(`Error initializing indexed DB ${e}`));
       };
 
       request.onsuccess = (e) => {
@@ -37,15 +41,20 @@ const idb = {
         const trans = db.transaction([COLLECTION_NAME], 'readwrite');
 
         const store = trans.objectStore(COLLECTION_NAME);
-        const idbDATA = {
+
+        // Encrypt data before Adding
+        // const CYPHER = enc.encnrypt(DATA);
+        // const PATH = enc.encnrypt(dataKeyPath);
+        // console.log('Encrypted', CYPHER);
+        const D = {
           ...DATA,
           data_key: dataKeyPath,
         };
 
-        store.add(idbDATA);
+        store.add(D);
 
         trans.oncomplete = () => {
-          resolve(idbDATA);
+          resolve(D);
         };
 
         trans.onerror = () => {
@@ -56,7 +65,7 @@ const idb = {
         const trans = this.db.transaction([COLLECTION_NAME], 'readonly');
         const objectStore = trans.objectStore(COLLECTION_NAME);
         let document = null;
-        const PATH = dataKeyPath;
+        const PATH = dataKeyPath; // enc.encnrypt(dataKeyPath);
 
         const index = objectStore.index('data_key');
 
@@ -67,7 +76,7 @@ const idb = {
         index.openCursor().onsuccess = (event) => {
           const cursor = event.target.result;
           if (cursor) {
-            if (cursor.value.data_key === PATH) {
+            if (cursor.value.data_key.includes(PATH)) {
               document = cursor.value;
             }
             cursor.continue();
@@ -76,6 +85,7 @@ const idb = {
 
         trans.oncomplete = () => {
           if (document) {
+            // const DECRYPT = enc.decrypt(document);
             resolve(document);
           } else {
             reject(new Error('Sorry, object not found'));
@@ -91,6 +101,7 @@ const idb = {
         store.openCursor().onsuccess = (e) => {
           const cursor = e.target.result;
           if (cursor) {
+            // const DECRYPT = enc.decrypt(cursor.value);
             docs.push(cursor.value);
             cursor.continue();
           }
@@ -106,7 +117,9 @@ const idb = {
       }),
       update: (DATA) => new Promise((resolve, reject) => {
         const transaction = db.transaction([COLLECTION_NAME], 'readwrite');
-        const PATH = dataKeyPath;
+        const PATH = dataKeyPath; // enc.encnrypt(dataKeyPath);
+        // Encrypt data before Updating
+        const CYPHER = DATA; // enc.encnrypt(DATA);
 
         transaction.onerror = (e) => {
           reject(new Error(e));
@@ -120,12 +133,10 @@ const idb = {
         objectStore.openCursor().onsuccess = (event) => {
           const cursor = event.target.result;
           if (cursor) {
-            if (cursor.value.data_key === PATH) {
-              const request = cursor.update(
-                { ...DATA, data_key: dataKeyPath },
-              );
+            if (cursor.value.pk === PATH) {
+              const request = cursor.update(CYPHER);
               request.onsuccess = () => {
-                resolve(DATA);
+                resolve(CYPHER);
               };
 
               request.onerror = (e) => {
@@ -140,7 +151,7 @@ const idb = {
         if (!dataKeyPath) reject(new Error('please provide a collection key'));
         const transaction = this.db.transaction([COLLECTION_NAME], 'readwrite');
         const objectStore = transaction.objectStore(COLLECTION_NAME);
-        const PATH = dataKeyPath;
+        const PATH = dataKeyPath; // enc.encnrypt(dataKeyPath);
 
         const objectStoreRequest = objectStore.delete(PATH);
         objectStoreRequest.onsuccess = () => {
@@ -164,7 +175,6 @@ const idb = {
       trans.oncomplete = () => {
         resolve(docs);
       };
-
       store.openCursor().onsuccess = (e) => {
         const results = e.target.result;
         if (results) {
@@ -174,7 +184,7 @@ const idb = {
       };
 
       trans.onerror = (e) => {
-        reject(new Error('Error', e));
+        reject(new Error(e));
       };
     });
   },
@@ -187,7 +197,7 @@ const idb = {
       };
 
       trans.onerror = (e) => {
-        reject(new Error('Error', e));
+        reject(new Error(e));
       };
 
       const store = trans.objectStore(COLLECTION_NAME);
@@ -203,13 +213,13 @@ const idb = {
       const index = objectStore.index('data_key');
 
       index.openCursor().onerror = (e) => {
-        reject(new Error('Error', e));
+        reject(new Error(e));
       };
 
       index.openCursor().onsuccess = (event) => {
         const cursor = event.target.result;
         if (cursor) {
-          if (cursor.value.data_key === key) {
+          if (cursor.value.data_key.includes(key)) {
             resolve(cursor.value);
           }
           cursor.continue();

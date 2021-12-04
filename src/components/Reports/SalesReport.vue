@@ -109,7 +109,7 @@ export default {
 
     serverIP() {
       const IPAddress = localStorage.getItem('smartpos_ipaddress_set');
-      return IPAddress ? `http://${IPAddress}/papi/` : 'http://localhost:80/papi/';
+      return IPAddress || 'http://localhost:80/';
     },
 
     reportURL() {
@@ -152,7 +152,7 @@ export default {
 
     printReport() {
       window.open(this.reportURL, '_blank').focus();
-      this.$emit('close');
+      // this.$emit('close');
     },
 
     fetchReport() {

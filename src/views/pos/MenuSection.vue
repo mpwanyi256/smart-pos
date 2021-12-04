@@ -28,6 +28,11 @@ import MenuItems from '@/components/pos/menu/MenuItems.vue';
 import ItemQuantity from '@/components/pos/order/ItemOrderQuantity.vue';
 import TimezoneMixin from '@/mixins/TimezoneMixin';
 
+import idb from '@/mixins/idb';
+
+const IDB_MENU_KEY = 'smart_pos_menu_sync';
+// const IDB_MENU_CATEGORIES_KEY = 'smart_pos_menu_categories_sync';
+
 export default {
   name: 'MenuSection',
   components: {
@@ -45,6 +50,7 @@ export default {
       loading: true,
       selectedMenuItem: null,
       showQuantityModal: false,
+      cachedMenuItems: [],
     };
   },
   computed: {
@@ -83,6 +89,16 @@ export default {
     ...mapActions('pos', ['getMenuItems', 'getMenuCategories', 'setRunningOrder',
       'createNewOrder', 'addOrderItem', 'setRunningOrderId', 'filterOrders',
       'setWorkingTable']),
+
+    fetchCachedMenuItems() {
+      idb.collection(IDB_MENU_KEY)
+        .get()
+        .then((res) => {
+          this.cachedMenuItems = [...res, { id: 0, name: 'ALL', status: '0' }];
+        }).catch((e) => {
+          console.log('Error in fetching cached menu', e);
+        });
+    },
 
     async createTableOrder(payload) {
       const order = await this.createNewOrder({
@@ -175,7 +191,7 @@ export default {
     searchForAMenuItem(searchKey) {
       setTimeout(() => {
         this.getMenuItems({ category_id: 'all', item_name: searchKey.trim() });
-      }, 100);
+      }, 1000);
     },
 
     filterMenuByCategory(categoryId) {
@@ -185,6 +201,7 @@ export default {
   async created() {
     this.$nextTick(async () => {
       this.loading = true;
+      this.fetchCachedMenuItems();
       await this.getMenuItems({ category_id: 'all', item_name: 'all' });
       await this.getMenuCategories();
       this.loading = false;

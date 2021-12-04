@@ -131,7 +131,17 @@ export default {
       filters.append('get_menu_categories', true);
       filters.append('company_id', localStorage.getItem('smart_company_id'));
       const categories = await API.smart(PATH, filters);
-      if (!categories.error) commit('setCategories', [{ id: 0, name: 'ALL', status: '0' }, ...categories.data]);
+      if (!categories.error) {
+        const CATEGORIES = [{ id: 0, name: 'ALL', status: '0' }, ...categories.data];
+        commit('setCategories', CATEGORIES);
+      }
+    },
+
+    fetchMenuCategories() {
+      const filters = new FormData();
+      filters.append('get_menu_categories', true);
+      filters.append('company_id', localStorage.getItem('smart_company_id'));
+      return API.smart(PATH, filters);
     },
 
     async updateMenuItemCategory({ commit }, payload) {
