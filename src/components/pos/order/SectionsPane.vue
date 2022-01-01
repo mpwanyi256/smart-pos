@@ -77,7 +77,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('pos', ['setRunningOrderId', 'setRunningOrder']),
+    ...mapActions('pos', ['setRunningOrderId', 'setRunningOrder', 'checkTableStatus']),
 
     cancelCreate() {
       this.tableSelected = null;
@@ -98,12 +98,19 @@ export default {
     },
 
     confirmOrderCreation(table) {
-      if (table.order.id) {
-        this.setOrder(table.order.id);
-        return;
-      }
-      this.tableSelected = table;
-      this.dialog = true;
+      this.checkTableStatus(table.id)
+        .then((response) => {
+          if (!response.error) {
+            this.setOrder(response.order_id);
+          } else {
+            this.tableSelected = table;
+            this.dialog = true;
+          }
+          console.log('Status', response);
+        })
+        .catch((e) => {
+          console.log('Error fetching table status', e);
+        });
     },
 
     async createOrder() {

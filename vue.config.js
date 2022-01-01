@@ -2,7 +2,7 @@ module.exports = {
   transpileDependencies: [
     'vuetify',
   ],
-  publicPath: '/smartPOS',
+  // publicPath: '/smartPOS',
 };
 
 /*

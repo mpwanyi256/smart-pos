@@ -51,6 +51,14 @@ export default {
   },
   actions: {
 
+    checkTableStatus(context, tableId) {
+      const companyId = localStorage.getItem('smart_company_id');
+      const params = new FormData();
+      params.append('check_table_status', tableId);
+      params.append('company_id', companyId);
+      return API.smart(PATH, params);
+    },
+
     post({ commit }, payload) {
       commit('toggleLoading', true);
       const params = new FormData();

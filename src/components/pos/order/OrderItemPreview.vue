@@ -65,7 +65,7 @@
                 <BaseTooltip
                   @button="showAddons = true"
                   message="Add addons"
-                  icon="blur"
+                  icon="blur-outline"
                 />
               </template>
               <template v-else>
@@ -75,7 +75,7 @@
                   @button="cancelOrderItem = true"
                   color="blue"
                   message="Cancel item"
-                  icon="delete"
+                  icon="delete-outline"
                 />
                 <BaseTooltip
                   v-if="companyType == 1 && (managerCanShiftItem || cashierCanShiftItem)"

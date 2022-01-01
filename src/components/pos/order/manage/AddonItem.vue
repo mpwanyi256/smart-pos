@@ -11,12 +11,11 @@
             {{ item.item_name }}
             <br>
             <small>
-                <span>
+                <span v-if="item.notes">
                     <v-btn
-                        class="notes"
-                        x-small text
-                        @click="$emit('delete', item)">
-                        <v-icon class="icon" left>mdi-book-open-blank-variant</v-icon>
+                        class="notes grey lighten-3"
+                        x-small text>
+                        <v-icon class="icon" left>mdi-note-outline</v-icon>
                         {{ item.notes }}
                     </v-btn>
                 </span>

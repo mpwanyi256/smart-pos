@@ -53,7 +53,8 @@ export default {
   },
   methods: {
     async switchToNewDay() {
-      await this.sendReportViaEmail('END OF DAY SALES REPORT');
+      this.$emit('switch', this.selectedDate);
+      // await this.sendReportViaEmail('END OF DAY SALES REPORT');
     },
   },
 };

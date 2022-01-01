@@ -13,6 +13,7 @@ export default {
     ...mapActions('pdf', ['generatePdf']),
 
     async sendReportViaEmail(message) {
+      this.$eventBus.$emit('show-snackbar', 'Sending email...');
       this.sendingEmail = true;
       const dayOpen = localStorage.getItem('smart_company_day_open');
       const reportDate = message === 'END OF DAY SALES REPORT' ? dayOpen : this.selectedDate;

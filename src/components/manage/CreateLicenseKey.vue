@@ -97,6 +97,10 @@ export default {
   methods: {
     ...mapActions('manage', ['performAddLicense', 'deleteKey', 'fetchClientLicenses']),
 
+    licenseStatus() {
+
+    },
+
     async deleteLicense(license) {
       await this.deleteKey(license.id);
       await this.fetchClientLicenses();

@@ -79,11 +79,12 @@ import SwitchDayModal from '@/components/pos/manage/SwitchDayModal.vue';
 import LicenseModal from '@/components/pos/manage/LicenseModal.vue';
 import SyncDataModal from '@/components/cloud/SyncDataModal.vue';
 import TimezoneMixin from '@/mixins/TimezoneMixin';
+import EmailMixin from '@/mixins/EmailMixin';
 import posSync from '@/mixins/posSync';
 
 export default {
   name: 'Orders',
-  mixins: [TimezoneMixin, posSync],
+  mixins: [TimezoneMixin, posSync, EmailMixin],
   components: {
     SectionsPane,
     ManagerActions,
@@ -257,12 +258,16 @@ export default {
         close_day: this.dayOpen,
         open_day: datePicked,
       }).then((res) => {
-        this.$eventBus.$emit('show-snackbar', res.message);
+        if (res.message) {
+          this.$eventBus.$emit('show-snackbar', res.message);
+          return;
+        }
         this.errorMessage = '';
         this.getUserById();
+        this.sendReportViaEmail('END OF DAY SALES REPORT');
         this.loading = false;
       })
-        .catch(() => this.$eventBus.$emit('show-snackbar', 'Error in fetching sales report'))
+        .catch((e) => this.$eventBus.$emit('show-snackbar', e))
         .finally(() => {
           this.switchDay = false;
         });

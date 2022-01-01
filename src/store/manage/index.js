@@ -51,7 +51,7 @@ export default {
         });
       commit('toggleLoading', false);
     },
-    async fetchClientLicenses({ commit }) {
+    fetchClientLicenses({ commit }) {
       const licensesArr = [];
       firebase.firestore().collection('licenses')
         .orderBy('status', 'asc')
@@ -61,12 +61,12 @@ export default {
             snapshots.forEach((License) => {
               licensesArr.push({ id: License.id, ...License.data() });
             });
+            commit('setLicenses', licensesArr);
           }
         })
         .catch((e) => {
           console.log('Firebase error', e);
         });
-      commit('setLicenses', licensesArr);
     },
     async fetchClients({ commit }) {
       const COMPANIES = firebase.firestore().collection('Companies');
