@@ -2,6 +2,7 @@
   <PageTemplate title="Supplier statements">
     <template slot="title-actions">
       <BaseDropDownFab
+        ref="BaseDropDownFab"
         v-if="statement.length"
         icon="cloud-download"
         title=""

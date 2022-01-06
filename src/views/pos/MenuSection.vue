@@ -94,7 +94,9 @@ export default {
       idb.collection(IDB_MENU_KEY)
         .get()
         .then((res) => {
-          this.cachedMenuItems = [...res, { id: 0, name: 'ALL', status: '0' }];
+          if (res && res.data_key) {
+            this.cachedMenuItems = [...res.items, { id: 0, name: 'ALL', status: '0' }];
+          }
         }).catch((e) => {
           console.log('Error in fetching cached menu', e);
         });
@@ -201,7 +203,7 @@ export default {
   async created() {
     this.$nextTick(async () => {
       this.loading = true;
-      this.fetchCachedMenuItems();
+      // this.fetchCachedMenuItems();
       await this.getMenuItems({ category_id: 'all', item_name: 'all' });
       await this.getMenuCategories();
       this.loading = false;

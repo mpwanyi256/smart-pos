@@ -47,9 +47,9 @@
                 :key="i"
                 :info="dep"
               />
-              <OrdersList
+              <!-- <OrdersList
                 :orders="report.orders"
-              />
+              /> -->
           </div>
           <div v-else class="loading_section">
             <LoadingSpinner v-if="loading" class="large" />
@@ -68,7 +68,7 @@ import BaseTooltip from '@/components/generics/BaseTooltip.vue';
 import Basemodal from '@/components/generics/Basemodal.vue';
 import PaymentSettlements from '@/components/Reports/generics/PaymentSettlements.vue';
 import DepartmentSale from '@/components/Reports/generics/DepartmentSales.vue';
-import OrdersList from '@/components/Reports/OrdersList.vue';
+// import OrdersList from '@/components/Reports/OrdersList.vue';
 import DatePickerBeta from '@/components/generics/DatePickerBeta.vue';
 import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
 import ControlsMixin from '@/mixins/ControlsMixin';
@@ -91,7 +91,7 @@ export default {
     LoadingSpinner,
     // LinearLoader,
     BaseTooltip,
-    OrdersList,
+    // OrdersList,
   },
   data() {
     return {
@@ -113,7 +113,7 @@ export default {
     },
 
     reportURL() {
-      return `${this.serverIP}pdf/salesReport.php?report=${this.selectedDate},${this.user.company_id}`;
+      return `${this.serverIP}papi/pdf/salesReport.php?report=${this.selectedDate},${this.user.company_id}`;
     },
   },
   watch: {

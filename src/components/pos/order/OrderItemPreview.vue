@@ -65,7 +65,7 @@
                 <BaseTooltip
                   @button="showAddons = true"
                   message="Add addons"
-                  icon="blur-outline"
+                  icon="plus"
                 />
               </template>
               <template v-else>

@@ -51,7 +51,6 @@ export default {
         }],
         collection: 'outlets',
       };
-      console.log('Outlet data', PAYLOAD);
       await this.pushToCloud(PAYLOAD);
     },
 

@@ -13,7 +13,8 @@
         >
           <v-list-item-title
             v-text="option.text"
-            @click="$emit('selected', option)"></v-list-item-title>
+            @click="selectedOption = option"
+          />
         </v-list-item>
       </v-list>
     </v-menu>
@@ -34,6 +35,21 @@ export default {
     options: {
       type: Array,
       required: true,
+    },
+  },
+  data() {
+    return {
+      selectedOption: null,
+    };
+  },
+  watch: {
+    selectedOption: {
+      handler(val) {
+        if (val) this.$emit('selected', val);
+        this.selectedOption = null;
+      },
+      deep: true,
+      immediate: true,
     },
   },
 };

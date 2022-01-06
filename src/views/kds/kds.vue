@@ -30,7 +30,7 @@
                   />
                 </div>
                 <div>
-                  <v-btn x-small fab @click="fetchRunningOrders(true)">
+                  <v-btn fab @click="fetchRunningOrders(true)">
                     <v-icon>mdi-refresh</v-icon>
                   </v-btn>
                 </div>

@@ -258,7 +258,7 @@ export default {
         close_day: this.dayOpen,
         open_day: datePicked,
       }).then((res) => {
-        if (res.message) {
+        if (res.error) {
           this.$eventBus.$emit('show-snackbar', res.message);
           return;
         }
@@ -266,6 +266,7 @@ export default {
         this.getUserById();
         this.sendReportViaEmail('END OF DAY SALES REPORT');
         this.loading = false;
+        window.location.reload();
       })
         .catch((e) => this.$eventBus.$emit('show-snackbar', e))
         .finally(() => {
