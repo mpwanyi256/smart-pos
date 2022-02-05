@@ -1,19 +1,5 @@
 <template>
     <div class="find_bill">
-      <template v-if="loading">
-        <div class="loading_page">
-          <h1>Loading</h1>
-        </div>
-      </template>
-      <template v-else>
-        <div class="header_nav">
-            <h3 class="mt-2">Fetch Sales summary</h3>
-            <v-spacer></v-spacer>
-            <v-btn text :to="{ name: 'overview' }">
-                <v-icon left>mdi-arrow-left</v-icon>
-                Home
-            </v-btn>
-        </div>
         <div class="search_filter">
             <div class="bill_no">
                 <h3>Filter sales</h3>
@@ -30,23 +16,45 @@
         </div>
         <div class="orders_table">
           <LinearLoader v-if="loading" />
-          <BaseTableComponent :headers="tableHeaders" :data="sales" />
+          <template v-else>
+            <Table>
+              <template slot="header">
+                <th v-for="(header, idx) in tableHeaders" :key="idx">
+                  {{ header.text }}
+                </th>
+              </template>
+              <template slot="body">
+                <tr v-for="sale in sales" :key="sale.date">
+                  <td>{{ sale.date }}</td>
+                  <td>{{ sale.cash }}</td>
+                  <td>{{ sale.visa }}</td>
+                  <td>{{ sale.mobile }}</td>
+                  <td>{{ sale.company }}</td>
+                  <td>{{ sale.cheque }}</td>
+                  <td>{{ sale.nc }}</td>
+                  <td>{{ sale.cancelled }}</td>
+                </tr>
+              </template>
+            </Table>
+          </template>
         </div>
-      </template>
+        <Pagination @change="page = $event" :length="totalItems" />
     </div>
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import DatePickerBeta from '@/components/generics/DatePickerBeta.vue';
 import LinearLoader from '@/components/generics/Loading.vue';
-import BaseTableComponent from '@/components/generics/BaseTableComponent.vue';
+import Table from '@/components/generics/new/Table.vue';
+import Pagination from '@/components/generics/new/Pagination.vue';
 
 export default {
-  name: 'SalesOverview',
+  name: 'DashboardSalesOverview',
   components: {
     DatePickerBeta,
     LinearLoader,
-    BaseTableComponent,
+    Pagination,
+    Table,
   },
   data() {
     return {
@@ -79,6 +87,9 @@ export default {
           text: 'CANCELLED', value: 'cancelled', sortable: false, align: 'start',
         },
       ],
+      page: 1,
+      totalItems: 0,
+      itemsPerPage: 15,
     };
   },
   computed: {
@@ -89,6 +100,9 @@ export default {
   watch: {
     async user() {
       await this.fetchSales();
+    },
+    page() {
+      this.fetchSales();
     },
   },
 
@@ -114,20 +128,26 @@ export default {
       const filters = {
         from: this.dateFrom,
         to: this.dateTo,
+        page: this.page,
+        items_per_page: this.itemsPerPage,
       };
-      const SALES = await this.fetchSalesSummary(filters);
-      if (!SALES.error) {
-        this.sales = SALES.data.map((Sale) => ({
-          date: Sale.day,
-          cancelled: Sale.settlement[0].amount,
-          cash: Sale.settlement[1].amount,
-          cheque: Sale.settlement[2].amount,
-          company: Sale.settlement[3].amount,
-          mobile: Sale.settlement[5].amount,
-          nc: Sale.settlement[6].amount,
-          visa: Sale.settlement[8].amount,
-        }));
-      }
+      this.fetchSalesSummary(filters)
+        .then((SALES) => {
+          if (!SALES.error) {
+            this.sales = SALES.data.map((Sale) => ({
+              date: Sale.day,
+              cancelled: Sale.settlement[0].amount,
+              cash: Sale.settlement[1].amount,
+              cheque: Sale.settlement[2].amount,
+              company: Sale.settlement[3].amount,
+              mobile: Sale.settlement[5].amount,
+              nc: Sale.settlement[6].amount,
+              visa: Sale.settlement[8].amount,
+            }));
+
+            this.totalItems = SALES.total_items;
+          }
+        });
     },
   },
 };
@@ -145,16 +165,8 @@ export default {
         flex-direction: column;
         overflow: hidden;
 
-        .header_nav {
-            height: 56px;
-            width: 100%;
-            padding: 5px;
-            border-bottom: 0.5px solid $border-color;
-            display: inline-flex;
-        }
-
         .search_filter {
-            height: 100px;
+            height: inherit;
             width: 100%;
             padding: 5px;
             border-bottom: 0.5px solid $border-color;
@@ -181,7 +193,7 @@ export default {
         .orders_table {
           display: flex;
           flex-direction: column;
-          height: calc(100vh - 208px);
+          height: calc(100vh - 244px);
           overflow-y: auto;
         }
     }

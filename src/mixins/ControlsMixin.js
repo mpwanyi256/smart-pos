@@ -13,6 +13,7 @@ export default {
       allowWaiterDeleteCODE: 'AWDIBS',
       allowManagerDeleteCODE: 'AMDIBS',
       allowManagerViewSales: 'AAVSR',
+      allowManagerCreateNewOrder: 'AMMODZ',
     };
   },
 
@@ -28,12 +29,25 @@ export default {
       return this.userRole === 5;
     },
 
+    isManager() {
+      return this.userRole === 1;
+    },
+
     companyType() {
       return this.user ? this.user.company_info.business_type : 0;
     },
 
     dayOpen() {
       return this.user ? this.user.company_info.day_open : null;
+    },
+
+    managerCanCreateNewOrders() {
+      const setting = this.getSetting(this.allowManagerCreateNewOrder);
+      return setting ? this.isManager && setting.status : false;
+    },
+
+    canCreateNewOrder() {
+      return this.managerCanCreateNewOrders || [2, 3, 5].includes(this.userRole);
     },
 
     allowAddVAT() {

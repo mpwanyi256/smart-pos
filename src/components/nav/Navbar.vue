@@ -76,6 +76,11 @@ import ControlsMixin from '@/mixins/ControlsMixin';
 export default {
   name: 'NavBar',
   mixins: [RoutingMixin, ControlsMixin],
+  computed: {
+    timeNow() {
+      return new Date('2022-01-23').toISOString();
+    },
+  },
 };
 </script>
 <style scoped lang="scss">

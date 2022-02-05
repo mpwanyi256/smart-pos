@@ -5,7 +5,7 @@
 import Settlements from '@/components/sales/settlements.vue';
 
 export default {
-  name: 'SalesOverview',
+  name: 'DashboardSalesOverview',
   components: {
     Settlements,
   },

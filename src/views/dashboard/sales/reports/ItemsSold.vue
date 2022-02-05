@@ -4,12 +4,12 @@
             <h3 class="mt-2">Items sold</h3>
             <v-spacer></v-spacer>
             <v-btn
-              v-if="itemsSoldFetch.length > 0"
+              v-if="totalItems > 1"
               small
               @click="exportToExcel"
               class="mt-2 ml-2 mb-2 green--text darken-4">
               <v-icon left color="green darken-4">mdi-file-excel</v-icon>
-              {{ `Export ${itemsSoldFetch.length} items to csv` }}
+              {{ `Export ${totalItems} items to csv` }}
           </v-btn>
         </div>
         <div class="search_filter">
@@ -74,6 +74,7 @@
             </template>
           </Table>
         </div>
+        <Pagination @change="page = $event" :length="totalPaginationItems" />
     </div>
 </template>
 <script>
@@ -82,6 +83,7 @@ import DatePickerBeta from '@/components/generics/DatePickerBeta.vue';
 import LinearLoader from '@/components/generics/Loading.vue';
 import Table from '@/components/generics/new/Table.vue';
 import ExcelExportMixin from '@/mixins/excelMixin';
+import Pagination from '@/components/generics/new/Pagination.vue';
 
 export default {
   name: 'ItemsSold',
@@ -90,6 +92,7 @@ export default {
     DatePickerBeta,
     LinearLoader,
     Table,
+    Pagination,
   },
   data() {
     return {
@@ -102,6 +105,9 @@ export default {
       dateFrom: '',
       dateTo: '',
       itemsSoldFetch: [],
+      page: 1,
+      totalItems: 1,
+      itemsPerPage: 10,
     };
   },
   computed: {
@@ -109,25 +115,39 @@ export default {
     menuItemsFiltered() {
       return this.menuItems.filter((Item) => Item.display === this.departmentSelected);
     },
+
+    totalPaginationItems() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
   },
   watch: {
     async departmentSelected(val) {
       if (val !== 0) await this.fetchSales();
+    },
+    page() {
+      this.fetchSales();
     },
   },
   methods: {
     ...mapActions('sales', ['getMenuItems', 'getDepartments', 'fetchItemsSold']),
 
     exportToExcel() {
-      // const dataCleaned = this.discounts.map((Order) => (
-      //   {
-      //     bill: Order.bill_no,
-      //     date: Order.date,
-      //     amount: Order.amount_display,
-      //     discounted_by: Order.discounted_by,
-      //     reason: Order.reason,
-      //   }));
-      this.exportDataToExcel(this.itemsSoldFetch, 'items_sold_smart_pos');
+      const filters = {
+        department: 'download',
+        menu_item: this.menuItemSelected,
+        date_from: this.dateFrom,
+        date_to: this.dateTo,
+        page: this.page,
+        itemsPerPage: this.itemsPerPage,
+        company_id: localStorage.getItem('smart_company_id'),
+      };
+      this.fetchItemsSold(filters)
+        .then((response) => {
+          this.exportDataToExcel(response.data, 'items_sold_smart_pos');
+        })
+        .catch((e) => {
+          console.log('Error in exportToExcel', e);
+        });
     },
 
     async fetchSales() {
@@ -137,27 +157,32 @@ export default {
         menu_item: this.menuItemSelected,
         date_from: this.dateFrom,
         date_to: this.dateTo,
+        page: this.page,
+        itemsPerPage: this.itemsPerPage,
         company_id: localStorage.getItem('smart_company_id'),
       };
-      const ItemsSold = await this.fetchItemsSold(filters);
-      if (!ItemsSold.error) {
-        this.itemsSoldFetch = ItemsSold.data.map((Sale) => ({
-          item_id: Sale.item_id,
-          item_name: Sale.item_name.toUpperCase(),
-          item_price: Sale.item_price,
-          quantity_sold: Sale.quantity_sold,
-          amount_sold: Sale.amount_sold,
-          // cancelled: Sale.settlement[0].amount,
-          // cash: Sale.settlement[1].amount,
-          // cheque: Sale.settlement[2].amount,
-          // company: Sale.settlement[3].amount,
-          // eft: Sale.settlement[4].amount,
-          // mobile: Sale.settlement[5].amount,
-          // nc: Sale.settlement[6].amount,
-          // split: Sale.settlement[8].amount,
-          // visa: Sale.settlement[9].amount,
-        }));
-      }
+      this.fetchItemsSold(filters)
+        .then((ItemsSold) => {
+          if (!ItemsSold.error) {
+            this.totalItems = ItemsSold.total_items;
+            this.itemsSoldFetch = ItemsSold.data.map((Sale) => ({
+              item_id: Sale.item_id,
+              item_name: Sale.item_name.toUpperCase(),
+              item_price: Sale.item_price,
+              quantity_sold: Sale.quantity_sold,
+              amount_sold: Sale.amount_sold,
+              // cancelled: Sale.settlement[0].amount,
+              // cash: Sale.settlement[1].amount,
+              // cheque: Sale.settlement[2].amount,
+              // company: Sale.settlement[3].amount,
+              // eft: Sale.settlement[4].amount,
+              // mobile: Sale.settlement[5].amount,
+              // nc: Sale.settlement[6].amount,
+              // split: Sale.settlement[8].amount,
+              // visa: Sale.settlement[9].amount,
+            }));
+          }
+        });
     },
 
     async fetchMenuItems() {
@@ -232,7 +257,7 @@ export default {
         }
 
         .orders_table {
-          height: calc(100vh - 156px);
+          height: calc(100vh - 310px);
           overflow: auto;
         }
     }

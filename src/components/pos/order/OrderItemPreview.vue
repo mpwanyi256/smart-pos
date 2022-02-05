@@ -11,6 +11,11 @@
               <span class="item_amount">
                 {{ orderItem.amount }}
               </span>
+              <br>
+              <span class="added_by">
+              <v-icon dark small v-if="orderItem.added_by">mdi-account</v-icon>
+              {{ orderItem.added_by ? `${orderItem.added_by}` : '' }}
+            </span>
           </p>
         </div>
         <div class="update_options">
@@ -280,6 +285,17 @@ export default {
                 color: $accent-color;
                 font-weight: bold;
                 text-align: right;
+              }
+
+              .added_by {
+                font-size: small;
+                font-weight: 300;
+                display: inline-flex;
+                align-items: center;
+                background-color: $tertiary;
+                color: $white;
+                border-radius: 4px;
+                padding: 3px;
               }
           }
         }

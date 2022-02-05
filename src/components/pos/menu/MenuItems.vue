@@ -5,6 +5,10 @@
       <div class="search">
         <input type="text" v-model="menuSearchKey"
           class="search_field" placeholder="Search" />
+        <v-btn v-if="runningOrderId" @click="openDish = true">
+          Open Dish
+          <v-icon left>mdi-silverware</v-icon>
+        </v-btn>
         <BaseTooltip
           v-if="runningOrderId"
           @button="addClient = true"
@@ -43,6 +47,11 @@
       v-if="addClient"
       @close="addClient = false"
     />
+    <OpenDishModal
+      v-if="openDish"
+      :order-id="runningOrderId"
+      @close="openDish = false"
+    />
   </div>
 </template>
 <script>
@@ -51,6 +60,7 @@ import MenuItem from '@/components/pos/menu/MenuItem.vue';
 import BaseTooltip from '@/components/generics/BaseTooltip.vue';
 import CreateClientMOdal from '@/components/pos/manage/CreateClientModal.vue';
 import LoadingKds from '@/components/kds/LoadingKds.vue';
+import OpenDishModal from '@/components/pos/menu/OpenDishModal.vue';
 
 export default {
   name: 'MenuItems',
@@ -59,6 +69,7 @@ export default {
     BaseTooltip,
     CreateClientMOdal,
     LoadingKds,
+    OpenDishModal,
   },
   props: {
     items: {
@@ -74,6 +85,7 @@ export default {
     return {
       menuSearchKey: '',
       addClient: false,
+      openDish: false,
     };
   },
   computed: {

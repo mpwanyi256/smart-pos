@@ -154,6 +154,8 @@ export default {
       filters.append('department_id', payload.department);
       filters.append('from', payload.date_from);
       filters.append('to', payload.date_to);
+      filters.append('page', payload.page || 1);
+      filters.append('items_per_page', payload.itemsPerPage || 15);
       filters.append('company_id', companyId);
       const items = await API.smart(PATH, filters);
 
@@ -170,6 +172,8 @@ export default {
       filters.append('sales_from', payload.from);
       filters.append('sales_to', payload.to);
       filters.append('company_id', companyId);
+      filters.append('page', payload.page || 1);
+      filters.append('items_per_page', payload.items_per_page || 15);
       const Sales = await API.smart(PATH, filters);
       commit('toggleLoading', false);
       return Sales;

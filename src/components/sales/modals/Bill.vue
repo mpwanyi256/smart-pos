@@ -193,7 +193,7 @@ export default {
     ...mapActions('sales', ['getOrderItems']),
     ...mapActions('pos', ['updateOrder']),
 
-    async printBill() {
+    printBill() {
       this.updateOrder({ update_bill_print_status: this.order.order_id })
         .then((res) => {
           if (res.error) {

@@ -29,6 +29,7 @@ import ItemQuantity from '@/components/pos/order/ItemOrderQuantity.vue';
 import TimezoneMixin from '@/mixins/TimezoneMixin';
 
 import idb from '@/mixins/idb';
+import ControlsMixin from '@/mixins/ControlsMixin';
 
 const IDB_MENU_KEY = 'smart_pos_menu_sync';
 // const IDB_MENU_CATEGORIES_KEY = 'smart_pos_menu_categories_sync';
@@ -42,6 +43,7 @@ export default {
   },
   mixins: [
     TimezoneMixin,
+    ControlsMixin,
   ],
   data() {
     return {
@@ -103,6 +105,10 @@ export default {
     },
 
     async createTableOrder(payload) {
+      if (!this.canCreateNewOrder) {
+        this.$eventBus.$emit('show-snackbar', 'Sorry, you are not allowed to create orders');
+        return;
+      }
       const order = await this.createNewOrder({
         ...payload,
         company_id: this.user.company_id,
@@ -163,6 +169,10 @@ export default {
 
     async createOrder() {
       if (!this.user) return;
+      if (!this.canCreateNewOrder) {
+        this.$eventBus.$emit('show-snackbar', 'Sorry, you are not allowed to create orders');
+        return;
+      }
       const filters = {
         company_id: this.user.company_id,
         user_id: this.user.id,
