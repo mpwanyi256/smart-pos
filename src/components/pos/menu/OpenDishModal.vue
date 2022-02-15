@@ -37,24 +37,29 @@
                   small
                 >Create Open Dish</v-btn>
             </div>
-            <p class="red--text text-center">
-              Please not that open dishes have no direct link with your inventory.
-            </p>
         </div>
+        <v-alert class="ma-1 text-center" dense outlined type="warning" prominent border="left">
+          <small>
+            Please note that open dishes have no direct link with your
+            <strong>inventory</strong>.<br>
+            Hence deductions in <strong>stock</strong> willl no be reflected.
+          </small>
+        </v-alert>
+      <LinearLoader v-if="loading" />
     </Basemodal>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Basemodal from '@/components/generics/Basemodal.vue';
 import BaseTextfield from '@/components/generics/BaseTextfield.vue';
-// import BaseAlert from '@/components/generics/new/BaseAlert.vue';
+import LinearLoader from '@/components/generics/Loading.vue';
 
 export default {
   name: 'OpenDishModal',
   components: {
     Basemodal,
     BaseTextfield,
-    // BaseAlert,
+    LinearLoader,
   },
   props: {
     orderId: {
@@ -68,10 +73,12 @@ export default {
       paxes: 1,
       pricePerPax: 0,
       department: 2,
+      loading: false,
     };
   },
   computed: {
     ...mapGetters('menu', ['departments']),
+    ...mapGetters('auth', ['user']),
 
     totalPrice() {
       return parseFloat((this.pricePerPax * this.paxes), 10);
@@ -83,15 +90,35 @@ export default {
   },
 
   methods: {
+    ...mapActions('pos', ['post']),
+
     createOpenDish() {
       const openDish = {
-        name: this.name.trim().toUpperCase(),
+        add_opendish_item: this.name.trim().toUpperCase(),
         paxes: parseFloat(this.paxes, 10),
         unit_price: this.pricePerPax,
         item_price: parseFloat((this.pricePerPax * this.paxes), 10),
         order_id: this.orderId,
+        department_id: this.department,
+        company_id: this.user.company_id,
+        added_by: this.user.id,
       };
-      console.log('openDish', openDish);
+      this.loading = true;
+      this.post(openDish)
+        .then((response) => {
+          if (response.error) {
+            this.$eventBus.$emit('show-snackbar', response.message);
+          } else {
+            this.$eventBus.$emit('fetch-items');
+            this.$emit('close');
+          }
+        })
+        .catch((e) => {
+          this.$eventBus.$emit('show-snackbar', e);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
   },
 };

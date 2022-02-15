@@ -9,6 +9,8 @@
                     <th>Unit price</th>
                     <th>Quantity</th>
                     <th>Amount</th>
+                    <th>Av. Cost Of Sales</th>
+                    <th>Total COS</th>
                 </tr>
             </template>
             <template slot="body">
@@ -29,7 +31,7 @@
                         {{ item.name }}
                         </template>
                     </td>
-                    <td>{{ item.unit_price }}</td>
+                    <td>{{ item.name }}</td>
                     <td>{{ item.quantity }}</td>
                     <td>
                         <template v-if="item.name == 'Total'">
@@ -39,12 +41,16 @@
                             {{ item.amount }}
                         </template>
                     </td>
+                    <td>{{ item.average_cost_price }}</td>
+                    <td>{{ item.item_cost_price }}</td>
                 </tr>
                 <tr>
                     <td colspan="4"><strong class="float-right">TOTAL</strong></td>
                     <td>
                         <strong>{{ info.total_sale }}</strong>
                     </td>
+                    <td><strong class="float-right"></strong></td>
+                    <td><strong></strong></td>
                 </tr>
             </template>
         </Table>

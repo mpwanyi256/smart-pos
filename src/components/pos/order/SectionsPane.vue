@@ -102,11 +102,11 @@ export default {
         .then((response) => {
           if (!response.error) {
             this.setOrder(response.order_id);
+            this.$eventBus.$emit('get-order-details', response.order_id);
           } else {
             this.tableSelected = table;
             this.dialog = true;
           }
-          console.log('Status', response);
         })
         .catch((e) => {
           console.log('Error fetching table status', e);

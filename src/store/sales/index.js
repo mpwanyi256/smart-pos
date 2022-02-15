@@ -117,6 +117,7 @@ export default {
       filters.append('from', payload.from);
       filters.append('to', payload.to);
       filters.append('client_id', payload.client_id);
+      filters.append('page', payload.page || 1);
       filters.append('settlement_type', payload.settlement_type);
       filters.append('company_id', payload.company_id || localStorage.getItem('smart_company_id'));
 

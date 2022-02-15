@@ -1,19 +1,10 @@
 <template>
-  <div class="text-center pagination">
-    <v-container v-if="length > 1">
-      <v-row justify="center">
-        <v-col cols="8">
-          <v-container class="max-width">
-            <v-pagination
-              v-model="page"
-              class="my-4"
-              circle
-              :length="length"
-            ></v-pagination>
-          </v-container>
-        </v-col>
-      </v-row>
-    </v-container>
+  <div v-if="length > 1" class="text-center pagination">
+    <v-pagination
+      v-model="page"
+      circle
+      :length="length"
+    />
   </div>
 </template>
 <script>
@@ -39,7 +30,8 @@ export default {
 </script>
 <style scoped>
     .pagination {
-        height: 36px;
-        background-color: inherit;
+      height: 52px;
+      background-color: inherit;
+      padding-top: 15px;
     }
 </style>

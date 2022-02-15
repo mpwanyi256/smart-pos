@@ -30,9 +30,9 @@ import TimezoneMixin from '@/mixins/TimezoneMixin';
 
 import idb from '@/mixins/idb';
 import ControlsMixin from '@/mixins/ControlsMixin';
+// const IDB_MENU_CATEGORIES_KEY = 'smart_pos_menu_categories_sync';
 
 const IDB_MENU_KEY = 'smart_pos_menu_sync';
-// const IDB_MENU_CATEGORIES_KEY = 'smart_pos_menu_categories_sync';
 
 export default {
   name: 'MenuSection',
@@ -149,7 +149,7 @@ export default {
         time: this.time,
       };
       const addItem = await this.addOrderItem(filters);
-      if (addItem.error) console.info(addItem.message);
+      if (addItem.error) console.error(addItem.message);
       else {
         this.showQuantityModal = false;
         this.$eventBus.$emit('reload-order', this.runningOrderId);
@@ -213,7 +213,6 @@ export default {
   async created() {
     this.$nextTick(async () => {
       this.loading = true;
-      // this.fetchCachedMenuItems();
       await this.getMenuItems({ category_id: 'all', item_name: 'all' });
       await this.getMenuCategories();
       this.loading = false;
@@ -224,16 +223,16 @@ export default {
 <style scoped lang="scss">
 @import '@/styles/pos.scss';
 
-    .menu_categories {
-        width: 100%;
-        height: calc(100% - 52px);
-        display: flex;
-        flex-direction: column;
-        gap: 1px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        background-color: inherit;
-        box-shadow: $elevation-default;
-    }
+  .menu_categories {
+    width: 100%;
+    height: calc(100% - 52px);
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: inherit;
+    box-shadow: $elevation-default;
+  }
 
 </style>

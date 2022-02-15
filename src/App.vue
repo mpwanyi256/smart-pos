@@ -43,10 +43,6 @@ export default {
       this.loadHomeDefaults();
     }
   },
-  beforeDestroy() {
-    // clearInterval(this.polling);
-    // this.polling = null;
-  },
 
   eventBusCallbacks: {
     'show-snackbar': 'showSnackBar',

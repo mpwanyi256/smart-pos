@@ -4,7 +4,7 @@ export default {
   computed: {
     serverIP() {
       const IPAddress = localStorage.getItem('smartpos_ipaddress_set');
-      return IPAddress ? `${IPAddress}papi/` : 'http://localhost:80/papi/';
+      return IPAddress ? `${IPAddress}/papi/` : 'http://localhost:80/papi/';
     },
   },
 

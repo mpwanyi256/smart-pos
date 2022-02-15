@@ -52,11 +52,8 @@
                 <th>Unit Price</th>
                 <th>Quantity sold</th>
                 <th>Amount</th>
-                <!-- <th>CASH</th>
-                <th>VISA</th>
-                <th>Mo. Money</th>
-                <th>NC</th>
-                <th>CANCELLED</th> -->
+                <th>Average Cost Price</th>
+                <th>Cost price</th>
               </tr>
             </template>
             <template slot="body">
@@ -65,11 +62,8 @@
                 <td>{{ item.item_price }}</td>
                 <td>{{ item.quantity_sold }}</td>
                 <td>{{ item.amount_sold }}</td>
-                <!-- <td>{{ item.cash }}</td>
-                <td>{{ item.visa }}</td>
-                <td>{{ item.mobile }}</td>
-                <td>{{ item.nc }}</td>
-                <td>{{ item.cancelled }}</td> -->
+                <td>{{ item.average_cost_price }}</td>
+                <td>{{ item.item_cost_price }}</td>
               </tr>
             </template>
           </Table>
@@ -171,15 +165,8 @@ export default {
               item_price: Sale.item_price,
               quantity_sold: Sale.quantity_sold,
               amount_sold: Sale.amount_sold,
-              // cancelled: Sale.settlement[0].amount,
-              // cash: Sale.settlement[1].amount,
-              // cheque: Sale.settlement[2].amount,
-              // company: Sale.settlement[3].amount,
-              // eft: Sale.settlement[4].amount,
-              // mobile: Sale.settlement[5].amount,
-              // nc: Sale.settlement[6].amount,
-              // split: Sale.settlement[8].amount,
-              // visa: Sale.settlement[9].amount,
+              average_cost_price: Sale.average_cost_price,
+              item_cost_price: Sale.item_cost_price,
             }));
           }
         });

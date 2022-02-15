@@ -113,7 +113,7 @@ export default {
     },
 
     reportURL() {
-      return `${this.serverIP}papi/pdf/salesReport.php?report=${this.selectedDate},${this.user.company_id}`;
+      return `${this.serverIP}/papi/pdf/salesReport.php?report=${this.selectedDate},${this.user.company_id}`;
     },
   },
   watch: {

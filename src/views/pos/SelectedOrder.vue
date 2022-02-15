@@ -7,7 +7,7 @@
     </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import RunningOrder from '@/components/pos/order/RunningOrder.vue';
 
 export default {
@@ -15,9 +15,36 @@ export default {
   components: {
     RunningOrder,
   },
+  data() {
+    return {
+      runningOrder: null,
+    };
+  },
+  eventBusCallbacks: {
+    'get-order-details': 'fetchOrderDetails',
+  },
+  methods: {
+    ...mapActions('sales', ['filterOrders']),
 
-  computed: {
-    ...mapGetters('pos', ['runningOrder']),
+    fetchOrderDetails(orderId) {
+      const filters = {
+        from: localStorage.getItem('smart_company_day_open'),
+        to: localStorage.getItem('smart_company_day_open'),
+        client_id: 0,
+        bill_no: orderId,
+        company_id: localStorage.getItem('smart_company_id'),
+        settlement_type: '',
+        page: 1,
+      };
+      this.filterOrders(filters)
+        .then((Orders) => {
+          this.runningOrder = { ...Orders.data.orders[0] };
+          this.$eventBus.$emit('fetch-items');
+        })
+        .catch((e) => {
+          console.error('Error in SelectOrder component', e);
+        });
+    },
   },
 };
 </script>
