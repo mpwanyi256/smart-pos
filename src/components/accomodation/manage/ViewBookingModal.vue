@@ -158,9 +158,9 @@
                   <td>{{ pay.amount_paid_display }}</td>
                   <td>{{ pay.payment_mode }}</td>
                   <td>
-                      <v-btn icon @click="dropPayment(pay.id)">
-                          <v-icon>mdi-delete</v-icon>
-                      </v-btn>
+                    <v-btn icon @click="dropPayment(pay.id)">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
                   </td>
                 </tr>
               </template>

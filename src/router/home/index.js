@@ -23,7 +23,8 @@ export default {
             authrequired: true,
             title: 'Sales | Dashboard',
           },
-          component: () => import('@/views/dashboard/sales/reports/salesOverview.vue'),
+          component: () => import('@/components/sales/SalesDashboard.vue'),
+          // component: () => import('@/views/dashboard/sales/reports/salesOverview.vue'),
         },
         {
           path: 'findbill',

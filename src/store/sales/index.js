@@ -38,6 +38,15 @@ export default {
       return API.smart(PATH, data);
     },
 
+    post(context, payload) {
+      const data = new FormData();
+      const params = Object.keys(payload);
+      params.forEach((key) => {
+        data.append(key, payload[key]);
+      });
+      return API.smart(PATH, data);
+    },
+
     async addClientInfo({ commit }, payload) {
       commit('toggleLoading', false);
       const data = new FormData();

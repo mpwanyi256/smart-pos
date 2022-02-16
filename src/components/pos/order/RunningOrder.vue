@@ -157,6 +157,7 @@ export default {
     'print-bill': 'checkOrderStatus',
     'trigger-error': 'showErrorAlert',
     'settle-bill': 'settleBill',
+    'reset-running-order': 'reloadOrderDisplay',
   },
 
   methods: {

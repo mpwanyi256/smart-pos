@@ -1,7 +1,7 @@
 <template>
     <div class="panel-sales">
-        <TotalSale/>
-        <SalesNavBar :links="links" />
+      <TotalSale/>
+      <SalesNavBar :links="links" />
     </div>
 </template>
 <script>

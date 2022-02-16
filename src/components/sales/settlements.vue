@@ -14,10 +14,10 @@
               v-for="payment in settlements"
               :key="payment.settlement_id"
             >
-                <div class="display">
-                    <h1>{{ payment.amount }}</h1>
-                    <span>{{ payment.settlement_name }}</span>
-                </div>
+              <div class="display">
+                <h1>{{ payment.amount }}</h1>
+                <span>{{ payment.settlement_name }}</span>
+              </div>
             </div>
         </div>
         <div class="section-title ma-2">

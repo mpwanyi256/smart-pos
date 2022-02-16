@@ -5,7 +5,7 @@
                 {{ companyInfo.company_name }}
             </div>
             <div class="sale-value display-1 text-center">
-                {{ `${sale.total_sale ? sale.total_sale : 0} ${companyInfo.company_currency}` }}
+                {{ `${sale ? sale : 0} ${companyInfo.company_currency}` }}
             </div>
             <h6 class="text-center" @click="showReport = true">
                 <v-icon small color="black">mdi-calendar</v-icon>

@@ -67,6 +67,7 @@ export default {
       });
       if (!addWaiter.error) {
         await this.$eventBus.$emit('get-waiter-info', this.order.order_id);
+        this.$eventBus.$emit('reset-running-order', this.order.order_id);
         this.$emit('close');
       }
     },

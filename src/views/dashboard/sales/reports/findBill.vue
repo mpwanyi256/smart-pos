@@ -72,7 +72,7 @@
   </div>
 </template>
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import DatePickerBeta from '@/components/generics/DatePickerBeta.vue';
 import LinearLoader from '@/components/generics/Loading.vue';
 import OrderDetailsModal from '@/components/sales/modals/OrderDetails.vue';
@@ -118,7 +118,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('sales', ['loading']),
     ...mapState('pos', ['paymentSettlements']),
 
     settlementOptions() {
@@ -169,7 +168,7 @@ export default {
           this.loading = false;
         });
     },
-    async findBill() {
+    findBill() {
       if (this.loading) return;
       const filters = {
         from: this.dateFrom,
@@ -180,9 +179,17 @@ export default {
         settlement_type: this.settlementType,
         page: this.page,
       };
-      const Orders = await this.filterOrders(filters);
-      this.orders = Orders.data.orders;
-      this.totalItems = Orders.total_items;
+      this.filterOrders(filters)
+        .then((Orders) => {
+          this.orders = Orders.data.orders;
+          this.totalItems = Orders.total_items;
+        })
+        .catch((e) => {
+          console.error('Error in findBill', e);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
 
     showOrderItems(order) {
