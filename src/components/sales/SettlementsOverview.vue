@@ -34,14 +34,14 @@ export default {
 .settlements-overview {
     min-height: 100%;
     background-color: $body-bg;
-    border-right: 0.5px solid $gray-80;
 
     .waiters-overview-list {
-        max-height: calc(100% - 32px);
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
+      height: calc(100vh - 222px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      border-right: 0.5px solid $gray-80;
     }
 }
 

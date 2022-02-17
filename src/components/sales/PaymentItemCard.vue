@@ -1,8 +1,8 @@
 <template>
-    <div class="payment">
-        <h1>{{ payment.amount_display }}</h1>
-        <span>{{ payment.name }}</span>
-    </div>
+  <div class="payment">
+    <h1>{{ payment.amount_display }}</h1>
+    <span>{{ payment.name }}</span>
+  </div>
 </template>
 <script>
 export default {
@@ -17,10 +17,9 @@ export default {
 </script>
 <style scoped>
     .payment {
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        cursor: pointer;
-        background-color: white;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      background-color: white;
     }
 </style>

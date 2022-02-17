@@ -8,7 +8,11 @@
         </div>
         <div class="stats">
             <SettlementsOverview :settlements="paymentSettlements" />
-            <RunningOrdersOverview :orders="runningOrers" />
+            <RunningOrdersOverview
+              :orders="runningOrers"
+              @fetch-more="fetchMoreRunningOrders"
+              :has-more="hasMore"
+            />
             <WaitersOverview :waiters="waitersOverview" />
         </div>
     </div>
@@ -34,6 +38,9 @@ export default {
       orders: [],
       runningOrers: [],
       page: 1,
+      fetchingOrders: false,
+      itemsPerPage: 10,
+      hasMore: true,
     };
   },
   computed: {
@@ -49,7 +56,15 @@ export default {
     ...mapActions('sales', ['post']),
     ...mapMutations('sales', ['setSale']),
 
-    fetchOrders() {
+    fetchMoreRunningOrders() {
+      this.page += 1;
+      this.fetchOrders(true);
+    },
+
+    fetchOrders(more = false) {
+      if (this.fetchingOrders || !this.hasMore) return;
+      if (more) this.page += 1;
+      this.fetchingOrders = true;
       const payload = {
         find_bill: 0,
         from: this.user.company_info.day_open,
@@ -58,15 +73,26 @@ export default {
         page: this.page,
         settlement_type: 0,
         client_id: 0,
-        status: 0,
+        status: 'pending',
       };
       this.post(payload)
         .then((response) => {
-          this.runningOrers = response.data.orders;
-          console.log('DATA', response);
+          this.runningOrers = [...this.runningOrers, ...response.data.orders];
+          // eslint-disable-next-line camelcase
+          const { total_items, page } = response;
+          // eslint-disable-next-line camelcase
+          const totalPages = Math.ceil(total_items / this.itemsPerPage);
+          if (page < totalPages) {
+            this.hasMore = true;
+          } else {
+            this.hasMore = false;
+          }
         })
         .catch((e) => {
           console.error('Error in fetchSettlementsSammary', e);
+        })
+        .finally(() => {
+          this.fetchingOrders = false;
         });
     },
 
@@ -80,7 +106,6 @@ export default {
       this.post(payload)
         .then((response) => {
           this.departmentSales = response.data;
-          console.log('DATA', response);
         })
         .catch((e) => {
           console.error('Error in fetchSettlementsSammary', e);
@@ -97,7 +122,6 @@ export default {
       this.post(payload)
         .then((response) => {
           this.waitersOverview = response.data;
-          console.log('DATA', response);
         })
         .catch((e) => {
           console.error('Error in fetchSettlementsSammary', e);
@@ -114,7 +138,6 @@ export default {
         .then((response) => {
           this.paymentSettlements = response.data;
           this.setSale(response.total_amount_display);
-          console.log('DATA', response);
         })
         .catch((e) => {
           console.error('Error in fetchSettlementsSammary', e);

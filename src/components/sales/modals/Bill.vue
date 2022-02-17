@@ -1,12 +1,15 @@
 <template>
     <Basemodal :size="700" :title="modalTitle" @close="$emit('close')">
-        <div>
-            <v-spacer></v-spacer>
-            <v-btn small @click="performBillPrint"
+        <template slot="action">
+            <v-btn v-if="!isPending" small @click="performBillPrint"
                 class="ma-2 float-right" outlined fab color="teal">
                 <v-icon>mdi-printer</v-icon>
             </v-btn>
-        </div>
+        </template>
+        <v-alert v-if="isPending" outlined dense type="warning" class="ma-2">
+            {{ `Order has ${isPending} unconfirmed order item${isPending > 1 ? 's' : ''}
+            So you cannot print Bill.` }}
+        </v-alert>
         <div ref="tableView">
             <PageAlert v-if="errorMessage" :message="errorMessage" @close="errorMessage= ''" />
             <div class="order_view">
@@ -25,9 +28,9 @@
                     </td>
                 </tr>
                 <tr><td colspan="4"><hr></td></tr>
-                <!-- <tr><td colspan="4"><small><strong>Table:</strong> {{ order.table}}
+                <tr><td colspan="4"><small><strong>Table:</strong> {{ order.table}}
                     &nbsp;</small></td>
-                </tr> -->
+                </tr>
                 <tr><td colspan="4"><small><strong>SERVED By:</strong>
                     {{ order.waiter ? order.waiter.toUpperCase() : ''}}</small></td>
                 </tr>
@@ -179,6 +182,10 @@ export default {
     vatAddedAmount() {
       // Add vat added to bill incase allowAddVAT == true
       return (this.showVatCalcular && !this.allowAddVAT) ? this.order.vat_included : 0;
+    },
+
+    isPending() {
+      return this.orderItems.filter((i) => i.status === 0).length;
     },
   },
   watch: {

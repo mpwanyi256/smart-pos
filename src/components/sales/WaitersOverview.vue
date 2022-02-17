@@ -3,9 +3,9 @@
         <OverviewHeader title="Waiters overview" />
         <div class="waiters-overview-list">
             <Waiter
-                v-for="waiter in waiters"
-                :key="waiter.id"
-                :waiter="waiter"
+              v-for="waiter in waiters"
+              :key="waiter.id"
+              :waiter="waiter"
             />
         </div>
     </div>
@@ -37,8 +37,8 @@ export default {
     border-right: 0.5px solid $gray-80;
 
     .waiters-overview-list {
-        max-height: calc(100% - 32px);
-        overflow-y: auto;
+      height: calc(100vh - 222px);
+      overflow-y: auto;
     }
 }
 

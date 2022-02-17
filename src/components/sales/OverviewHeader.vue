@@ -28,7 +28,7 @@ export default {
 
     h3 {
       line-height: 1.5;
-      color: $tertiary;
+      color: $black;
       font-weight: 400;
       margin: 15px;
     }

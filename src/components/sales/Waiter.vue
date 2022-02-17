@@ -40,20 +40,20 @@ export default {
 @import '@/styles/constants.scss';
 
 .waiter {
-    width: 100%;
+    width: auto;
     display: grid;
     grid-template-columns: 20% 80%;
     gap: 5px;
     background-color: $white;
     padding: 3px;
     overflow: hidden;
-    // border-bottom: 0.5px solid $gray-80;
-    margin-bottom: 3px;
+    border-radius: 4px;
+    margin: 5px;
 
     .avator {
-        display: inline-flex;
-        justify-content: left;
-        align-items: center;
+      display: inline-flex;
+      justify-content: left;
+      align-items: center;
     }
 
     .sales-info {
@@ -66,30 +66,30 @@ export default {
         text-overflow: ellipsis;
 
         >p {
-            font-size: 14px;
-            line-height: 1.5;
-            top: 0;
-            bottom: 0;
-            margin: 0;
-            text-align: left;
-            margin-right: 10px;
+          font-size: 14px;
+          line-height: 1.5;
+          top: 0;
+          bottom: 0;
+          margin: 0;
+          text-align: left;
+          margin-right: 10px;
         }
 
         .name {
-            color: $black;
-            font-size: 16px;
+          color: $black;
+          font-size: 16px;
         }
 
         .orders {
-            color: $accent;
+          color: $accent;
         }
 
         .settled {
-            color: $green;
+          color: $green;
         }
 
         .pending {
-            color: $orange;
+          color: $orange;
         }
     }
 }
