@@ -17,6 +17,7 @@
     <div class="items_list">
       <StoreItemsList
         @update="updateItem"
+        @reload="reloadItems"
         :search="search"
       />
     </div>
@@ -41,7 +42,7 @@ import UpdateStoreItem from '@/components/inventory/store/UpdateStoreItem.vue';
 import CreateStoreItemModal from '@/components/inventory/store/CreateStoreItemModal.vue';
 
 export default {
-  name: 'InventoryStoreItems',
+  name: 'StoreItems',
   components: {
     BaseTooltip,
     StoreItemsList,

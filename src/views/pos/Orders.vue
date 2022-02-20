@@ -291,15 +291,15 @@ export default {
 
     async fetchOrders() {
       await this.fetchTables();
-      const orders = await this.filterOrders({
-        bill_no: 0,
-        from: this.dayOpen,
-        to: this.dayOpen,
-        client_id: 0,
-        status: 1,
-        outlet_id: this.outletId,
-      });
-      if (!orders.error) this.setRunning(orders.data.orders);
+      // const orders = await this.filterOrders({
+      //   bill_no: 0,
+      //   from: this.dayOpen,
+      //   to: this.dayOpen,
+      //   client_id: 0,
+      //   status: 1,
+      //   outlet_id: this.outletId,
+      // });
+      // if (!orders.error) this.setRunning(orders.data.orders);
     },
 
     setRunning(orders) {

@@ -27,7 +27,7 @@ export default {
     },
   },
   actions: {
-    async filterSales({ commit }, payload) {
+    filterSales({ commit }, payload) {
       commit('toggleLoading', false);
       const data = new FormData();
       const params = Object.keys(payload);

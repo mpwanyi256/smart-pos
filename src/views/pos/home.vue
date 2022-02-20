@@ -20,7 +20,7 @@
       />
       <OrderSettlementModal
         v-if="openSettementModal"
-        @close="closeSettlementModal"
+        @close="openSettementModal = false"
       />
       <WaitersModal
         v-if="showWaiters"
@@ -87,13 +87,10 @@ export default {
       this.showBill = true;
     },
 
-    async closeSettlementModal() {
-      this.openSettementModal = false;
-      await this.syncData();
-    },
-
-    async settleBill() {
-      this.openSettementModal = true;
+    settleBill() {
+      this.$nextTick(() => {
+        this.openSettementModal = true;
+      });
     },
   },
 };
@@ -101,38 +98,38 @@ export default {
 <style scoped lang="scss">
 @import '@/styles/pos.scss';
 
-    .pos_home {
-        height: 100vh;
-        width: 100vw;
-        overflow: hidden;
-        background-color: $bg_color;
-        font-size: 14px;
-        font-family: $font-style;
+  .pos_home {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background-color: $bg_color;
+      font-size: 14px;
+      font-family: $font-style;
 
-        ::-webkit-scrollbar{
-          width: 5px;
-          height: 5px;
-        }
+      ::-webkit-scrollbar{
+        width: 5px;
+        height: 5px;
+      }
 
-        ::-webkit-scrollbar-thumb {
-            background: $scrollbar-color;
-            border-radius: 1ex;
-            -webkit-border-radius: 1ex;
-        }
+      ::-webkit-scrollbar-thumb {
+          background: $scrollbar-color;
+          border-radius: 1ex;
+          -webkit-border-radius: 1ex;
+      }
 
-        ::-webkit-scrollbar-corner {
-            background: #000;
-        }
+      ::-webkit-scrollbar-corner {
+          background: #000;
+      }
 
-        .sales_view {
-            height: calc(100vh - 52px);
-            display: grid;
-            grid-template-columns: 15% 50% 25% 10%;
+      .sales_view {
+          height: calc(100vh - 52px);
+          display: grid;
+          grid-template-columns: 15% 50% 25% 10%;
 
-            >div {
-              height: calc(100vh - 50px);
-              width: 100%;
-            }
-        }
-    }
+          >div {
+            height: calc(100vh - 50px);
+            width: 100%;
+          }
+      }
+  }
 </style>

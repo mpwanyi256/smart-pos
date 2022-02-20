@@ -102,16 +102,20 @@ export default {
   methods: {
     ...mapActions('pos', ['updateRunningOrder']),
 
-    async addDiscount() {
+    addDiscount() {
       const filter = {
         add_order_discount: this.runningOrder.order_id,
         discount_amount: this.discoutedAmount,
         user_id: this.user.id,
         reason: this.reason,
       };
-      const discount = await this.updateRunningOrder(filter);
-      this.$eventBus.$emit('reload-order');
-      if (!discount.error) this.$emit('close');
+      this.updateRunningOrder(filter)
+        .then((discount) => {
+          this.$eventBus.$emit('reset-running-order');
+          if (!discount.error) this.$emit('close');
+        }).catch((e) => {
+          this.$eventBus.$emit('show-snackbar', e);
+        });
     },
   },
 };

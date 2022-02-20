@@ -9,7 +9,6 @@
       <template slot="body">
           <tr v-for="item in filteredItems" :key="`store-item-${item.id}`">
               <td>{{ item.name }}</td>
-              <td>{{ item.category }}</td>
               <td>{{ item.unit_price_display }}</td>
               <td>{{ item.pack_size }}</td>
               <td>{{ item.unit_measure }}</td>
@@ -43,7 +42,6 @@ export default {
     return {
       headers: [
         'Item Name',
-        'Category',
         'Unit Price',
         'Pack size',
         'Measurement',

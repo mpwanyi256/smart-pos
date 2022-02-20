@@ -7,9 +7,9 @@
         >
             <p>{{ payment.name }}</p>
             <BaseTextfield
-                :placeholder="payment.name"
-                inputType="number"
-                v-model="payments[`${payment.name.toLowerCase().split(' ')[0]}`]"
+              :placeholder="payment.name"
+              inputType="number"
+              v-model.trim="payments[`${payment.name.toLowerCase().split(' ')[0]}`]"
             />
         </div>
         <div class="settlement_btn">
@@ -17,7 +17,7 @@
             :disabled="!isValidPayment"
             @click="settleOrder"
             class="make_payment float-right">
-                SETTLE
+              SETTLE
             </v-btn>
         </div>
     </div>
@@ -66,14 +66,14 @@ export default {
   },
   methods: {
     settleOrder() {
-      const payments = {
+      const PAY = {
         settlement_id: 7,
         order_id: this.order.order_id,
         settled_by: this.user.id,
         settle_order: 'split',
         ...this.payments,
       };
-      this.$emit('pay', payments);
+      this.$emit('pay', PAY);
     },
   },
 };
@@ -90,23 +90,23 @@ export default {
     padding: 25px;
 
     .payment_option {
-        height: 50px;
-        display: grid;
-        grid-template-columns: 50% 50%;
-        align-items: center;
-        justify-content: center;
+      height: 50px;
+      display: grid;
+      grid-template-columns: 50% 50%;
+      align-items: center;
+      justify-content: center;
 
-        p {
-            text-align: left;
-            margin-left: 150px;
-            font-size: 18px;
-            justify-content: center;
-        }
+      p {
+        text-align: left;
+        margin-left: 150px;
+        font-size: 18px;
+        justify-content: center;
+      }
     }
 
     .settlement_btn .make_payment {
-        background-color: $blue !important;
-        color: $white;
+      background-color: $blue !important;
+      color: $white;
     }
 
 }

@@ -46,6 +46,14 @@
                   />
                 </v-tab-item>
             </v-tabs-items>
+            <v-alert
+              class="ma-2"
+              v-if="errorMessage"
+              shaped outlined
+              dismissible
+              type="error" @click="errorMessage = ''">
+              {{ errorMessage }}
+            </v-alert>
         </div>
     </Basemodal>
 </template>
@@ -83,6 +91,7 @@ export default {
       ],
       clients: [],
       errorMessage: '',
+      loading: false,
     };
   },
   computed: {
@@ -99,6 +108,7 @@ export default {
     },
   },
   async created() {
+    this.errorMessage = '';
     await this.fetchsetpaymentSettlements();
     await this.fetchClients();
   },
@@ -111,15 +121,30 @@ export default {
       if (!posClients.error) this.clients = posClients.data;
     },
 
-    async savePayment(settlement) {
-      const settleOrder = await this.updateOrder(settlement);
-      if (!settleOrder.error) {
-        this.setRunningOrderId(null);
-        this.setRunningOrder(null);
-        this.$emit('close');
-      } else {
-        this.errorMessage = settleOrder.error_message;
-      }
+    savePayment(settlement) {
+      if (this.loading) return;
+      this.loading = true;
+      this.errorMessage = '';
+      this.updateOrder({ ...settlement, discount_note: 'none' })
+        .then(async (settleOrder) => {
+          if (!settleOrder.error) {
+            this.setRunningOrderId(null);
+            this.setRunningOrder(null);
+            this.$eventBus.$emit('clear-running-order-items');
+            await this.$eventBus.$emit('fetch-orders');
+            this.$nextTick(() => {
+              this.$emit('close');
+            });
+          } else {
+            this.errorMessage = settleOrder.message;
+          }
+        })
+        .catch((e) => {
+          this.errorMessage = e.message;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
 
     isOtherPaymentType(SettlementId) {
@@ -140,7 +165,8 @@ export default {
 @import '@/styles/constants.scss';
 
     .settle {
-        height: 400px;
+        height: auto;
+        padding-bottom: 3px;
         background-color: $white;
 
         .tab-head {

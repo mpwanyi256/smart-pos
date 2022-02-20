@@ -7,7 +7,7 @@
     </div>
 </template>
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 import RunningOrder from '@/components/pos/order/RunningOrder.vue';
 
 export default {
@@ -15,18 +15,18 @@ export default {
   components: {
     RunningOrder,
   },
-  data() {
-    return {
-      runningOrder: null,
-    };
+  computed: {
+    ...mapGetters('pos', ['runningOrder']),
   },
   eventBusCallbacks: {
     'get-order-details': 'fetchOrderDetails',
   },
   methods: {
     ...mapActions('sales', ['filterOrders']),
+    ...mapMutations('pos', ['setRunningOrder']),
 
     fetchOrderDetails(orderId) {
+      if (!orderId) return;
       const filters = {
         from: localStorage.getItem('smart_company_day_open'),
         to: localStorage.getItem('smart_company_day_open'),
@@ -38,7 +38,8 @@ export default {
       };
       this.filterOrders(filters)
         .then((Orders) => {
-          this.runningOrder = { ...Orders.data.orders[0] };
+          const runningOrder = { ...Orders.data.orders[0] };
+          this.setRunningOrder(runningOrder);
           this.$eventBus.$emit('fetch-items');
         })
         .catch((e) => {

@@ -135,7 +135,7 @@ export default {
       } else console.info(order.message);
     },
 
-    async addItemToSelectedOrder(quantity) {
+    addItemToSelectedOrder(quantity) {
       const filters = {
         order_id: this.runningOrderId,
         menu_item_id: this.selectedMenuItem.id,
@@ -148,12 +148,17 @@ export default {
         add_order_item: this.runningOrderId,
         time: this.time,
       };
-      const addItem = await this.addOrderItem(filters);
-      if (addItem.error) console.error(addItem.message);
-      else {
-        this.showQuantityModal = false;
-        this.$eventBus.$emit('reload-order', this.runningOrderId);
-      }
+      this.addOrderItem(filters)
+        .then((addItem) => {
+          if (addItem.error) console.error(addItem.message);
+          else {
+            this.showQuantityModal = false;
+            this.$eventBus.$emit('reload-order', this.runningOrderId);
+          }
+        })
+        .catch((e) => {
+          console.error(e.message);
+        });
     },
 
     async addItemToOrder(menuItem) {

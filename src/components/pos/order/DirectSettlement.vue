@@ -8,13 +8,13 @@
                 item-text="name"
                 item-value="id"
             />
-            <v-btn block
-              class="btn_settle"
-              :disabled="!settlementId"
-              @click="settleBill">
-                Settle Bill
-            </v-btn>
         </div>
+        <v-btn block
+          class="btn_settle"
+          :disabled="!settlementId"
+          @click="settleBill">
+            Settle Bill
+        </v-btn>
     </div>
 </template>
 <script>
@@ -46,6 +46,9 @@ export default {
       return this.order.final_amount;
     },
   },
+  created() {
+    console.log('Get bill total');
+  },
   methods: {
     ...mapActions('pos', ['updateOrder', 'setRunningOrderId', 'setRunningOrder']),
 
@@ -76,25 +79,24 @@ export default {
         width: 100%;
 
         > div {
-            height: 300px;
             width: 100%;
             display: inline-flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 30px;
             padding: 10px;
 
             .settle_options {
-                width: 300px;
-            }
-
-            .btn_settle {
-                background-color: $blue !important;
-                color: $white;
-                height: 56px !important;
-                width: 100%;
+              width: 300px;
             }
         }
+
+      .btn_settle {
+        background-color: $blue !important;
+        color: $white;
+        height: 56px !important;
+        margin: 10px;
+      }
     }
 </style>

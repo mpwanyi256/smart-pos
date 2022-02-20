@@ -28,7 +28,6 @@ export default {
     },
     setRunningId(state, payload) {
       state.runningOrderId = payload;
-      localStorage.setItem('smart_running_order', payload);
     },
     setRunningOrder(state, payload) {
       state.runningOrder = payload;

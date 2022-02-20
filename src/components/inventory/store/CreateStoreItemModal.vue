@@ -39,7 +39,7 @@
             :hint="`Min stock in ${selectedMeasureName.toLowerCase()}`" v-model="min_stock"/>
           </div>
         </div>
-        <div class="frm_entry">
+        <!-- <div class="frm_entry">
           <div class="label">Category</div>
           <div class="entry_update">
             <v-select dense outlined
@@ -49,7 +49,7 @@
               v-model="categoryId"
             />
           </div>
-        </div>
+        </div> -->
         <div class="frm_entry">
           <div class="label">&nbsp;</div>
           <div class="entry_update">
@@ -82,7 +82,7 @@ export default {
       unit_measure: '',
       unit_price: '',
       unit_measure_id: '',
-      categoryId: '',
+      categoryId: 0,
       error: '',
       loading: false,
     };
@@ -110,7 +110,7 @@ export default {
 
     createStoreItem() {
       if (!this.name || parseInt(this.pack_size, 10) <= 0 || !this.unit_measure_id
-          || !this.categoryId || !this.min_stock) {
+          || !this.min_stock) {
         this.error = 'Missing fields';
         return;
       }
@@ -124,7 +124,6 @@ export default {
         minimum_stock: this.min_stock || 1,
         company_id: this.user.company_info.company_id,
       };
-      console.log('Create', newItem);
       this.loading = true;
       const created = this.createItem(newItem);
       this.loading = false;

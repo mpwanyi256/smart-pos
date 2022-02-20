@@ -54,6 +54,7 @@
                 <th>Amount</th>
                 <th>Average Cost Price</th>
                 <th>Cost price</th>
+                <th>&nbsp;</th>
               </tr>
             </template>
             <template slot="body">
@@ -64,11 +65,19 @@
                 <td>{{ item.amount_sold }}</td>
                 <td>{{ item.average_cost_price }}</td>
                 <td>{{ item.item_cost_price }}</td>
+                <td></td>
+                <v-btn small @click="viewItemDetails(item)">Details</v-btn>
               </tr>
             </template>
           </Table>
         </div>
         <Pagination @change="page = $event" :length="totalPaginationItems" />
+        <ItemSoldDetailsModal
+          v-if="showItemInfo && selectedItem"
+          :item="selectedItem"
+          :duration="duration"
+          @close="showItemInfo = false"
+        />
     </div>
 </template>
 <script>
@@ -78,6 +87,7 @@ import LinearLoader from '@/components/generics/Loading.vue';
 import Table from '@/components/generics/new/Table.vue';
 import ExcelExportMixin from '@/mixins/excelMixin';
 import Pagination from '@/components/generics/new/Pagination.vue';
+import ItemSoldDetailsModal from '@/views/dashboard/sales/reports/modals/ItemSoldDetailsModal.vue';
 
 export default {
   name: 'ItemsSold',
@@ -87,6 +97,7 @@ export default {
     LinearLoader,
     Table,
     Pagination,
+    ItemSoldDetailsModal,
   },
   data() {
     return {
@@ -102,6 +113,9 @@ export default {
       page: 1,
       totalItems: 1,
       itemsPerPage: 10,
+      duration: null,
+      selectedItem: null,
+      showItemInfo: false,
     };
   },
   computed: {
@@ -124,6 +138,11 @@ export default {
   },
   methods: {
     ...mapActions('sales', ['getMenuItems', 'getDepartments', 'fetchItemsSold']),
+
+    viewItemDetails(item) {
+      this.selectedItem = item;
+      this.showItemInfo = true;
+    },
 
     exportToExcel() {
       const filters = {
@@ -159,6 +178,7 @@ export default {
         .then((ItemsSold) => {
           if (!ItemsSold.error) {
             this.totalItems = ItemsSold.total_items;
+            this.duration = ItemsSold.duration;
             this.itemsSoldFetch = ItemsSold.data.map((Sale) => ({
               item_id: Sale.item_id,
               item_name: Sale.item_name.toUpperCase(),
@@ -167,6 +187,7 @@ export default {
               amount_sold: Sale.amount_sold,
               average_cost_price: Sale.average_cost_price,
               item_cost_price: Sale.item_cost_price,
+              average_cost_price_clean: Sale.average_cost_price_clean,
             }));
           }
         });

@@ -95,14 +95,18 @@ export default {
     async setOrder(orderId) {
       await this.$eventBus.$emit('fetch-orders');
       this.setRunningOrderId(orderId);
+      this.$nextTick(() => {
+      });
     },
 
     confirmOrderCreation(table) {
       this.checkTableStatus(table.id)
         .then((response) => {
-          if (!response.error) {
+          if (!response.error) { // Has order ID
             this.setOrder(response.order_id);
-            this.$eventBus.$emit('get-order-details', response.order_id);
+            this.$nextTick(() => {
+              this.$eventBus.$emit('get-order-details', response.order_id);
+            });
           } else {
             this.tableSelected = table;
             this.dialog = true;

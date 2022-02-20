@@ -153,7 +153,7 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-@import '../../../../styles/constants.scss';
+@import '@/styles/constants.scss';
 
     .find_bill {
         background-color: $white;

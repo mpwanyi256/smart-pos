@@ -100,8 +100,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('pos', ['runningOrder', 'runningOrderId', 'orders']),
+    ...mapGetters('pos', ['runningOrderId', 'orders']),
     ...mapGetters('auth', ['user']),
+
+    // order() {
+    //   return this.runningOrder;
+    // },
 
     outletId() {
       return this.user.outlet_id;
@@ -130,9 +134,13 @@ export default {
   },
 
   watch: {
-    async orderId(val) {
-      await this.$eventBus.$emit('reload-order', val);
-      await this.fetchOrderItems();
+    orderId(val) {
+      if (val) {
+        this.$nextTick(async () => {
+          await this.$eventBus.$emit('reload-order', val);
+          await this.fetchOrderItems();
+        });
+      }
     },
     itemsCount() {
       this.$nextTick(async () => {
@@ -158,11 +166,16 @@ export default {
     'trigger-error': 'showErrorAlert',
     'settle-bill': 'settleBill',
     'reset-running-order': 'reloadOrderDisplay',
+    'clear-running-order-items': 'clearItems',
   },
 
   methods: {
     ...mapActions('sales', ['getOrderItems']),
     ...mapActions('pos', ['updateOrder', 'filterOrders', 'setRunningOrder']),
+
+    clearItems() {
+      this.orderItems = [];
+    },
 
     reloadOrderDisplay() {
       if (!this.order) return;
@@ -184,14 +197,22 @@ export default {
       }
     },
 
-    async shiftOrder(tableId) {
+    shiftOrder(tableId) {
       const filter = {
         shift_order_to_table: tableId,
         order_id: this.order.order_id,
       };
-      const updated = await this.updateOrder(filter);
-      if (!updated.error) this.$eventBus.$emit('reload-order');
-      this.shift = false;
+      this.updateOrder(filter)
+        .then((response) => {
+          if (!response.error) this.$eventBus.$emit('reload-order');
+          this.shift = false;
+        })
+        .catch((e) => {
+          console.error('error in shiftOrder', e);
+        })
+        .finally(() => {
+
+        });
     },
 
     showErrorAlert(msg) {
@@ -201,7 +222,7 @@ export default {
 
     settleBill() {
       if (!this.isPending) this.$eventBus.$emit('open-settlement-modal');
-      else this.$eventBus.$emit('show-snackbar', 'Please confirm order.');
+      else this.$eventBus.$emit('show-snackbar', 'Please confirm pending items.');
     },
 
     checkOrderStatus() {

@@ -180,55 +180,61 @@ export default {
       params.append('username', payload.username);
       params.append('password', payload.password);
 
-      const authData = await API.smart(PATH, params).catch((e) => {
-        commit('toggleLoading', false);
-        return null;
-      });
-      if (authData && authData.error) {
-        commit('toggleLoading', false);
-        dispatch('setError', authData.message);
-      } else {
-        const userInfo = authData.data;
-        localStorage.setItem('smart_user_id', userInfo.id);
-        localStorage.setItem('smart_user_name', userInfo.user_name);
-        localStorage.setItem('smart_user_role', userInfo.role);
-        localStorage.setItem('smart_company_id', userInfo.company_info.company_id);
-        localStorage.setItem('smart_company_day_open', userInfo.company_info.day_open);
-        localStorage.setItem('smart_company_email', userInfo.company_info.company_email);
-        localStorage.setItem('smart_outlet_id', userInfo.outlet_id);
-        commit('setUser', userInfo);
-
-        const DAYSLEFT = userInfo.company_info.days_left;
-        const PACKAGE = userInfo.package;
-
-        if (DAYSLEFT <= 0) {
-          dispatch('setError', 'Sorry, your license expired');
-          dispatch();
-          router.replace({ name: 'login' });
-          commit('toggleLoading', false);
-          return;
-        }
-
-        dispatch('settings/fetchOutletSettings',
-          { get_access_controls: 'all', outlet: userInfo.outlet_id }, { root: true });
-
-        if (payload === 'new account') {
-          router.push({ name: 'company_settings' });
-        } else if ([1, 2, 3].includes(PACKAGE)) {
-          if (userInfo.role === 4) {
-            router.push({ name: 'kds' });
+      // const authData = await
+      API.smart(PATH, params)
+        .then((authData) => {
+          if (authData && authData.error) {
+            commit('toggleLoading', false);
+            dispatch('setError', authData.message);
           } else {
-            router.push({ name: 'pos' });
+            const userInfo = authData.data;
+            localStorage.setItem('smart_user_id', userInfo.id);
+            localStorage.setItem('smart_user_name', userInfo.user_name);
+            localStorage.setItem('smart_user_role', userInfo.role);
+            localStorage.setItem('smart_company_id', userInfo.company_info.company_id);
+            localStorage.setItem('smart_company_day_open', userInfo.company_info.day_open);
+            localStorage.setItem('smart_company_email', userInfo.company_info.company_email);
+            localStorage.setItem('smart_outlet_id', userInfo.outlet_id);
+            commit('setUser', userInfo);
+
+            const DAYSLEFT = userInfo.company_info.days_left;
+            const PACKAGE = userInfo.package;
+
+            if (DAYSLEFT <= 0) {
+              dispatch('setError', 'Sorry, your license expired');
+              dispatch();
+              router.replace({ name: 'login' });
+              commit('toggleLoading', false);
+              return;
+            }
+
+            dispatch('settings/fetchOutletSettings',
+              { get_access_controls: 'all', outlet: userInfo.outlet_id }, { root: true });
+
+            if (payload === 'new account') {
+              router.push({ name: 'company_settings' });
+            } else if ([1, 2, 3].includes(PACKAGE)) {
+              if (userInfo.role === 4) {
+                router.push({ name: 'kds' });
+              } else {
+                router.push({ name: 'pos' });
+              }
+              dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
+            } else if (PACKAGE === 4) {
+              router.push({ name: 'tenants' });
+            } else {
+              dispatch('setError', 'Sorry, you have no access to this section');
+              dispatch('performLogout');
+            }
           }
-          dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
-        } else if (PACKAGE === 4) {
-          router.push({ name: 'tenants' });
-        } else {
-          dispatch('setError', 'Sorry, you have no access to this section');
-          dispatch('performLogout');
-        }
-      }
-      commit('toggleLoading', false);
+          commit('toggleLoading', false);
+        })
+        .catch((e) => {
+          console.error('error', e);
+        })
+        .finally(() => {
+          commit('toggleLoading', false);
+        });
     },
     async getUserById({ dispatch, commit }, payload = null) {
       const loggedinUser = localStorage.getItem('smart_user_id');
