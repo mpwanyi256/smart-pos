@@ -16,7 +16,7 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1280,
+    width: 1400,
     height: 800,
     webPreferences: {
 
@@ -59,11 +59,11 @@ app.on('activate', () => {
 app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
-    // try {
-    //   await installExtension(VUEJS_DEVTOOLS);
-    // } catch (e) {
-    //   console.error('Vue Devtools failed to install:', e.toString());
-    // }
+    try {
+      await installExtension(VUEJS_DEVTOOLS);
+    } catch (e) {
+      console.error('Vue Devtools failed to install:', e.toString());
+    }
   }
   createWindow();
 });

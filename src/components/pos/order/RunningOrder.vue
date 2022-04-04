@@ -62,7 +62,7 @@
     </div>
 </template>
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 import OrderItem from '@/components/pos/order/OrderItem.vue';
 import OrderListHeader from '@/components/pos/order/OrderListHeader.vue';
 import OrderTotalCacular from '@/components/pos/order/OrderTotalCacular.vue';
@@ -171,10 +171,13 @@ export default {
 
   methods: {
     ...mapActions('sales', ['getOrderItems']),
-    ...mapActions('pos', ['updateOrder', 'filterOrders', 'setRunningOrder']),
+    ...mapActions('pos', ['updateOrder', 'filterOrders', 'setRunningOrder', 'post']),
+    ...mapMutations('pos', ['setRunningOrder', 'setRunningId']),
 
     clearItems() {
       this.orderItems = [];
+      this.setRunningOrder(null);
+      this.setRunningId(null);
     },
 
     reloadOrderDisplay() {
@@ -231,8 +234,26 @@ export default {
     },
 
     viewPendingItems(orderItem) {
-      this.orderItemSelected = orderItem;
-      this.showItems = true;
+      this.post({
+        check_order_status: orderItem.order_id,
+      })
+        .then((response) => {
+          if (response.is_pending) {
+            this.orderItemSelected = orderItem;
+            this.showItems = true;
+          } else { // if order was settled
+            this.clearItems();
+            this.setRunningOrder(null);
+            this.setRunningId(null);
+            this.$nextTick(async () => {
+              this.$eventBus.$emit('show-snackbar', 'Sorry, this order was settled.');
+              this.$eventBus.$emit('fetch-orders');
+            });
+          }
+        })
+        .catch(() => {
+          this.$eventBus.$emit('show-snackbar', 'Sorry, Failed to connect to server.');
+        });
     },
 
     async fetchOrderItems() {

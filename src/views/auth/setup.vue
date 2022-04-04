@@ -26,6 +26,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import BaseAlert from '@/components/alerts/BaseAlert.vue';
+import axios from 'axios';
 
 export default {
   name: 'IpSetup',
@@ -52,14 +53,9 @@ export default {
     },
 
     setIPaddress() {
+      axios.defaults.baseURL = `${this.ipAddress}/papi/`;
       localStorage.setItem('smartpos_ipaddress_set', this.ipAddress);
       this.$router.replace({ name: 'login' });
-      // if (this.ipAddress.split('.').length <= 2) {
-      //   this.setError('Invalid IP Address set');
-      // } else {
-      //   localStorage.setItem('smartpos_ipaddress_set', this.ipAddress);
-      //   this.$router.replace({ name: 'login' });
-      // }
     },
 
   },

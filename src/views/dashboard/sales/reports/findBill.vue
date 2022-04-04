@@ -43,13 +43,13 @@
             />
           </div>
           <div class="bill_no">
-              <DatePickerBeta @picked="setDateFrom" :message="'From'" />
+            <DatePickerBeta @picked="setDateFrom" :message="'From'" />
           </div>
           <div class="bill_no">
-              <DatePickerBeta @picked="setDateTo" :message="'To'" />
+            <DatePickerBeta @picked="setDateTo" :message="'To'" />
           </div>
           <div class="bill_no">
-              <v-btn small @click="findBill">Search</v-btn>
+            <v-btn small @click="findBill">Search</v-btn>
           </div>
       </div>
       <div class="orders_table">
@@ -252,10 +252,9 @@ export default {
               justify-content: center;
               justify-self: center;
               align-items: center;
-              // margin-top: 20px;
 
               .frm_input {
-                  height: 30px;
+                height: 30px;
               }
           }
       }

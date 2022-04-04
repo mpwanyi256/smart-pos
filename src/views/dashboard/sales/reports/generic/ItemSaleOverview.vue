@@ -1,29 +1,33 @@
 <template>
     <div class="item-wrapper">
       <div class="item-info">
-        <!-- <p>Item Sale overview</p> -->
         <h3>{{ item.item_name }}</h3>
-        <h4>Item Average cost price: <strong>{{ item.average_cost_price_clean }}</strong></h4>
+        <h4>Item average cost price: <strong>{{ item.average_cost_price_clean }}</strong></h4>
         <p class="duration">{{ `Duration: ${duration.from} to ${duration.to}` }}</p>
+        <p class="duration">{{`${item.quantity_sold} items sold`}}</p>
       </div>
       <Table>
-        <template slot="header">
+        <template #header>
           <tr>
+            <th>#</th>
             <th>Waiter</th>
             <th>Quantity Sold</th>
             <th>Cost Of Sale</th>
           </tr>
         </template>
-        <template slot="body">
+        <template #body>
           <tr v-for="(record, idx) in records" :key="`record-sale-${idx}`">
+            <td>{{ ++idx }}</td>
             <td>{{ record.full_name }}</td>
             <td>{{ record.quantity }}</td>
             <td>{{ record.quantity * item.average_cost_price_clean }}</td>
           </tr>
         </template>
-          <tr>
+          <tr class="item-info">
+            <td>&nbsp;</td>
             <td><strong>Total Items</strong></td>
             <td><strong>{{ item.quantity_sold }}</strong></td>
+            <td><strong>{{ item.quantity_sold * item.average_cost_price_clean }}</strong></td>
           </tr>
       </Table>
     </div>
@@ -73,7 +77,6 @@ export default {
       this.filterSales(filters)
         .then((response) => {
           this.records = response.data;
-          console.log('response', response);
         })
         .catch((e) => {
           console.error('Error in fetchRecords', e);
@@ -91,10 +94,10 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 0;
+    color: $black;
 
     .item-info {
       padding: 15px;
-      background-color: $blue-disabled;
       p {
         margin: 0;
       }

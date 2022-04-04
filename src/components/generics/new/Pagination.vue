@@ -33,5 +33,7 @@ export default {
       height: 52px;
       background-color: inherit;
       padding-top: 15px;
+      margin-left: 15px;
+      margin-right: 15px;
     }
 </style>

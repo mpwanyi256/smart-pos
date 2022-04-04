@@ -3,7 +3,7 @@ export default {
   name: 'settings',
   meta: {
     authrequired: true,
-    title: 'SmartPOS :: Settings',
+    title: 'Settings',
   },
   component: () => import('@/views/Settings/Home.vue'),
   children: [

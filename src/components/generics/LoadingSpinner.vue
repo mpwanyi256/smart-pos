@@ -18,6 +18,8 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 100%;
+        height: 100%;
 
         &.small > .spinner {
             @include width-height(20px);

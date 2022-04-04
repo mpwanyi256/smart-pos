@@ -36,6 +36,21 @@ export default {
     background-color: $body-bg;
     border-right: 0.5px solid $gray-80;
 
+    ::-webkit-scrollbar {
+      width: 5px !important;
+      height: 5px !important;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: $scrollbar-color !important;
+      border-radius: 1ex !important;
+      -webkit-border-radius: 1ex !important;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: #000 !important;
+    }
+
     .waiters-overview-list {
       height: calc(100vh - 222px);
       overflow-y: auto;

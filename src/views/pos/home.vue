@@ -107,29 +107,29 @@ export default {
       font-family: $font-style;
 
       ::-webkit-scrollbar{
-        width: 5px;
-        height: 5px;
+        width: 5px !important;
+        height: 5px !important;
       }
 
       ::-webkit-scrollbar-thumb {
-          background: $scrollbar-color;
-          border-radius: 1ex;
-          -webkit-border-radius: 1ex;
+        background: $scrollbar-color !important;
+        border-radius: 1px !important;
+        -webkit-border-radius: 1px !important;
       }
 
       ::-webkit-scrollbar-corner {
-          background: #000;
+        background: #000 !important;
       }
 
       .sales_view {
-          height: calc(100vh - 52px);
-          display: grid;
-          grid-template-columns: 15% 50% 25% 10%;
+        height: calc(100vh - 52px);
+        display: grid;
+        grid-template-columns: 15% 50% 25% 10%;
 
-          >div {
-            height: calc(100vh - 50px);
-            width: 100%;
-          }
+        >div {
+          height: calc(100vh - 50px);
+          width: 100%;
+        }
       }
   }
 </style>

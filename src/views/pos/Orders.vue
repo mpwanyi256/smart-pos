@@ -184,7 +184,7 @@ export default {
 
   async created() {
     if (!this.user) return;
-    await this.fetchOrders();
+    // await this.fetchOrders();
     await this.fetchTables();
     this.loading = false;
 
@@ -196,7 +196,7 @@ export default {
   },
 
   eventBusCallbacks: {
-    'fetch-orders': 'fetchOrders',
+    'fetch-orders': 'fetchTables', // fetchOrders
     'reload-order': 'reload',
   },
 

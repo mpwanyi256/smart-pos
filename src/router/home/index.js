@@ -80,6 +80,24 @@ export default {
           },
           component: () => import('@/components/sales/DiscountsReport.vue'),
         },
+        {
+          path: 'cancellations',
+          name: 'cancellations_report',
+          meta: {
+            authrequired: true,
+            title: 'Sales | Item Cancellations',
+          },
+          component: () => import('@/components/sales/ItemCancellations.vue'),
+        },
+        {
+          path: 'nc_report',
+          name: 'nc_report',
+          meta: {
+            authrequired: true,
+            title: 'Sales | NC Reports',
+          },
+          component: () => import('@/components/sales/NCReports.vue'),
+        },
       ],
     },
   ],

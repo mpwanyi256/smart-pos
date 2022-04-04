@@ -90,7 +90,8 @@ export default {
       }).catch(() => null);
 
       if (response && !response.error) {
-        await this.$eventBus.$emit('fetch-orders');
+        await this.$eventBus.$emit('reset-running-order', this.runningOrderId);
+        // await this.$eventBus.$emit('fetch-orders');
         await this.fetchClients();
         this.$emit('close');
       } else {

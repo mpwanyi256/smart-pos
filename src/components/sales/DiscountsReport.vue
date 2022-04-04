@@ -27,28 +27,28 @@
             {{ `Export ${discounts.length} items to csv` }}
           </v-btn>
           <Table>
-              <template slot="header">
-                    <tr>
-                        <th>Bill No</th>
-                        <th>DATE</th>
-                        <th>AMOUNT</th>
-                        <th>Discounted By</th>
-                        <th>REASON</th>
-                        <th>&nbsp;</th>
-                    </tr>
-              </template>
-              <template slot="body">
-                <tr v-for="discount in discounts" :key="`discount-${discount.bill_no}`">
-                    <td>{{ discount.bill_no }}</td>
-                    <td>{{ discount.date }}</td>
-                    <td>{{ discount.amount_display }}</td>
-                    <td>{{ discount.discounted_by }}</td>
-                    <td>{{ discount.reason }}</td>
-                    <td>
-                        <v-btn class="ml-1" small @click="viewBill(discount)">Bill</v-btn>
-                    </td>
-                </tr>
-              </template>
+            <template slot="header">
+                  <tr>
+                      <th>Bill No</th>
+                      <th>DATE</th>
+                      <th>AMOUNT</th>
+                      <th>Discounted By</th>
+                      <th>REASON</th>
+                      <th>&nbsp;</th>
+                  </tr>
+            </template>
+            <template slot="body">
+              <tr v-for="discount in discounts" :key="`discount-${discount.bill_no}`">
+                  <td>{{ discount.bill_no }}</td>
+                  <td>{{ discount.date }}</td>
+                  <td>{{ discount.amount_display }}</td>
+                  <td>{{ discount.discounted_by }}</td>
+                  <td>{{ discount.reason }}</td>
+                  <td>
+                      <v-btn class="ml-1" small @click="viewBill(discount)">Bill</v-btn>
+                  </td>
+              </tr>
+            </template>
           </Table>
           <Bill
             v-if="showBillModal && selectedOrder"
@@ -134,49 +134,49 @@ export default {
 <style scoped lang="scss">
 @import '@/styles/constants.scss';
 
-    .find_bill {
-        background-color: $white;
-        font-family: $font-style;
-        min-height: 100%;
-        border-left: 0.5px solid $border-color;
-        display: flex;
-        flex-direction: column;
+  .find_bill {
+      background-color: $white;
+      font-family: $font-style;
+      min-height: 100%;
+      border-left: 0.5px solid $border-color;
+      display: flex;
+      flex-direction: column;
 
-        .header_nav {
-            min-height: 56px;
-            width: 100%;
-            padding: 5px;
-            border-bottom: 0.5px solid $border-color;
-            display: grid;
-            grid-template-columns: 40% 60%;
-            justify-content: center;
+      .header_nav {
+          min-height: 56px;
+          width: 100%;
+          padding: 5px;
+          border-bottom: 0.5px solid $border-color;
+          display: grid;
+          grid-template-columns: 40% 60%;
+          justify-content: center;
 
-            > div {
-                display: inline-flex;
-                align-items: center;
-            }
+          > div {
+              display: inline-flex;
+              align-items: center;
+          }
 
-            .search_filter {
-                height: 100%;
-                width: 100%;
-                display: inline-flex;
-                align-items: center;
+          .search_filter {
+              height: 100%;
+              width: 100%;
+              display: inline-flex;
+              align-items: center;
 
-                > div {
-                    height: 100%;
-                    overflow: hidden;
-                    padding: 5px;
-                    width: 100%;
-                    justify-content: center;
-                    justify-self: center;
-                    margin-top: 20px;
+              > div {
+                  height: 100%;
+                  overflow: hidden;
+                  padding: 5px;
+                  width: 100%;
+                  justify-content: center;
+                  justify-self: center;
+                  margin-top: 20px;
 
-                    .frm_input {
-                        height: 30px;
-                    }
-                }
-            }
+                  .frm_input {
+                      height: 30px;
+                  }
+              }
+          }
 
-        }
-    }
+      }
+  }
 </style>

@@ -1,17 +1,17 @@
 <template>
     <Basemodal
-        :title="`${itemsLength} ${item.item_name}`"
-        :size="700" @close="$emit('close')">
-        <div class="menu_items">
-            <OrderItemPreview
-                v-for="item in orderItemsList"
-                :key="item.id"
-                :orderItem="item"
-                @delete="deleteItem"
-                @note="addItemNote"
-                @cancel="cancelOrderItem"
-            />
-        </div>
+      :title="`${itemsLength} ${item.item_name}`"
+      :size="700" @close="$emit('close')">
+      <div class="menu_items">
+        <OrderItemPreview
+          v-for="item in orderItemsList"
+          :key="item.id"
+          :orderItem="item"
+          @delete="deleteItem"
+          @note="addItemNote"
+          @cancel="cancelOrderItem"
+        />
+      </div>
     </Basemodal>
 </template>
 <script>

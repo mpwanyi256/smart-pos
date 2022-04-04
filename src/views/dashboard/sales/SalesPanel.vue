@@ -32,6 +32,8 @@ export default {
         // { name: 'Menu Categories', icon: 'mdi-book-open-page-variant', path: 'menu_categories' },
         // { name: 'Menu Items', icon: 'mdi-book-open-variant', path: 'menu_items' },
         { name: 'Discounts', icon: 'mdi-bell-check', path: 'discounts_report' },
+        { name: 'Item Cancellations', icon: 'mdi-cancel', path: 'cancellations_report' },
+        { name: 'NC Reports', icon: 'mdi-all-inclusive', path: 'nc_report' },
       ],
     };
   },

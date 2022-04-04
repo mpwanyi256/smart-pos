@@ -104,8 +104,9 @@ export default {
         .then((response) => {
           if (!response.error) { // Has order ID
             this.setOrder(response.order_id);
-            this.$nextTick(() => {
-              this.$eventBus.$emit('get-order-details', response.order_id);
+            this.$nextTick(async () => {
+              await this.$eventBus.$emit('get-order-details', response.order_id);
+              await this.$eventBus.$emit('fetch-orders');
             });
           } else {
             this.tableSelected = table;

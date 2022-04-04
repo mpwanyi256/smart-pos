@@ -28,7 +28,19 @@
                 <td>{{ Order.settlement }}</td>
                 <td>{{ Order.client_info.firstname }}</td>
                 <td>
-                    <v-btn small @click="$emit('view', Order)">View</v-btn>
+                  <BaseTooltip
+                    @button="$emit('view', Order)"
+                    message="View Bill"
+                    icon="note-outline"
+                  />
+                  <BaseTooltip
+                    class="ml-3"
+                    @button="$emit('settlements', Order)"
+                    message="View settlements"
+                    icon="credit-card-outline"
+                  />
+                  <!-- <v-btn small @click="$emit('view', Order)">Details</v-btn>
+                  <v-btn small @click="$emit('view', Order)">View</v-btn> -->
                 </td>
             </tr>
         </template>
@@ -36,11 +48,13 @@
 </template>
 <script>
 import Table from '@/components/generics/new/Table.vue';
+import BaseTooltip from '@/components/generics/BaseTooltip.vue';
 
 export default {
   name: 'BillsTable',
   components: {
     Table,
+    BaseTooltip,
   },
   props: {
     orders: {
@@ -48,5 +62,29 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      viewOptions: [
+        { name: 'Bill', ref: 'view' },
+        { name: 'Details', ref: 'info' },
+      ],
+      selectedOption: '',
+    };
+  },
+  watch: {
+    selectedOption(val) {
+      this.$nextTick(() => {
+        console.log('View', val);
+      });
+    },
+  },
 };
 </script>
+<style scoped>
+  ::v-deep .v-input {
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    top: 0 !important;
+  }
+</style>

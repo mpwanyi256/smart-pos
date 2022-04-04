@@ -149,9 +149,16 @@ export default {
         time: this.time,
       };
       this.addOrderItem(filters)
-        .then((addItem) => {
-          if (addItem.error) console.error(addItem.message);
-          else {
+        .then(async (response) => {
+          if (response.error) {
+            this.$eventBus.$emit('show-snackbar', response.message);
+            if (!response.is_pending) {
+              this.$eventBus.$emit('clear-running-order-items');
+              this.$nextTick(async () => {
+                await this.$eventBus.$emit('fetch-orders');
+              });
+            }
+          } else {
             this.showQuantityModal = false;
             this.$eventBus.$emit('reload-order', this.runningOrderId);
           }

@@ -53,6 +53,13 @@ export default {
     validSettlement() {
       return this.notes.length > 3 && this.settlementId > 0;
     },
+    settlementDetails() {
+      return parseInt(this.settlementId, 10) > 0 ? this.paymentSettlements
+        .find((settlement) => settlement.id === this.settlementId) : '';
+    },
+    hasClient() {
+      return !!this.order.client_info.firstname || !!this.order.client_info.lasname;
+    },
   },
   methods: {
     settleOrder() {
@@ -63,6 +70,10 @@ export default {
         settle_order: 'other',
         notes: this.notes.toUpperCase(),
       };
+      if ([6, 3, 12].includes(parseInt(this.settlementId, 10)) && !this.hasClient) {
+        this.$eventBus.$emit('show-snackbar', `Sorry, ${this.settlementDetails.name} requires a client company.`);
+        return;
+      }
       this.$emit('pay', payment);
     },
   },
