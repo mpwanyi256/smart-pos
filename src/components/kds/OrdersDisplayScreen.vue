@@ -18,6 +18,7 @@
                             <KOTOrder
                               v-if="columnKots(column.name).length > 0"
                               :key="kot.id"
+                              :items="kot.items"
                               :kot="kot"
                               :column="column.name"
                               :checkoutId="column.checkout_id"
@@ -63,27 +64,64 @@ export default {
     },
   },
 
-  methods: {
-    columnKots(column) {
-      if (!this.runningOrders || !this.runningOrders.length) return [];
-      let kots = [];
-      if (column === 'New orders') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time < 10)
-        && this.hasPendingItems(Order.items));
-      } else if (column === 'Running Late') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time >= 11)
-        && (Order.delay_time <= 15) && this.hasPendingItems(Order.items));
-      } else if (column === 'Pick up') {
-        kots = this.runningOrders.filter((Order) => Order.has_ready_orders);
-      } else if (column === 'Delayed') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time >= 16)
-        && this.hasPendingItems(Order.items));
-      }
+  computed: {
+    distinctKotQues() {
+      if (!this.runningOrders.length) return [];
+
+      const distinct = Array.from(new Set(this.runningOrders.map((i) => i.kot_id)));
+      return distinct.map((que) => {
+        const queItems = this.runningOrders.filter((item) => item.kot_que_id === que);
+        const kotItem = queItems[0];
+        return {
+          kot_que: que,
+          delay_time: kotItem.delay_time,
+          table_name: kotItem.table_name,
+          waiter: kotItem.waiter,
+          kot_id: kotItem.kot_id,
+          bill_no: kotItem.bill_number,
+          items: queItems,
+        };
+      });
+    },
+
+    newOrders() {
+      const kots = this.distinctKotQues
+        .filter((Order) => (Order.delay_time <= 9));
       return kots;
     },
 
-    hasPendingItems(kotItems) {
-      return !!kotItems.filter((Order) => Order.status === 0).length;
+    runningLate() {
+      const kots = this.distinctKotQues
+        .filter((Order) => ((Order.delay_time >= 10) && (Order.delay_time < 15)));
+      return kots;
+    },
+
+    delayed() {
+      const kots = this.distinctKotQues
+        .filter((Order) => (Order.delay_time >= 15));
+      return kots;
+    },
+  },
+
+  methods: {
+    columnKots(column) {
+      let KOTS = [];
+      switch (column) {
+        case 'New orders':
+          KOTS = this.newOrders;
+          break;
+        case 'Running Late':
+          KOTS = this.runningLate;
+          break;
+        default:
+          KOTS = this.delayed;
+      }
+
+      return KOTS;
+    },
+
+    hasPendingItems(kot) {
+      return !!kot.was_served;
     },
 
     displayColorCode(column) {

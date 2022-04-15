@@ -12,7 +12,7 @@
               :small="true"
               class="float-right"
             />
-            {{ `T:${kot.table_name} #${kot.kot_id} (${kot.waiter})` }}
+            {{ `#${kot.kot_id} :: ${kot.table_name} BILL#${kot.bill_no} Served By ${kot.waiter}` }}
             </div>
             <div class="text-right">
                 <!-- <BaseTooltip
@@ -28,13 +28,13 @@
         </div>
         <div class="kots_list">
             <KotItem
-                v-for="(item, i) in runnungOrders"
-                :highlighted="i %2 == 0"
-                :key="`kot-${item.id}`"
-                :menuItem="item"
-                :showPreparationTime="isReadyColumn"
-                :columnClass="columnClass"
-                @mark-as-served="markItemAsServed($event)"
+              v-for="(item, i) in kot.items"
+              :highlighted="i %2 == 0"
+              :key="`kot-${item.id}`"
+              :menuItem="item"
+              :showPreparationTime="isReadyColumn"
+              :columnClass="columnClass"
+              @mark-as-served="markItemAsServed($event)"
             />
         </div>
 
@@ -79,6 +79,10 @@ export default {
     },
     department: {
       type: [Number, String],
+      required: true,
+    },
+    items: {
+      type: Array,
       required: true,
     },
   },

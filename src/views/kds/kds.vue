@@ -9,6 +9,17 @@
                 :message="errorMessage"
                 type="error"
               />
+
+              <audio
+                controls
+                src="@/audio/mordernBell.wav"
+                ref="audioPlayer"
+                :autoplay="false"
+                class="aidio-player"
+              >
+                Your browser does not support the
+                <code>audio</code> element.
+              </audio>
             </div>
             <div>
                 <div>
@@ -29,11 +40,11 @@
                     v-model="selectedDepartment"
                   />
                 </div>
-                <div>
+                <!-- <div>
                   <v-btn fab @click="fetchRunningOrders(true)">
                     <v-icon>mdi-refresh</v-icon>
                   </v-btn>
-                </div>
+                </div> -->
             </div>
         </div>
         <OrdersDisplayScreen
@@ -103,6 +114,8 @@ export default {
       polling: null,
       errorMessage: '',
       fetchingKDS: false,
+      fetchingKOTS: true,
+      BellNotificationSound: null,
     };
   },
   computed: {
@@ -139,7 +152,10 @@ export default {
         const prevItems = Prev && Prev.length ? Prev.map((i) => i.items) : 0;
 
         if (newItems !== 0 && prevItems !== 0) {
-          if (newItems.length > prevItems.length) this.$eventBus.$emit('show-snackbar', 'New order!...');
+          if (newItems.length > prevItems.length) {
+            this.$eventBus.$emit('show-snackbar', 'New order!...');
+            this.playNotificationSound();
+          }
         }
       },
       deep: true,
@@ -150,16 +166,25 @@ export default {
     this.polling = null;
   },
   async created() {
+    this.BellNotificationSound = new Audio('@/audio/bell.mp3');
     await this.fetchRunningOrders(true);
     await this.getDepartments(0);
     this.loading = false;
     this.polling = setInterval(async () => {
       await this.fetchRunningOrders();
-    }, 5000);
+    }, 10000);
   },
   methods: {
     ...mapActions('kds', ['queryKds']),
     ...mapActions('menu', ['getDepartments']),
+
+    playNotificationSound() {
+      try {
+        this.$refs.audioPlayer.play();
+      } catch (e) {
+        console.log('Audio player failed', e);
+      }
+    },
 
     displayColorCode(column) {
       let notColor;
@@ -176,29 +201,12 @@ export default {
       return notColor;
     },
 
-    columnKots(column) {
-      if (!this.runningOrders.length) return [];
-      let kots = [];
-      if (column === 'New orders') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time <= 10)
-        && this.hasPendingItems(Order.items));
-      } else if (column === 'Running Late') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time > 15)
-        && (Order.delay_time <= 7) && this.hasPendingItems(Order.items));
-      } else if (column === 'Ready') {
-        kots = this.runningOrders.filter((Order) => Order.has_ready_orders);
-      } else if (column === 'Delayed') {
-        kots = this.runningOrders.filter((Order) => (Order.delay_time > 15)
-        && this.hasPendingItems(Order.items));
-      }
-      return kots;
-    },
-
     hasPendingItems(kotItems) {
       return !!kotItems.filter((Order) => Order.status === 0).length;
     },
 
     async fetchRunningOrders(showLoader = false) {
+      if (this.fetchingKDS) return;
       if (!this.dayOpen || this.fetchingKDS) return;
       if (showLoader) this.loading = true;
       this.fetchingKDS = true;
@@ -206,6 +214,7 @@ export default {
         get_pending_kots: this.dayOpen,
         department_id: this.selectedDepartment,
         kds_type: this.selectedDisplayColumn,
+        company_id: this.user.company_id,
       }).then((KOTS) => {
         this.runningOrders = KOTS.data;
         this.errorMessage = KOTS.error_message;
@@ -223,6 +232,10 @@ export default {
 <style scoped lang="scss">
 @import '../../styles/constants.scss';
 
+.aidio-player {
+  display: none;
+}
+
 .kds {
     width: 100%;
     height: 100vh;
@@ -234,103 +247,103 @@ export default {
     overflow: hidden;
 
     ::-webkit-scrollbar{
-        width: 5px;
-        height: 5px;
+      width: 5px;
+      height: 5px;
     }
 
     ::-webkit-scrollbar-thumb {
-        background: $scrollbar-color;
-        border-radius: 1ex;
-        -webkit-border-radius: 1ex;
+      background: $scrollbar-color;
+      border-radius: 1ex;
+      -webkit-border-radius: 1ex;
     }
 
     ::-webkit-scrollbar-corner {
-        background: #000;
+      background: #000;
     }
 
     .orders_pane {
-        overflow-x: hidden;
-        overflow-y: auto;
-        top: 0;
-        bottom: 0;
-        height: calc(100vh - 104px);
-        display: flex;
-        flex-direction: row;
-        background-color: $bg_color;
-        flex-wrap: nowrap;
-        padding: 8px 12px;
-        gap: 16px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      top: 0;
+      bottom: 0;
+      height: calc(100vh - 104px);
+      display: flex;
+      flex-direction: row;
+      background-color: $bg_color;
+      flex-wrap: nowrap;
+      padding: 8px 12px;
+      gap: 16px;
 
-        > div {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
+      > div {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          background-color: $gray-95;
+          box-shadow: 0px 1px 14px rgb(11 13 14 / 10%), 0px 0px 1px rgb(11 13 14 / 10%);
+          border-radius: 4px;
+          padding: 4px 4px;
+          -webkit-tap-highlight-color: transparent;
+
+          .kot_list {
+              display: flex;
+              flex-direction: column;
+              height: calc(100vh - 156px);
+              overflow-x: hidden;
+              overflow-y: auto;
+              gap: 10px;
+              padding-top: 5px;
+          }
+
+          .column_header {
+            height: 52px !important;
+            display: inline-flex;
+            justify-content: left;
+            align-items: center;
+            color: $kds-text-header-color;
             overflow: hidden;
-            background-color: $gray-95;
-            box-shadow: 0px 1px 14px rgb(11 13 14 / 10%), 0px 0px 1px rgb(11 13 14 / 10%);
-            border-radius: 4px;
-            padding: 4px 4px;
-            -webkit-tap-highlight-color: transparent;
-
-            .kot_list {
-                display: flex;
-                flex-direction: column;
-                height: calc(100vh - 156px);
-                overflow-x: hidden;
-                overflow-y: auto;
-                gap: 10px;
-                padding-top: 5px;
-            }
-
-            .column_header {
-              height: 52px !important;
-              display: inline-flex;
-              justify-content: left;
-              align-items: center;
-              color: $kds-text-header-color;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              font-style: normal;
-              font-size: 14px;
-              line-height: 150%;
-              letter-spacing: -0.005em;
-              border-bottom: 1px solid $bg_color;
-              padding-left: 16px;
-            }
-        }
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-style: normal;
+            font-size: 14px;
+            line-height: 150%;
+            letter-spacing: -0.005em;
+            border-bottom: 1px solid $bg_color;
+            padding-left: 16px;
+          }
+      }
     }
 
     .toggle_display {
-        height: 52px;
-        background-color: $white;
-        display: grid;
-        grid-template-columns: 50% 50%;
-        justify-content: left;
+      height: 52px;
+      background-color: $white;
+      display: grid;
+      grid-template-columns: 50% 50%;
+      justify-content: left;
+      align-items: center;
+
+      > div :first-child {
+        padding-left: 10px;
+        color: $black;
+        display: flex;
         align-items: center;
+        font-size: 18px;
+      }
 
-        > div :first-child {
-          padding-left: 10px;
-          color: $black;
-          display: flex;
-          align-items: center;
-          font-size: 18px;
-        }
+      > div:last-child {
+          padding-right: 10px;
+          text-align: right;
 
-        > div:last-child {
-            padding-right: 10px;
-            text-align: right;
-
-            > div {
-              display: inline-flex;
-              justify-content: center;
-              align-items: center;
-              gap: 5px;
-              max-width: 350px;
-              margin-top: 5px;
-              margin-right: 5px;
-            }
-        }
+          > div {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            max-width: 350px;
+            margin-top: 5px;
+            margin-right: 5px;
+          }
+      }
     }
 }
 </style>

@@ -57,13 +57,12 @@ new Vue({
     if (LoggedInUser) {
       store.dispatch('auth/getUserById');
       store.dispatch('settings/fetch', { get_access_controls: 'all' });
-      // firebase.firestore().collection('licenses')
-      //   .onSnapshot(async () => {
-      //     const compEmail = localStorage.getItem('smart_company_email');
-      //     if (compEmail) await store.dispatch('auth/getActiveLicense', compEmail);
-      //     if (compEmail === 'prodevgroup256@gmail.com')
-      // { await store.dispatch('manage/fetchClientLicenses'); }
-      //   });
+      firebase.firestore().collection('licenses')
+        .onSnapshot(async () => {
+          const compEmail = localStorage.getItem('smart_company_email');
+          if (compEmail) await store.dispatch('auth/getActiveLicense', compEmail);
+          if (compEmail === 'prodevgroup256@gmail.com') { await store.dispatch('manage/fetchClientLicenses'); }
+        });
     } else store.replace({ name: 'login' });
   },
   render: (h) => h(App),
