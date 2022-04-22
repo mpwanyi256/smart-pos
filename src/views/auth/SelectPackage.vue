@@ -58,7 +58,7 @@ export default {
       loading: true,
       idb_key: 'smart_business_info',
       companyInfo: null,
-      errorMessage: 'Error message',
+      errorMessage: '',
     };
   },
   computed: {
@@ -86,6 +86,7 @@ export default {
     },
 
     async continueToAccount() {
+      this.errorMessage = '';
       this.loading = true;
       const company = {
         company_name: this.companyInfo.name,
@@ -113,6 +114,7 @@ export default {
       const fbAcc = await this.addCompanyFirebase(fbAccount);
       if (fbAcc && !fbAcc.error) {
         const newAccount = await this.post(company).catch(() => null);
+        console.log('newAccount', newAccount);
         if (newAccount && !newAccount.error) {
           await idb.delete(this.idb_key);
           await idb.delete('smart_auth');

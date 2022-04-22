@@ -17,6 +17,14 @@
                 placeholder="Outlet location"
                 :inputType="'text'"
             />
+
+            <label>Location</label>
+            <BaseTextfield
+                v-model.trim="outlet.currency"
+                :preset="outlet.currency"
+                placeholder="Outlet currency"
+                :inputType="'text'"
+            />
             <div>
                 <p v-if="errorMessage">{{ errorMessage }}</p>
                 <v-btn small
@@ -73,6 +81,7 @@ export default {
       const params = {
         name: this.outlet.name.toUpperCase(),
         location: this.outlet.location.toUpperCase(),
+        currency: this.outlet.currency.toUpperCase(),
         update_outlet_info: this.outlet.id,
       };
       const Outlet = await this.post(params).catch(() => null);
@@ -89,7 +98,6 @@ export default {
         gap: 15px;
         min-height: 300px;
         justify-content: center;
-        // align-items: center;
-        padding: 0 16px;
+        padding: 16px;
     }
 </style>

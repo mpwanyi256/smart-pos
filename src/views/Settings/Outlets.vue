@@ -13,6 +13,7 @@
                 <th>#</th>
                 <th>Name</th>
                 <th>Location</th>
+                <th>Currency</th>
                 <th>&nbsp;</th>
                 </tr>
             </template>
@@ -21,7 +22,7 @@
                     <td>{{ ++i }}</td>
                     <td>{{ outlet.name }}</td>
                     <td>{{ outlet.location }}</td>
-                    <td>{{ outlet.email }}</td>
+                    <td>{{ outlet.currency }}</td>
                     <td>
                         <v-btn icon small @click="update(outlet)">
                             <v-icon>mdi-pencil</v-icon>
