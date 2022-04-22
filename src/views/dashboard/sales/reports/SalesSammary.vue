@@ -1,50 +1,50 @@
 <template>
-    <div class="find_bill">
-        <div class="search_filter">
-            <div class="bill_no">
-                <h3>Filter sales</h3>
-            </div>
-            <div class="bill_no">
-                <DatePickerBeta @picked="setDateFrom" :message="'From'" />
-            </div>
-            <div class="bill_no">
-                <DatePickerBeta @picked="setDateTo" :message="'To'" />
-            </div>
-            <div class="bill_no">
-                <v-btn small @click="fetchSales">Search</v-btn>
-            </div>
+  <div class="find_bill">
+    <div class="search_filter">
+        <div class="bill_no">
+            <h3>Filter sales</h3>
         </div>
-        <div class="orders_table">
-          <LinearLoader v-if="loading" />
-          <template v-else>
-            <Table>
-              <template slot="header">
-                <th v-for="(header, idx) in tableHeaders" :key="idx">
-                  {{ header.text }}
-                </th>
-              </template>
-              <template slot="body">
-                <tr v-for="sale in sales" :key="sale.date">
-                  <td>{{ sale.date }}</td>
-                  <td>{{ sale.cash }}</td>
-                  <td>{{ sale.visa }}</td>
-                  <td>{{ sale.mobile }}</td>
-                  <td>{{ sale.company }}</td>
-                  <td>{{ sale.cheque }}</td>
-                  <td>{{ sale.nc }}</td>
-                  <td>{{ sale.cancelled }}</td>
-                </tr>
-              </template>
-            </Table>
-          </template>
+        <div class="bill_no">
+            <DatePickerBeta @picked="setDateFrom" :message="'From'" />
         </div>
-        <Pagination @change="page = $event" :length="totalItems" />
+        <div class="bill_no">
+            <DatePickerBeta @picked="setDateTo" :message="'To'" />
+        </div>
+        <div class="bill_no">
+            <v-btn small @click="fetchSales">Search</v-btn>
+        </div>
     </div>
+    <div class="orders_table">
+      <LoadingSpinner class="large" v-if="loading" />
+      <template v-else>
+        <Table>
+          <template slot="header">
+            <th v-for="(header, idx) in tableHeaders" :key="idx">
+              {{ header.text }}
+            </th>
+          </template>
+          <template slot="body">
+            <tr v-for="sale in sales" :key="sale.date">
+              <td>{{ sale.date }}</td>
+              <td>{{ sale.cash }}</td>
+              <td>{{ sale.visa }}</td>
+              <td>{{ sale.mobile }}</td>
+              <td>{{ sale.company }}</td>
+              <td>{{ sale.cheque }}</td>
+              <td>{{ sale.nc }}</td>
+              <td>{{ sale.cancelled }}</td>
+            </tr>
+          </template>
+        </Table>
+      </template>
+    </div>
+    <Pagination @change="page = $event" :length="totalItems" />
+  </div>
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import DatePickerBeta from '@/components/generics/DatePickerBeta.vue';
-import LinearLoader from '@/components/generics/Loading.vue';
+import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
 import Table from '@/components/generics/new/Table.vue';
 import Pagination from '@/components/generics/new/Pagination.vue';
 
@@ -52,7 +52,7 @@ export default {
   name: 'DashboardSalesOverview',
   components: {
     DatePickerBeta,
-    LinearLoader,
+    LoadingSpinner,
     Pagination,
     Table,
   },

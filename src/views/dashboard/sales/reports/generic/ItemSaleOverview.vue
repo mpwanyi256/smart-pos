@@ -6,40 +6,45 @@
         <p class="duration">{{ `Duration: ${duration.from} to ${duration.to}` }}</p>
         <p class="duration">{{`${item.quantity_sold} items sold`}}</p>
       </div>
-      <Table>
-        <template #header>
-          <tr>
-            <th>#</th>
-            <th>Waiter</th>
-            <th>Quantity Sold</th>
-            <th>Cost Of Sale</th>
-          </tr>
-        </template>
-        <template #body>
-          <tr v-for="(record, idx) in records" :key="`record-sale-${idx}`">
-            <td>{{ ++idx }}</td>
-            <td>{{ record.full_name }}</td>
-            <td>{{ record.quantity }}</td>
-            <td>{{ record.quantity * item.average_cost_price_clean }}</td>
-          </tr>
-        </template>
-          <tr class="item-info">
-            <td>&nbsp;</td>
-            <td><strong>Total Items</strong></td>
-            <td><strong>{{ item.quantity_sold }}</strong></td>
-            <td><strong>{{ item.quantity_sold * item.average_cost_price_clean }}</strong></td>
-          </tr>
-      </Table>
+      <div class="sales-info">
+        <LoadingSpinner v-if="loading" class="large" />
+        <Table v-else>
+          <template #header>
+            <tr>
+              <th>#</th>
+              <th>Waiter</th>
+              <th>Quantity Sold</th>
+              <th>Cost Of Sale</th>
+            </tr>
+          </template>
+          <template #body>
+            <tr v-for="(record, idx) in records" :key="`record-sale-${idx}`">
+              <td>{{ ++idx }}</td>
+              <td>{{ record.full_name }}</td>
+              <td>{{ record.quantity }}</td>
+              <td>{{ record.quantity * item.average_cost_price_clean }}</td>
+            </tr>
+          </template>
+            <tr class="item-info">
+              <td>&nbsp;</td>
+              <td><strong>Total Items</strong></td>
+              <td><strong>{{ item.quantity_sold }}</strong></td>
+              <td><strong>{{ item.quantity_sold * item.average_cost_price_clean }}</strong></td>
+            </tr>
+        </Table>
+      </div>
     </div>
 </template>
 <script>
 import Table from '@/components/generics/new/Table.vue';
+import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'ItemSaleOverview',
   components: {
     Table,
+    LoadingSpinner,
   },
   props: {
     item: {
@@ -54,6 +59,7 @@ export default {
   data() {
     return {
       records: [],
+      loading: true,
     };
   },
   computed: {
@@ -66,6 +72,7 @@ export default {
     ...mapActions('sales', ['filterSales']),
 
     fetchRecords() {
+      this.loading = true;
       const filters = {
         get_item_sales_overview: 'sales',
         menu_item_id: this.item.item_id,
@@ -80,6 +87,9 @@ export default {
         })
         .catch((e) => {
           console.error('Error in fetchRecords', e);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
   },
@@ -95,6 +105,10 @@ export default {
     flex-direction: column;
     gap: 0;
     color: $black;
+
+    .sales-info {
+      min-height: 250px;
+    }
 
     .item-info {
       padding: 15px;

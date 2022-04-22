@@ -21,7 +21,10 @@ export default {
       {
         icon: 'mdi-sale', name: 'Sales', path: 'overview', allowedUsers: [1, 5, 6], packages: [1, 2, 3],
       },
-      // { icon: 'mdi-webhook', name: 'Cashbook Accounting', path: 'accountingDashboard' },
+      // {
+      //   icon: 'mdi-webhook', name: 'Cashbook Accounting', path: 'accountingDashboard',
+      // allowedUsers: [1, 5, 6], packages: [1, 2, 3],
+      // },
       {
         icon: 'mdi-shopping', name: 'Inventory', path: 'inv_dashboard', allowedUsers: [1, 5, 6, 8], packages: [2, 3],
       },
@@ -227,7 +230,6 @@ export default {
               dispatch('performLogout');
             }
           }
-          commit('toggleLoading', false);
         })
         .catch((e) => {
           console.error('error', e);

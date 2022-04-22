@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="orders_table">
-          <LinearLoader v-if="loading" />
+          <LoadingSpinner class="large" v-if="loading" />
           <Table>
             <template slot="header">
               <tr>
@@ -83,7 +83,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import DatePickerBeta from '@/components/generics/DatePickerBeta.vue';
-import LinearLoader from '@/components/generics/Loading.vue';
+import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
 import Table from '@/components/generics/new/Table.vue';
 import ExcelExportMixin from '@/mixins/excelMixin';
 import Pagination from '@/components/generics/new/Pagination.vue';
@@ -94,7 +94,7 @@ export default {
   mixins: [ExcelExportMixin],
   components: {
     DatePickerBeta,
-    LinearLoader,
+    LoadingSpinner,
     Table,
     Pagination,
     ItemSoldDetailsModal,
