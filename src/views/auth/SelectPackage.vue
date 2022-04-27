@@ -9,7 +9,7 @@
         <div class="header_section">
             <p>
                 <v-btn icon left dark @click="$emit('previous')">
-                    <v-icon>mdi-arrow-left</v-icon>
+                  <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
                 Please Select package to continue
             </p>
@@ -79,7 +79,8 @@ export default {
   },
   methods: {
     ...mapActions('auth', ['getPackages',
-      'addCompanyFirebase', 'getUserById', 'post']),
+      'addCompanyFirebase', 'getUserById', 'post', 'performLogin']),
+    ...mapActions('mail', ['sendEmail']),
 
     async getDataSync() {
       this.companyInfo = await idb.get(this.idb_key).catch(() => null);
@@ -99,35 +100,76 @@ export default {
         create_new_company: this.companyInfo.name,
       };
 
-      const fbAccount = {
-        DayOpen: this.dayToday,
-        DaysLeft: 3,
-        Email: this.companyInfo.email,
-        HomeServer: '127.0.0.1',
-        LiveUrl: `${this.companyInfo.email}_Live`,
-        Location: this.companyInfo.address,
-        Name: this.companyInfo.name,
-        TimeZone: 'Africa/Kampala',
-        package: this.selectedPackage,
-      };
+      this.post(company)
+        .then(async (newAccount) => {
+          if (newAccount.error) {
+            this.errorMessage = newAccount.message;
+          } else {
+            await idb.delete(this.idb_key);
+            await idb.delete('smart_auth');
 
-      const fbAcc = await this.addCompanyFirebase(fbAccount);
-      if (fbAcc && !fbAcc.error) {
-        const newAccount = await this.post(company).catch(() => null);
-        console.log('newAccount', newAccount);
-        if (newAccount && !newAccount.error) {
-          await idb.delete(this.idb_key);
-          await idb.delete('smart_auth');
-          const newAccountId = newAccount.user_id;
-          localStorage.setItem('smart_user_id', newAccountId);
-          await this.getUserById('new account');
-        } else {
-          this.errorMessage = newAccount.message;
-        }
-      } else {
-        this.errorMessage = fbAcc.message;
-        console.log(fbAcc.message);
-      }
+            const authParams = {
+              user_id: newAccount.user_id,
+              new_account: 'new account',
+            };
+
+            this.$nextTick(() => {
+            // Send Verification Code
+              this.sendEmail({
+                send_verification_code: true,
+                company_name: company.company_name,
+                company_email: company.email_address,
+                company_id: newAccount.company_id,
+              })
+                .then(() => {
+                  this.$router.replace({
+                    name: 'verification',
+                    params: authParams,
+                  });
+                })
+                .catch((e) => console.log('error', e))
+                .finally(() => {
+                  this.loading = false;
+                });
+            });
+          }
+        })
+        .catch((e) => {
+          this.errorMessage = e;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+
+      // const fbAccount = {
+      //   DayOpen: this.dayToday,
+      //   DaysLeft: 3,
+      //   Email: this.companyInfo.email,
+      //   HomeServer: '127.0.0.1',
+      //   LiveUrl: `${this.companyInfo.email}_Live`,
+      //   Location: this.companyInfo.address,
+      //   Name: this.companyInfo.name,
+      //   TimeZone: 'Africa/Kampala',
+      //   package: this.selectedPackage,
+      // };
+
+      // const fbAcc = await this.addCompanyFirebase(fbAccount);
+      // if (fbAcc && !fbAcc.error) {
+      //   const newAccount = await this.post(company).catch(() => null);
+      //   console.log('newAccount', newAccount);
+      //   if (newAccount && !newAccount.error) {
+      //     await idb.delete(this.idb_key);
+      //     await idb.delete('smart_auth');
+      //     const newAccountId = newAccount.user_id;
+      //     localStorage.setItem('smart_user_id', newAccountId);
+      //     await this.getUserById('new account');
+      //   } else {
+      //     this.errorMessage = newAccount.message;
+      //   }
+      // } else {
+      //   this.errorMessage = fbAcc.message;
+      //   console.log(fbAcc.message);
+      // }
       this.loading = false;
     },
   },

@@ -10,7 +10,11 @@
             </v-text-field>
             <v-btn type="submit" block class="btn-login">Login</v-btn>
             <div class="sign_up_div">
-              <p>New here? <span @click="viewMode = 2">Create account</span></p>
+              <p>New here ?
+                <span @click="viewMode = 2">Create account</span> | <span>
+                  Forgot password?
+                  </span>
+              </p>
             </div>
         </v-card-text>
         <CreateAccount v-else-if="viewMode == 2"

@@ -52,7 +52,7 @@
                 </v-btn>
             </div>
             <div class="login_link">
-                <p>Already have an account? <span @click="switchToLogin">Signin</span></p>
+              <p>Already have an account? <span @click="switchToLogin">Signin</span></p>
             </div>
         </template>
     </div>

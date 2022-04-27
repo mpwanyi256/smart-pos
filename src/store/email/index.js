@@ -21,7 +21,7 @@ export default {
       updateKeys.forEach((key) => {
         params.append(key, payload[`${key}`]);
       });
-      params.append('company_id', companyId);
+      if (!payload.company_id) params.append('company_id', companyId);
       commit('loading', false);
       return API.smart(PATH, params);
     },

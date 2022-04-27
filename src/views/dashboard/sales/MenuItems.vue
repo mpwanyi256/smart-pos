@@ -81,7 +81,7 @@
         <DownloadMenu v-if="downloadModal" @close="downloadModal = false" />
         <CreateNewMenuItem
           v-if="createModal"
-          @close="createModal = false"
+          @close="createModal = false; fetchMenuItems()"
         />
     </div>
 </template>

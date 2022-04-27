@@ -14,6 +14,7 @@ import Manage from './manage';
 import KDS from './kds';
 import Estates from './estates';
 import Outlets from './outlet';
+import Verification from './verification';
 
 Vue.use(VueRouter);
 Vue.use(Meta, {
@@ -34,6 +35,7 @@ const routes = [
   KDS,
   Estates,
   Outlets,
+  Verification,
   { path: '*', component: () => import('@/views/auth/login.vue') },
 ];
 
