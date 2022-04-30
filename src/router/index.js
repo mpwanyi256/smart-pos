@@ -15,6 +15,7 @@ import KDS from './kds';
 import Estates from './estates';
 import Outlets from './outlet';
 import Verification from './verification';
+import AccountRecovery from './recovery';
 
 Vue.use(VueRouter);
 Vue.use(Meta, {
@@ -36,6 +37,7 @@ const routes = [
   Estates,
   Outlets,
   Verification,
+  AccountRecovery,
   { path: '*', component: () => import('@/views/auth/login.vue') },
 ];
 

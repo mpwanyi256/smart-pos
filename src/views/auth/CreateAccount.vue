@@ -52,7 +52,10 @@
                 </v-btn>
             </div>
             <div class="login_link">
-              <p>Already have an account? <span @click="switchToLogin">Signin</span></p>
+              <p>
+                <span @click="switchToLogin">Signin</span> |
+                <span @click="verifyCompany">Proceed to Activate company</span>
+              </p>
             </div>
         </template>
     </div>
@@ -112,6 +115,10 @@ export default {
     });
   },
   methods: {
+
+    verifyCompany() {
+      this.$router.push({ name: 'verification' });
+    },
 
     async getDataSync() {
       try {

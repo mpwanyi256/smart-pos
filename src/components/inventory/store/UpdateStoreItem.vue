@@ -47,17 +47,6 @@
           </div>
         </div>
         <div class="frm_entry">
-          <div class="label">Category</div>
-          <div class="entry_update">
-            <v-select dense outlined
-              :items="categories"
-              item-text="name"
-              item-value="id"
-              v-model="categoryId"
-            />
-          </div>
-        </div>
-        <div class="frm_entry">
           <div>&nbsp;</div>
           <div>
             <v-btn class="float-right" @click="updateStoreItem">Update</v-btn>
@@ -103,14 +92,13 @@ export default {
       unit_measure: '',
       unit_price: '',
       unit_measure_id: '',
-      categoryId: '',
       error: '',
       loading: false,
       confirmDelete: false,
     };
   },
   computed: {
-    ...mapGetters('inventory', ['storeMeasures', 'categories']),
+    ...mapGetters('inventory', ['storeMeasures']),
 
     selectedMeasureName() {
       const measureSelect = this.storeMeasures
@@ -119,7 +107,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('inventory', ['getStoreMeasures', 'getStoreCategories', 'updateItem']),
+    ...mapActions('inventory', ['getStoreMeasures', 'updateItem']),
 
     updateStoreItem() {
       const update = {
@@ -128,7 +116,6 @@ export default {
         pack_size: this.pack_size,
         unit_price: this.unit_price,
         unit_measure_id: this.unit_measure_id,
-        category_id: this.categoryId,
         minimum_stock: this.min_stock,
       };
       this.loading = true;
@@ -157,8 +144,7 @@ export default {
     this.unit_measure = this.item.unit_measure;
     this.unit_price = this.item.unit_price;
     this.unit_measure_id = this.item.measure_id;
-    this.categoryId = this.item.category_id;
-    await this.getStoreCategories({ category_id: 'all' });
+    // await this.getStoreCategories({ category_id: 'all' });
     await this.getStoreMeasures('all');
   },
 };

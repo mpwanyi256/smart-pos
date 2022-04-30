@@ -42,7 +42,9 @@ export default {
   },
   watch: {
     input_text(val) {
-      this.$emit('input', val);
+      this.$nextTick(() => {
+        this.$emit('input', val);
+      });
     },
     preset(val) {
       this.input_text = val;

@@ -11,11 +11,52 @@
                     <template v-else>
                         <template v-if="resend">
                             <div class="text-center mb-3">
-                                <h3>Account activation</h3>
+                                <h3>Enter verification code we sent to your email</h3>
                             </div>
-                            <div class="text-left mb-3">
+                            <div class="outlets-list mt-5">
+                              <template v-if="!setNewPassword">
+                                <BaseTextfield
+                                  v-model.trim="code"
+                                  placeholder="code"
+                                />
+                                <v-btn :disabled="code.length < 5"
+                                  class="ml-4 mr-4" @click="verifyCode">
+                                  Verify
+                                </v-btn>
+                              </template>
+                              <template v-else>
+                                <BaseTextfield
+                                  v-model.trim="newPassword"
+                                  placeholder="Enter new password"
+                                  inputType="password"
+                                />
+                                <BaseTextfield
+                                  v-model.trim="passwordConfirm"
+                                  placeholder="Confirm password"
+                                  inputType="password"
+                                />
+                                <v-btn :disabled="(newPassword.length < 6)
+                                  || newPassword && newPassword !== passwordConfirm"
+                                  class="ml-4 mr-4" @click="resetPassword">
+                                  Reset password
+                                </v-btn>
+                              </template>
+                            </div>
+                            <div class="mt-4 text-right" v-if="!setNewPassword">
+                                <p>Didn't get verification code ?
+                                    <v-btn text small @click="resend = true">
+                                      Resend code
+                                    </v-btn>
+                                </p>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="text-center mb-3">
+                                <h3>Account recovery</h3>
+                            </div>
+                            <div class="text-center mb-3">
                                 <p class="black--text">
-                                  Please enter your email address
+                                  We will send you a reset code to your email address
                                 </p>
                             </div>
                             <div class="resend-verification-code">
@@ -25,31 +66,9 @@
                                     placeholder="Enter email address"
                                 />
                                 <v-btn :disabled="!isValidEmail" class="ml-4 mr-4"
-                                    @click="resendCode">
+                                    @click="sendVerificationCode">
                                     Send
                                 </v-btn>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div class="text-center mb-3">
-                                <h3>Enter verification code we sent to your email</h3>
-                            </div>
-                            <div class="outlets-list mt-5">
-                                <BaseTextfield
-                                    v-model.trim="code"
-                                    placeholder="code"
-                                />
-                                <v-btn :disabled="code.length < 5"
-                                    class="ml-4 mr-4" @click="verifyCode">
-                                    Verify
-                                </v-btn>
-                            </div>
-                            <div class="mt-4 text-right">
-                                <p>Didn't get verification code ?
-                                    <v-btn text small @click="resend = true">
-                                        Resend code
-                                    </v-btn>
-                                </p>
                             </div>
                         </template>
                         <div class="login_link">
@@ -86,7 +105,7 @@ import validator from 'validator';
 import { mapActions } from 'vuex';
 
 export default {
-  name: 'Verification',
+  name: 'Resetpassword',
 
   components: {
     BaseTextfield,
@@ -99,7 +118,11 @@ export default {
       companyEmailAddress: '',
       resend: false,
       errorMessage: '',
+      setNewPassword: false,
       loading: false,
+      userInfo: null,
+      newPassword: '',
+      passwordConfirm: '',
     };
   },
 
@@ -132,6 +155,21 @@ export default {
     ...mapActions('auth', ['post']),
     ...mapActions('mail', ['sendEmail']),
 
+    resetPassword() {
+      this.loading = true;
+      this.errorMessage = '';
+      this.post({
+        reset_password: this.newPassword.trim(),
+        user_id: this.userInfo.company_id,
+      })
+        .then((res) => {
+          this.errorMessage = res.message;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+
     verifyCode() {
       this.loading = true;
       this.errorMessage = '';
@@ -139,7 +177,8 @@ export default {
         verify_code: this.code,
       })
         .then((res) => {
-          this.errorMessage = res.message;
+          if (!res.errorr) this.setNewPassword = true;
+          else this.errorMessage = res.message;
         })
         .catch((e) => {
           this.errorMessage = e;
@@ -153,11 +192,11 @@ export default {
       this.$router.replace({ name: 'login' });
     },
 
-    resendCode() {
+    sendVerificationCode() {
       this.loading = true;
       this.errorMessage = '';
       this.post({
-        find_client_verification_code: this.companyEmailAddress,
+        password_reset: this.companyEmailAddress,
       })
         // eslint-disable-next-line consistent-return
         .then((response) => {
@@ -165,6 +204,7 @@ export default {
             this.errorMessage = response.message;
           } else {
             const companyData = response.company_data;
+            this.userInfo = companyData;
             return this.sendEmail({
               send_verification_code: true,
               ...companyData,
@@ -172,7 +212,7 @@ export default {
           }
         })
         .then(() => {
-          this.resend = false;
+          this.resend = true;
           this.errorMessage = 'Please enter verification code we sent to your email.';
         })
         .catch((e) => {

@@ -7,7 +7,7 @@
         </th>
       </template>
       <template slot="body">
-          <tr v-for="item in filteredItems" :key="`store-item-${item.id}`">
+          <tr v-for="item in storeItems" :key="`store-item-${item.id}`">
               <td>{{ item.name }}</td>
               <td>{{ item.unit_price_display }}</td>
               <td>{{ item.pack_size }}</td>
@@ -32,12 +32,6 @@ export default {
   components: {
     Table,
   },
-  props: {
-    search: {
-      type: String,
-      required: false,
-    },
-  },
   data() {
     return {
       headers: [
@@ -52,12 +46,6 @@ export default {
   },
   computed: {
     ...mapGetters('inventory', ['storeItems']),
-
-    filteredItems() {
-      return this.search.length ? this.storeItems
-        .filter((item) => item.name.toLowerCase()
-          .match(this.search.toLowerCase())) : this.storeItems;
-    },
   },
 };
 </script>
@@ -65,7 +53,7 @@ export default {
 @import '../../../styles/constants.scss';
 
   .stores {
-    height: calc(100vh - 104px);
+    height: calc(100vh - 171px);
     width: 100%;
     display: flex;
     flex-direction: column;

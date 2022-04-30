@@ -18,9 +18,9 @@
       <StoreItemsList
         @update="updateItem"
         @reload="reloadItems"
-        :search="search"
       />
     </div>
+    <Pagination @change="page = $event" :length="totalPaginationItems" />
     <UpdateStoreItem
       v-if="updateItemModal && selectedItem"
       :item="selectedItem"
@@ -40,6 +40,7 @@ import BaseTooltip from '@/components/generics/BaseTooltip.vue';
 import StoreItemsList from '@/components/inventory/store/StoreItemsList.vue';
 import UpdateStoreItem from '@/components/inventory/store/UpdateStoreItem.vue';
 import CreateStoreItemModal from '@/components/inventory/store/CreateStoreItemModal.vue';
+import Pagination from '@/components/generics/new/Pagination.vue';
 
 export default {
   name: 'StoreItems',
@@ -48,6 +49,7 @@ export default {
     StoreItemsList,
     UpdateStoreItem,
     CreateStoreItemModal,
+    Pagination,
   },
   data() {
     return {
@@ -55,14 +57,34 @@ export default {
       selectedItem: null,
       search: '',
       createItem: false,
+      page: 1,
+      itemsPerPage: 15,
     };
   },
   computed: {
     ...mapGetters('auth', ['user']),
+    ...mapGetters('inventory', ['storeItems', 'loading', 'totalStoreItems']),
+
+    totalPaginationItems() {
+      return Math.ceil(this.totalStoreItems / this.itemsPerPage);
+    },
   },
   watch: {
     display() {
       this.reloadItems();
+    },
+    page() {
+      this.$nextTick(() => {
+        this.loadItems();
+      });
+    },
+    search: {
+      handler(val) {
+        if (val.length >= 2 || val.length === 0) {
+          this.loadItems();
+        }
+      },
+      immediate: false,
     },
   },
   methods: {
@@ -74,14 +96,23 @@ export default {
     },
 
     async reloadItems() {
-      await this.getStoreItems({ company_id: this.user.company_id });
+      this.loadItems();
       this.selectedItem = null;
       this.createItem = false;
       this.updateItemModal = false;
     },
+
+    loadItems() {
+      this.getStoreItems({
+        type: 'paginated',
+        company_id: this.user.company_id,
+        page: this.page,
+        search: this.search.trim(),
+      });
+    },
   },
-  async created() {
-    await this.getStoreItems({ company_id: this.user.company_id });
+  created() {
+    this.loadItems();
   },
 };
 </script>
@@ -90,7 +121,7 @@ export default {
 
 .inv_main {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 52px);
   display: flex;
   flex-direction: column;
 

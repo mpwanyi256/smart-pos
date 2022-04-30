@@ -10,10 +10,9 @@
             </v-text-field>
             <v-btn type="submit" block class="btn-login">Login</v-btn>
             <div class="sign_up_div">
-              <p>New here ?
-                <span @click="viewMode = 2">Create account</span> | <span>
-                  Forgot password?
-                  </span>
+              <p>
+                <span @click="viewMode = 2">Create account</span> |
+                <span @click="resetPassword">Forgot password?</span>
               </p>
             </div>
         </v-card-text>
@@ -125,6 +124,10 @@ export default {
     switchView(view) {
       this.viewMode = view;
       this.syncData();
+    },
+
+    resetPassword() {
+      this.$router.push({ name: 'password-reset' });
     },
 
     async loginUser() {

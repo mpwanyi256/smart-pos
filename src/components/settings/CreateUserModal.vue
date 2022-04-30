@@ -16,7 +16,7 @@
       <v-text-field
         outlined dense
         v-model.trim="fullname"
-        label="User name"
+        label="Email address"
       />
       <v-select outlined
         dense
@@ -60,6 +60,7 @@
 </template>
 <script>
 import moment from 'moment';
+import validator from 'validator';
 import { mapActions, mapGetters } from 'vuex';
 import Basemodal from '@/components/generics/Basemodal.vue';
 
@@ -83,8 +84,13 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['user']),
+
+    isValidEmail() {
+      return validator.isEmail(this.fullname);
+    },
+
     isValidPassword() {
-      return this.fullname.length > 3 && this.password.length > 3
+      return this.isValidEmail && this.password.length > 3
       && this.firstName.length > 2 && this.lastName.length > 2
       && (this.password === this.passwordConfirm && this.employeeOutletId !== 0);
     },
