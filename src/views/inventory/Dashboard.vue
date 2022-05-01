@@ -96,7 +96,6 @@ export default {
 
   async created() {
     this.$nextTick(async () => {
-      // this.dateSelected = this.dayOpen;
       if (this.dayOpen) await this.fetchInventory();
     });
   },

@@ -19,7 +19,7 @@
               </template>
               <template slot="body">
                 <tr
-                  v-for="i in filteredItems"
+                  v-for="i in storeItems"
                   :key="i.id">
                   <td>{{ i.name }}</td>
                   <td>
@@ -81,12 +81,32 @@ export default {
     ...mapGetters('auth', ['user']),
     ...mapGetters('inventory', ['storeItems']),
     filteredItems() {
-      return this.storeItems.filter((Item) => Item.name.toLowerCase()
-        .match(this.store_items_filter.toLowerCase()));
+      return this.storeItems;
+    },
+  },
+  watch: {
+    store_items_filter: {
+      handler(val) {
+        if (val.length === 0 || val.length >= 3) {
+          this.page = 1;
+          this.$nextTick(() => {
+            this.fetchStoreItems();
+          });
+        }
+      },
+      immediate: true,
     },
   },
   methods: {
     ...mapActions('inventory', ['getStoreItems', 'updateItem']),
+
+    fetchStoreItems() {
+      this.getStoreItems({
+        company_id: this.user.company_id,
+        page: 1,
+        search: this.store_items_filter,
+      });
+    },
 
     exists(item) {
       return this.recipe.findIndex((Item) => Item.store_item_id === item.id) >= 0;
@@ -120,8 +140,8 @@ export default {
       }, 2000);
     },
   },
-  async created() {
-    await this.getStoreItems({ company_id: this.user.company_id });
+  created() {
+    this.fetchStoreItems();
   },
 };
 </script>
