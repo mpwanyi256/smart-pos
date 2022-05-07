@@ -1,6 +1,9 @@
 # Smart POS
 - A restaurant software with Sales and Inventory modules. The system serves both web and Electron crossplatform apps for Windows, Linux and Windows. The project runs on PHP backend.
 
+![Screenshot 2022-05-07 at 11 41 45](https://user-images.githubusercontent.com/20843520/167246627-0d2ac263-5cd1-4f4c-882a-c2d47cc3d23a.png)
+
+
 ## Project setup
 ```
 - Clone the repo
