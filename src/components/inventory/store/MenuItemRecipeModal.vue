@@ -106,6 +106,7 @@ export default {
       const dropReceipe = {
         drop_receipe_item: this.selectedItem,
       };
+      // refresh after drop
       await this.updateItem(dropReceipe);
       await this.fetchRecipe();
       this.confirmDelete = false;
