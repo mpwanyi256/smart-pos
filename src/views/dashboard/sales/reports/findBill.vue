@@ -49,12 +49,12 @@
             <DatePickerBeta @picked="setDateTo" :message="'To'" />
           </div>
           <div class="bill_no">
-            <v-btn small @click="findBill">Search</v-btn>
+            <v-btn small @click="findBill(true)">Search</v-btn>
           </div>
       </div>
       <div class="orders_table">
           <LinearLoader v-if="loading" />
-          <BillsTable :orders="orders" @view="showBill($event)"/>
+          <BillsTable :orders="orders" @view="showBill($event)" @settlements="viewSettlements" />
       </div>
       <Pagination @change="page = $event" :length="totalPaginationItems" />
       <!-- Modals -->
@@ -68,6 +68,11 @@
         :order="selectedOrder"
         @close="showBillModal = false"
       />
+      <BillSettlements
+        v-if="viewsettlemnts && selectedOrder"
+        :order="selectedOrder"
+        @close="viewsettlemnts = false"
+      />
       <!-- /Modals -->
   </div>
 </template>
@@ -80,6 +85,7 @@ import BillModal from '@/components/sales/modals/Bill.vue';
 import BillsTable from '@/views/dashboard/sales/reports/BillsTable.vue';
 import Pagination from '@/components/generics/new/Pagination.vue';
 import ExcelExportMixin from '@/mixins/excelMixin';
+import BillSettlements from '@/views/dashboard/sales/reports/modals/BillSettlements.vue';
 
 export default {
   name: 'FindBill',
@@ -91,6 +97,7 @@ export default {
     OrderDetailsModal,
     BillModal,
     BillsTable,
+    BillSettlements,
   },
   data() {
     return {
@@ -108,6 +115,7 @@ export default {
       itemsPerPage: 10,
       page: 1,
       loading: false,
+      viewsettlemnts: false,
     };
   },
   watch: {
@@ -130,6 +138,13 @@ export default {
   methods: {
     ...mapActions('sales', ['getClients', 'filterOrders']),
     ...mapActions('pos', ['fetchsetpaymentSettlements']),
+
+    viewSettlements(order) {
+      this.selectedOrder = order;
+      this.$nextTick(() => {
+        this.viewsettlemnts = true;
+      });
+    },
 
     exportToExcel() {
       if (this.loading) return;
@@ -168,8 +183,9 @@ export default {
           this.loading = false;
         });
     },
-    findBill() {
+    findBill(reset = false) {
       if (this.loading) return;
+      if (reset) this.page = 1;
       const filters = {
         from: this.dateFrom,
         to: this.dateTo,
