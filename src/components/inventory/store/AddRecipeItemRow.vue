@@ -2,37 +2,39 @@
   <div class="new_recipe_item_entry">
     <div class="select_store_item">
       <div class="store_item_select">
-        <div class="menu_items_filter">
-          <div class="store_column">
-            <p v-if="message" class="red--text text-center ma-2">{{ message }}</p>
-            <Table>
-              <template slot="header">
-                <tr>
-                  <th colspan="2">
-                    <BaseTextfield
-                      v-model="store_items_filter"
-                      class="input_field"
-                      placeholder="Search ..."
-                    />
-                  </th>
-                </tr>
-              </template>
-              <template slot="body">
-                <tr
-                  v-for="i in storeItems"
-                  :key="i.id">
-                  <td>{{ i.name }}</td>
-                  <td>
-                    <v-btn
-                      :disabled="exists(i)" small text @click="addKnockOff(i)">
-                      <v-icon left>mdi-plus</v-icon>Add
-                    </v-btn>
-                  </td>
-                </tr>
-              </template>
-            </Table>
-          </div>
-        </div>
+          <InfiniteScroll @refetch="refetchItems" :hasNext="hasNext" class="menu_items_filter">
+            <template #content>
+              <div class="store_column">
+                <p v-if="message" class="red--text text-center ma-2">{{ message }}</p>
+                <Table>
+                  <template slot="header">
+                    <tr>
+                      <th colspan="2">
+                        <BaseTextfield
+                          v-model.trim="search"
+                          class="input_field"
+                          placeholder="Search ..."
+                        />
+                      </th>
+                    </tr>
+                  </template>
+                  <template slot="body">
+                    <tr
+                      v-for="i in storeItems"
+                      :key="i.id">
+                      <td>{{ i.name }}</td>
+                      <td>
+                        <v-btn
+                          :disabled="exists(i)" small text @click="addKnockOff(i)">
+                          <v-icon left>mdi-plus</v-icon>Add
+                        </v-btn>
+                      </td>
+                    </tr>
+                  </template>
+                </Table>
+              </div>
+            </template>
+          </InfiniteScroll>
       </div>
     </div>
     <div>
@@ -50,6 +52,7 @@ import { mapGetters, mapActions } from 'vuex';
 import BaseTextfield from '@/components/generics/BaseTextfield.vue';
 import Table from '@/components/generics/new/Table.vue';
 import KnockOffAmountEntryModal from '@/components/inventory/store/KnockOffAmountEntryModal.vue';
+import InfiniteScroll from '@/components/generics/new/InfiniteScroll.vue';
 
 export default {
   name: 'AddRecipeItemRow',
@@ -67,25 +70,29 @@ export default {
     BaseTextfield,
     Table,
     KnockOffAmountEntryModal,
+    InfiniteScroll,
   },
   data() {
     return {
-      store_items_filter: '',
+      search: '',
       selected_store_item: null,
       knockOffQuantity: '',
       message: '',
       openKnockoffModal: false,
+      page: 1,
+      loading: false,
+      hasNext: false,
+      storeItems: [],
     };
   },
   computed: {
     ...mapGetters('auth', ['user']),
-    ...mapGetters('inventory', ['storeItems']),
     filteredItems() {
       return this.storeItems;
     },
   },
   watch: {
-    store_items_filter: {
+    search: {
       handler(val) {
         if (val.length === 0 || val.length >= 3) {
           this.page = 1;
@@ -98,14 +105,34 @@ export default {
     },
   },
   methods: {
-    ...mapActions('inventory', ['getStoreItems', 'updateItem']),
+    ...mapActions('inventory', ['updateItem', 'fetchPurchaseItems']),
+
+    refetchItems() {
+      this.page += 1;
+      this.$nextTick(() => {
+        this.fetchStoreItems();
+      });
+    },
 
     fetchStoreItems() {
-      this.getStoreItems({
+      this.loading = true;
+      this.fetchPurchaseItems({
+        type: 'paginated',
         company_id: this.user.company_id,
-        page: 1,
-        search: this.store_items_filter,
-      });
+        page: this.page,
+        search: this.search,
+      })
+        .then((res) => {
+          if (this.search.length > 0) {
+            this.storeItems = res.data;
+          } else {
+            this.storeItems = [...this.storeItems, ...res.data];
+          }
+          this.hasNext = res.has_next;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
 
     exists(item) {

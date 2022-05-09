@@ -29,6 +29,16 @@ export default {
       commit('toggleLoading', payload);
     },
 
+    post({ commit }, payload) {
+      commit('toggleLoading', true);
+      const data = new FormData();
+      const params = Object.keys(payload);
+      params.forEach((key) => {
+        data.append(key, payload[`${key}`]);
+      });
+      return API.smart(PATH, data);
+    },
+
     async getMenuItems({ commit }, payload) {
       commit('toggleLoading', true);
       const filters = new FormData();

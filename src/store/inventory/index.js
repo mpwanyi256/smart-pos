@@ -10,11 +10,13 @@ export default {
     measures: [],
     categories: [],
     loading: false,
+    hasNext: true,
   },
   mutations: {
     setStoreItems(state, payload) {
-      state.storeItems = payload.data;
+      state.storeItems = [...state.storeItems, ...payload.data];
       state.totalStoreItems = payload.total_items;
+      state.hasNext = payload.has_next;
     },
     setMeasures(state, payload) {
       state.measures = payload;
@@ -35,6 +37,15 @@ export default {
       const recipe = await API.smart(PATH, filters);
       commit('loading', false);
       return recipe.data || [];
+    },
+
+    fetchPurchaseItems(context, payload) {
+      const params = new FormData();
+      params.append('get_store_items', payload.type || 'all');
+      params.append('company_id', payload.company_id);
+      params.append('page', payload.page);
+      params.append('search', payload.search);
+      return API.smart(PATH, params);
     },
 
     async getStoreItems({ commit }, payload) {
@@ -90,5 +101,6 @@ export default {
     storeMeasures: (state) => state.measures,
     categories: (state) => state.categories,
     totalStoreItems: (state) => state.totalStoreItems,
+    hasNext: (state) => state.hasNext,
   },
 };

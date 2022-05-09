@@ -4,16 +4,16 @@
             <slot name="header" />
         </thead>
         <tbody>
-            <slot name="body" />
+            <slot name="body"/>
         </tbody>
         <slot />
     </table>
 </template>
 
 <script>
+
 export default {
   name: 'Table',
-
   computed: {
     hasHeader() {
       return !!this.$slots.header;

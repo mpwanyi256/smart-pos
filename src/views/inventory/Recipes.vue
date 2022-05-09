@@ -1,12 +1,15 @@
 <template>
   <div class="recipes_main">
-    <Table class="recipes_table">
-      <template slot="header">
+    <div class="recipes_table">
+    <LoadingSpinner class="large" v-if="loading" />
+    <Table v-else>
+      <template #header>
         <tr>
           <th>
             <div class="item_name">
               <BaseTooltip
                 @button="downloadCSV"
+                :disabled="loading"
                 message="Download receipes" icon="download"
                 color="green"
               />
@@ -15,6 +18,7 @@
                 dense outlined
                 label="Department"
                 :items="departments"
+                :disabled="loading"
                 item-text="name"
                 item-value="id"
                 v-model="display"
@@ -27,15 +31,8 @@
           <th>Recipe</th>
         </tr>
       </template>
-      <template slot="body" v-if="loading">
-        <tr>
-          <td colspan="5">
-            <LinearLoader />
-          </td>
-        </tr>
-      </template>
-      <template slot="body" v-else>
-        <tr v-for="item in filteredMenuItems" :key="item.id">
+      <template #body>
+        <tr v-for="item in menuItems" :key="item.id">
           <td>{{ item.name }}</td>
             <td>{{ item.category }}</td>
           <td>{{ item.price_display }}</td>
@@ -50,6 +47,8 @@
         </tr>
       </template>
     </Table>
+    </div>
+    <Pagination @change="page = $event" :length="totalPaginationItems" />
     <MenuItemRecipeModal
       v-if="showRecipe && menuItemSelected"
       :menuItem="menuItemSelected"
@@ -63,18 +62,20 @@ import Table from '@/components/generics/new/Table.vue';
 import BaseTooltip from '@/components/generics/BaseTooltip.vue';
 import MenuItemRecipeModal from '@/components/inventory/store/MenuItemRecipeModal.vue';
 import BaseTextfield from '@/components/generics/BaseTextfield.vue';
-import LinearLoader from '@/components/generics/Loading.vue';
+import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
 import DownloadCSVMixin from '@/mixins/DownloadCSVMixin';
+import Pagination from '@/components/generics/new/Pagination.vue';
 
 export default {
-  name: 'InventoryRecipes',
+  name: 'Recipes',
   mixins: [DownloadCSVMixin],
   components: {
     Table,
     MenuItemRecipeModal,
     BaseTextfield,
     BaseTooltip,
-    LinearLoader,
+    LoadingSpinner,
+    Pagination,
   },
   data() {
     return {
@@ -83,34 +84,76 @@ export default {
       search: '',
       display: 0,
       loading: false,
+      menuItems: [],
+      page: 1,
+      totalStoreItems: 55,
+      itemsPerPage: 15,
     };
   },
   computed: {
-    ...mapGetters('menu', ['menuItems', 'departments']),
+    ...mapGetters('menu', ['departments']),
+    ...mapGetters('auth', ['user']),
 
-    filteredMenuItems() {
-      return this.menuItems.filter((Item) => Item.name.toLowerCase()
-        .match(this.search.toLowerCase()));
+    totalPaginationItems() {
+      return Math.ceil(this.totalStoreItems / this.itemsPerPage);
     },
   },
   watch: {
     display() {
-      this.reloadReceipes();
+      this.page = 1;
+      this.$nextTick(() => {
+        this.fetchMenuItems();
+      });
+    },
+    page: {
+      handler() {
+        this.fetchMenuItems();
+      },
+      immediate: true,
+    },
+    search: {
+      handler(val) {
+        const strLength = val.length;
+        if (strLength >= 3 || strLength === 0) {
+          this.page = 1;
+          this.$nextTick(() => {
+            this.fetchMenuItems();
+          });
+        }
+      },
+      immediate: true,
     },
   },
   async created() {
-    await this.getMenuItems({ department_id: 'all' });
+    await this.fetchMenuItems();
     await this.fetchMenuDepartments();
   },
   methods: {
-    ...mapActions('menu', ['getMenuItems', 'getDepartments']),
+    ...mapActions('menu', ['getDepartments', 'post']),
+
+    async fetchMenuItems() {
+      this.loading = true;
+      this.post({
+        fetch_store_menu_items: this.display,
+        company_id: this.user.company_id,
+        page: this.page,
+        search: this.search.trim(),
+      })
+        .then((res) => {
+          this.menuItems = res.data;
+          this.totalStoreItems = res.total_items;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
 
     async fetchMenuDepartments() {
       await this.getDepartments(0);
     },
 
     downloadCSV() {
-      this.reloadReceipes();
+      // this.reloadReceipes();
       const data = this.menuItems.map((Item) => ({
         menu_item_name: Item.name.toUpperCase(),
         category: Item.category,
@@ -121,10 +164,8 @@ export default {
     },
 
     async reloadReceipes() {
-      this.loading = true;
       this.showRecipe = false;
-      await this.getMenuItems({ department_id: this.display });
-      this.loading = false;
+      await this.fetchMenuItems();
     },
 
     viewRecipeInfo(item) {
@@ -142,8 +183,13 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     color: $black;
+    overflow: hidden;
+
+    .recipes_table {
+      height: calc(100vh - 112px);
+      overflow-y: auto;
+    }
   }
 
   .item_name {

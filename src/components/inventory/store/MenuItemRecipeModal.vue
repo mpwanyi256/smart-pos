@@ -1,6 +1,6 @@
 <template>
   <Basemodal :title="menuItem.name +' receipe'" :size="1000" @close="$emit('close')">
-    <div class="recipe_view">
+    <div class="recipe_view" @scroll="refetchItems">
       <div class="receipe_section">
         <Table>
           <template slot="header">
@@ -90,6 +90,10 @@ export default {
   },
   methods: {
     ...mapActions('inventory', ['getItemRecipe', 'updateItem']),
+
+    refetchItems() {
+      console.log('fetch more items');
+    },
 
     async fetchRecipe() {
       this.loading = true;
