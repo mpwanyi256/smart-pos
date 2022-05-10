@@ -8,14 +8,17 @@
               @reload="fetchMappings"
             />
         </div>
-        <div class="add_mapping">
+        <InfiniteScroll class="add_mapping" @refetch="refetchItems" :hasNext="hasNext">
+          <template #content>
             <AddStoreItemToMapping
               :storeItems="storeItems"
               :supplier="supplier"
               :mappings="mappings"
+              @search="search = $event"
               @reload="fetchMappings"
             />
-        </div>
+            </template>
+          </InfiniteScroll>
     </div>
   </Basemodal>
 </template>
@@ -24,6 +27,7 @@ import { mapActions, mapGetters } from 'vuex';
 import AddStoreItemToMapping from '@/components/inventory/suppliers/AddStoreItemToMapping.vue';
 import SupplierItemMappings from '@/components/inventory/suppliers/SupplierItemMappings.vue';
 import Basemodal from '@/components/generics/Basemodal.vue';
+import InfiniteScroll from '@/components/generics/new/InfiniteScroll.vue';
 
 export default {
   name: 'SupplierItemMapping',
@@ -37,27 +41,72 @@ export default {
     Basemodal,
     AddStoreItemToMapping,
     SupplierItemMappings,
+    InfiniteScroll,
   },
   data() {
     return {
       mappings: [],
+      page: 1,
+      hasNext: false,
+      storeItems: [],
+      search: '',
+      loading: false,
     };
   },
   computed: {
-    ...mapGetters('inventory', ['storeItems']),
     ...mapGetters('auth', ['user']),
   },
+  watch: {
+    search: {
+      handler(val) {
+        if (val.length >= 3 || val.length === 0) {
+          this.page = 1;
+          this.getStoreItems();
+        }
+      },
+      immediate: true,
+    },
+  },
   methods: {
-    ...mapActions('inventory', ['getStoreItems', 'updateItem']),
+    ...mapActions('inventory', ['updateItem', 'fetchPurchaseItems']),
+
+    refetchItems() {
+      this.page += 1;
+      this.$nextTick(() => {
+        this.getStoreItems();
+      });
+    },
+    getStoreItems() {
+      this.loading = true;
+      this.fetchPurchaseItems({
+        type: 'paginated',
+        page: this.page,
+        search: this.search,
+        company_id: this.user.company_id,
+      })
+        .then((res) => {
+          if (this.search.length > 0) {
+            this.storeItems = res.data;
+          } else {
+            this.storeItems = [...this.storeItems, ...res.data];
+          }
+          this.hasNext = res.has_next;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
 
     async fetchMappings() {
-      const Mappings = await this.updateItem({ fetch_supplier_mapping: this.supplier.id });
+      const Mappings = await this.updateItem({
+        fetch_supplier_mapping: this.supplier.id,
+      });
       if (!Mappings.error) this.mappings = Mappings.data;
     },
   },
   async created() {
-    this.fetchMappings();
-    await this.getStoreItems({ company_id: this.user.company_id });
+    await this.fetchMappings();
+    await this.getStoreItems();
   },
 };
 
@@ -87,7 +136,8 @@ export default {
 
       .add_mapping {
         background-color: $light-grey;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
       }
     }
 </style>

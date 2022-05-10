@@ -86,7 +86,7 @@ export default {
       loading: false,
       menuItems: [],
       page: 1,
-      totalStoreItems: 55,
+      totalStoreItems: 0,
       itemsPerPage: 15,
     };
   },

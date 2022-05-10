@@ -2,10 +2,9 @@
     <Table>
         <template slot="header">
             <tr>
-                <th>
-                    <BaseTextfield v-model="search" placeholder="Search..." />
-                </th>
-                <th>&nbsp;</th>
+              <th colspan="2">
+                <BaseTextfield v-model="search" placeholder="Search ..." />
+              </th>
             </tr>
         </template>
         <template slot="body">
@@ -53,10 +52,19 @@ export default {
       loading: false,
     };
   },
+  watch: {
+    search: {
+      handler(val) {
+        if (val.length >= 3 || val.length === 0) {
+          this.$emit('search', val);
+        }
+      },
+      immediate: true,
+    },
+  },
   computed: {
     filteredStoreItems() {
-      return this.storeItems.filter((Item) => Item.name.toLowerCase()
-        .match(this.search.toLowerCase()));
+      return this.storeItems;
     },
   },
   methods: {
