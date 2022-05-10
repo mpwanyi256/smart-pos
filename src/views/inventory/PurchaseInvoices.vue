@@ -134,7 +134,6 @@ export default {
     },
 
     fetchMore() {
-      console.log('fetch more');
       this.page += 1;
       this.$nextTick(() => {
         this.fetchInvoices();
