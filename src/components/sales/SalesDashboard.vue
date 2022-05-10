@@ -18,10 +18,10 @@
     </div>
 </template>
 <script>
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 import WaitersOverview from '@/components/sales/WaitersOverview.vue';
 import SettlementsOverview from '@/components/sales/SettlementsOverview.vue';
 import RunningOrdersOverview from '@/components/sales/RunningOrdersOverview.vue';
-import { mapActions, mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: 'SalesDashboard',

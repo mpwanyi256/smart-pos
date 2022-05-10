@@ -25,8 +25,8 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseAlert from '@/components/alerts/BaseAlert.vue';
 import axios from 'axios';
+import BaseAlert from '@/components/alerts/BaseAlert.vue';
 
 export default {
   name: 'IpSetup',

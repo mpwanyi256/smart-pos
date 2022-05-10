@@ -36,9 +36,9 @@
     </div>
 </template>
 <script>
+import { mapActions, mapGetters } from 'vuex';
 import Table from '@/components/generics/new/Table.vue';
 import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
-import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'ItemSaleOverview',

@@ -99,10 +99,10 @@
     </div>
 </template>
 <script>
+import { mapActions } from 'vuex';
+import validator from 'validator';
 import BaseTextfield from '@/components/generics/BaseTextfield.vue';
 import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
-import validator from 'validator';
-import { mapActions } from 'vuex';
 
 export default {
   name: 'Resetpassword',

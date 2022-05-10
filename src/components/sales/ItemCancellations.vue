@@ -56,12 +56,12 @@
     </div>
 </template>
 <script>
+import { mapActions, mapGetters } from 'vuex';
 import DatePickerBeta from '@/components/generics/DatePickerBeta.vue';
 import Table from '@/components/generics/new/Table.vue';
 import Pagination from '@/components/generics/new/Pagination.vue';
 import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
 import ExcelExportMixin from '@/mixins/excelMixin';
-import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'ItemCancellations',
