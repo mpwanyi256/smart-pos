@@ -145,7 +145,7 @@ export default {
     async fetchSuppliers(searchFilter) {
       this.loading = true;
       const Suppliers = await this.updateItem({
-        get_suppliers: searchFilter || 'all',
+        get_suppliers: searchFilter || 'paginated',
         company_id: this.companyId,
         page: this.page,
       });
