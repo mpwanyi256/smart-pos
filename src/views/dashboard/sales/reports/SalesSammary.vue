@@ -160,13 +160,13 @@ export default {
         font-family: $font-style;
         min-height: 100%;
         border-left: 0.5px solid $border-color;
-        height: calc(100vh -52px);
+        height: calc(100vh - 52px);
         display: flex;
         flex-direction: column;
         overflow: hidden;
 
         .search_filter {
-            height: inherit;
+            // height: inherit;
             width: 100%;
             padding: 5px;
             border-bottom: 0.5px solid $border-color;

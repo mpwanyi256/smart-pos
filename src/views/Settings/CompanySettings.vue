@@ -36,18 +36,10 @@
                     />
                 </div>
                 <div>
-                    <p>Email Address</p>
+                    <p>Account Email Address</p>
                     <p class="grey--text darken-3">
                       {{ email }}
                     </p>
-                </div>
-                <div>
-                    <p>Currency prefix</p>
-                    <BaseTextfield
-                        :preset="currency"
-                        v-model="currency"
-                        placeholder="Currency prefix"
-                    />
                 </div>
                 <div>
                     <p>Receipt foot note</p>
@@ -56,6 +48,9 @@
                         v-model="receipt"
                         placeholder="Receipt note"
                     />
+                </div>
+                <div>
+                    &nbsp;
                 </div>
                 <div>
                     <BaseAlert v-if="message" type="success" message="Success" />
@@ -93,7 +88,6 @@ export default {
       name: '',
       address: '',
       tin: '',
-      currency: '',
       email: '',
       contact: '',
       receipt: '',
@@ -127,7 +121,6 @@ export default {
       this.tin = this.company.company_tin;
       this.contact = this.company.company_mobile;
       this.email = this.company.company_email;
-      this.currency = this.company.company_currency;
       this.receipt = this.company.company_receipt;
     },
 
@@ -138,7 +131,6 @@ export default {
         tin: this.tin,
         mobile: this.contact,
         email: this.email,
-        currency: this.currency,
         receipt: this.receipt,
         update_company_info: this.company.company_id,
       };
