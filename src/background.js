@@ -15,7 +15,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1400,
     height: 800,
-    icon: './assets/pos_icon.png',
+    // icon: './assets/pos_icon.png',
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,

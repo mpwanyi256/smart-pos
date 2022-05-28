@@ -63,27 +63,5 @@
     "vue-cli-plugin-vuetify": "~2.0.8",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.3.0"
-  },
-  "build": {
-    "appId": "com.smartpos-ug.app",
-    "mac": {
-      "category": "public.app-category.business",
-      "target": "dmg",
-      "identity": "MIT",
-      "icon": "src/assets/pos_icon.png",
-      "type": "distribution"
-    },
-    "win": {
-      "target": {
-        "target": "nsis",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      },
-      "icon": "src/assets/pos_icon.png",
-      "legalTrademarks": "Smart POS",
-      "publisherName": "Samuel Mpwanyi"
-    }
   }
 }

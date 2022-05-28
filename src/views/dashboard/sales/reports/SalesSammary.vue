@@ -103,7 +103,7 @@ export default {
       ],
       page: 1,
       totalItems: 0,
-      itemsPerPage: 15,
+      itemsPerPage: 30,
     };
   },
   computed: {
