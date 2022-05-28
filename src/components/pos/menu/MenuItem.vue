@@ -19,7 +19,7 @@ export default {
 @import '@/styles/constants.scss';
 
 .menu_item {
-  height: 75px;
+  min-height: 75px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -36,7 +36,7 @@ export default {
     margin: auto;
     padding-right: 5px;
     padding-left: 5px;
-    max-lines: 2;
+    max-lines: 1;
     line-height: 1.5;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -51,7 +51,25 @@ export default {
     font-weight: bold;
     justify-content: baseline;
     color: $blue-darker;
-    // color: $blue;
+  }
+}
+
+.menu_item:hover {
+  font-size: 1rem;
+  p {
+    margin: auto;
+    padding-right: 5px;
+    padding-left: 5px;
+    font-weight: bold;
+    line-height: 1.5;
+    width: 100%;
+    white-space: pre-wrap;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .item_price {
+    font-weight: bold;
   }
 }
 

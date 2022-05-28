@@ -249,7 +249,6 @@ export default {
     },
     async getUserById({ dispatch, commit }, payload = null) {
       const loggedinUser = payload ? payload.user_id : localStorage.getItem('smart_user_id');
-      console.log('Attempting getUserById', loggedinUser);
       if (!loggedinUser) {
         console.log('no login information found');
         dispatch('setError', 'no login information found');
@@ -263,7 +262,6 @@ export default {
         commit('toggleLoading', false);
         return null;
       });
-      console.log('Returned data', authData);
       if (authData && authData.error) {
         dispatch('setError', authData.message);
         if (authData.verification_error) {
@@ -286,7 +284,6 @@ export default {
         const PACKAGE = userInfo.package;
 
         if (DAYSLEFT <= 0) {
-          console.log('Sorry, your license expired');
           commit('toggleLoading', false);
           dispatch('setError', 'Sorry, your license expired');
           dispatch('performLogout');
@@ -297,7 +294,6 @@ export default {
           { get_access_controls: 'all', outlet: userInfo.outlet_id }, { root: true });
 
         const CurrentPath = router.currentRoute.name; // window.location.pathname;
-        console.log('CurrentPath', CurrentPath);
         if (CurrentPath === 'login') {
           if (payload && payload.new_account === 'new account') {
             router.push({ name: 'company_settings' });
