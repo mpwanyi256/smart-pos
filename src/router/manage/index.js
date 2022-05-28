@@ -15,7 +15,7 @@ export default {
         authrequired: true,
         title: 'Manage | Clients',
       },
-      component: () => import('@/views/Manage/Clients.vue'),
+      component: () => import('@/views/Manage/POSClients.vue'),
     },
   ],
 };

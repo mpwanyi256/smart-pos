@@ -39,11 +39,11 @@
                 <tr v-for="License in clientLicenses" :key="License.id">
                     <td>{{ License.key }}</td>
                     <td>{{ License.duration }}</td>
-                    <td>{{ License.status }}</td>
+                    <td>{{ licenseStatus(License.status) }}</td>
                     <td>
-                        <v-btn icon small @click="deleteLicense(License)" >
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
+                      <v-btn icon small @click="deleteLicense(License)" >
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
                     </td>
                 </tr>
                 </template>
@@ -97,8 +97,8 @@ export default {
   methods: {
     ...mapActions('manage', ['performAddLicense', 'deleteKey', 'fetchClientLicenses']),
 
-    licenseStatus() {
-
+    licenseStatus(status) {
+      return status === 1 ? 'Activated' : 'Pending';
     },
 
     async deleteLicense(license) {

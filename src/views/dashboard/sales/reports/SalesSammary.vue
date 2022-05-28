@@ -2,16 +2,28 @@
   <div class="find_bill">
     <div class="search_filter">
         <div class="bill_no">
-            <h3>Filter sales</h3>
+          <h3>
+            Filter sales
+            <span>
+              <v-btn
+                v-if="sales.length >= 1"
+                small
+                @click="exportToExcel"
+                class="mt-2 ml-2 mb-2 green--text darken-4">
+                  <v-icon left color="green darken-4">mdi-file-excel</v-icon>
+                  {{ `Export ${sales.length} items` }}
+              </v-btn>
+            </span>
+            </h3>
         </div>
         <div class="bill_no">
-            <DatePickerBeta @picked="setDateFrom" :message="'From'" />
+          <DatePickerBeta @picked="setDateFrom" :message="'From'" />
         </div>
         <div class="bill_no">
-            <DatePickerBeta @picked="setDateTo" :message="'To'" />
+          <DatePickerBeta @picked="setDateTo" :message="'To'" />
         </div>
         <div class="bill_no">
-            <v-btn small @click="fetchSales">Search</v-btn>
+          <v-btn small @click="fetchSales">Search</v-btn>
         </div>
     </div>
     <div class="orders_table">
@@ -43,13 +55,15 @@
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import ExcelExportMixin from '@/mixins/excelMixin';
 import DatePickerBeta from '@/components/generics/DatePickerBeta.vue';
 import LoadingSpinner from '@/components/generics/LoadingSpinner.vue';
 import Table from '@/components/generics/new/Table.vue';
 import Pagination from '@/components/generics/new/Pagination.vue';
 
 export default {
-  name: 'DashboardSalesOverview',
+  name: 'SalesSammary',
+  mixins: [ExcelExportMixin],
   components: {
     DatePickerBeta,
     LoadingSpinner,
@@ -114,6 +128,10 @@ export default {
 
   methods: {
     ...mapActions('sales', ['fetchSalesSummary']),
+
+    exportToExcel() {
+      this.exportDataToExcel(this.sales, 'SalesSammary');
+    },
 
     setDateFrom(dateSelected) {
       this.dateFrom = dateSelected;

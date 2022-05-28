@@ -30,9 +30,9 @@ export default {
         { name: 'View Sales Report', action: 'sales' },
         { name: 'Open new day', action: 'open' },
         { name: 'Extend License', action: 'license' },
-        { name: 'Cloud sync', action: 'cloud' },
-        { name: 'Credit payment', action: 'payment' },
-        { name: 'Sync POS', action: 'sync-pos' },
+        // { name: 'Cloud sync', action: 'cloud' },
+        // { name: 'Credit payment', action: 'payment' },
+        // { name: 'Sync POS', action: 'sync-pos' },
       ],
     };
   },

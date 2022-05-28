@@ -1,7 +1,4 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable max-len */
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
@@ -18,9 +15,11 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1400,
     height: 800,
+    icon: './assets/icon.png',
     webPreferences: {
 
       // Use pluginOptions.nodeIntegration, leave this alone
+      // eslint-disable-next-line max-len
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
