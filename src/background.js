@@ -15,8 +15,13 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1400,
     height: 800,
-    // icon: './assets/pos_icon.png',
+    title: 'Smart POS',
+    // icon: './assets/logo/icon.png',
+
     webPreferences: {
+      // Use pluginOptions.nodeIntegration, leave this alone
+      // eslint-disable-next-line max-len
+      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
     },

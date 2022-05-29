@@ -1,9 +1,8 @@
 {
   "name": "smartpos",
-  "productName": "Smart POS",
   "version": "1.1.2",
-  "description": "Smart POS is a product of Samuel Mpwanyi. Designed for restaurants and Bars. Ships with Web, Linux Mac and Windows Desktop support",
   "private": true,
+  "description": "Smart POS is a product of Samuel Mpwanyi. Designed for restaurants and Bars. Ships with Web, Linux Mac and Windows Desktop support",
   "author": {
     "name": "Samuel Mpwanyi",
     "email": "samuelmpwanyi@gmail.com",
@@ -13,15 +12,15 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder",
     "electron:build": "vue-cli-service electron:build",
     "electron:build-windows": "vue-cli-service electron:build --windows",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
-    "app:dir": "electron-builder --dir",
-    "app:dist": "electron-builder"
+    "postuninstall": "electron-builder install-app-deps"
   },
-  "main": "src/background.js",
+  "main": "background.js",
   "dependencies": {
     "axios": "^0.21.0",
     "blob-stream": "^0.1.3",
