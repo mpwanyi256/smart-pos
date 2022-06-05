@@ -15,7 +15,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1400,
     height: 800,
-    title: 'Smart POS',
+    title: 'SmartPOS',
     // icon: './assets/logo/icon.png',
 
     webPreferences: {

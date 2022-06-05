@@ -28,7 +28,7 @@
               {{ link.name }}
             </div>
             <div
-              v-if="isProtectedManageAccount"
+              v-if="isProtectedManageAccount && userRole == 5"
               :class="isActiveRoute(manageRoute.name) ? 'active' : 'item'"
               :to="{ name: manageRoute.path }"
               @click="gotTopage(manageRoute)">

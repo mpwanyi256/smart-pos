@@ -65,8 +65,9 @@
                 <td>{{ item.amount_sold }}</td>
                 <td>{{ item.average_cost_price }}</td>
                 <td>{{ item.item_cost_price }}</td>
-                <td></td>
-                <v-btn small @click="viewItemDetails(item)">Details</v-btn>
+                <td>
+                  <v-btn small @click="viewItemDetails(item)">Details</v-btn>
+                </td>
               </tr>
             </template>
           </Table>

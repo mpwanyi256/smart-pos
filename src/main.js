@@ -17,7 +17,7 @@ import 'firebase/firestore';
 
 // Api server address set
 const IPAddress = localStorage.getItem('smartpos_ipaddress_set');
-axios.defaults.baseURL = IPAddress ? `${IPAddress}/papi/` : 'http://localhost:80/papi/';
+axios.defaults.baseURL = IPAddress ? `${IPAddress}/papi/` : 'http://localhost/papi/';
 Vue.config.productionTip = false;
 
 // eslint-disable-next-line consistent-return
@@ -63,7 +63,7 @@ new Vue({
           if (compEmail) await store.dispatch('auth/getActiveLicense', compEmail);
           if (compEmail === 'prodevgroup256@gmail.com') { await store.dispatch('manage/fetchClientLicenses'); }
         });
-    } else store.replace({ name: 'login' });
+    } else router.replace({ name: 'login' });
   },
   render: (h) => h(App),
 }).$mount('#app');

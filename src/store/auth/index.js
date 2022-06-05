@@ -185,67 +185,68 @@ export default {
       params.append('password', payload.password);
 
       // const authData = await
-      API.smart(PATH, params)
-        .then((authData) => {
-          if (authData && authData.error) {
-            commit('toggleLoading', false);
-            dispatch('setError', authData.message);
-            if (authData.verification_error) {
-              router.push({
-                name: 'verification',
-                params: {
-                  company_email: payload.username,
-                },
-              });
-            } else {
-              router.push({ name: 'login' });
-            }
+      const authData = await API.smart(PATH, params).catch((e) => null);
+      commit('toggleLoading', false);
+      if (!authData || authData.error) {
+        const message = authData ? authData.error : 'Sorry, there was an error. Please check server Connection';
+        dispatch('setError', message);
+
+        // For one time users
+        if (authData && authData.verification_error) {
+          router.push({
+            name: 'verification',
+            params: {
+              company_email: payload.username,
+            },
+          });
+        }
+      } else {
+        const userInfo = authData.data;
+        dispatch('auth/verifyAuth', { userInfo, payload }, { root: true });
+      }
+    },
+    async verifyAuth({ dispatch, commit }, { userInfo, payload }) {
+      // Set local defaults
+      localStorage.setItem('smart_user_id', userInfo.id);
+      localStorage.setItem('smart_user_name', userInfo.user_name);
+      localStorage.setItem('smart_user_role', userInfo.role);
+      localStorage.setItem('smart_company_id', userInfo.company_info.company_id);
+      localStorage.setItem('smart_company_day_open', userInfo.company_info.day_open);
+      localStorage.setItem('smart_company_email', userInfo.company_info.company_email);
+      localStorage.setItem('smart_outlet_id', userInfo.outlet_id);
+      commit('setUser', userInfo);
+
+      const DAYSLEFT = userInfo.company_info.days_left;
+      const PACKAGE = userInfo.package;
+
+      if (DAYSLEFT <= 0) {
+        commit('toggleLoading', false);
+        dispatch('setError', 'Sorry, your license expired');
+        dispatch('performLogout');
+        return;
+      }
+
+      await dispatch('settings/fetchOutletSettings',
+        { get_access_controls: 'all', outlet: userInfo.outlet_id }, { root: true });
+
+      const CurrentPath = router.currentRoute.name;
+      if (CurrentPath === 'login') {
+        if (payload && payload.new_account === 'new account') {
+          router.push({ name: 'company_settings' });
+        } else if ([1, 2, 3].includes(PACKAGE)) {
+          if (userInfo.role === 4) {
+            router.push({ name: 'kds' });
           } else {
-            const userInfo = authData.data;
-            localStorage.setItem('smart_user_id', userInfo.id);
-            localStorage.setItem('smart_user_name', userInfo.user_name);
-            localStorage.setItem('smart_user_role', userInfo.role);
-            localStorage.setItem('smart_company_id', userInfo.company_info.company_id);
-            localStorage.setItem('smart_company_day_open', userInfo.company_info.day_open);
-            localStorage.setItem('smart_company_email', userInfo.company_info.company_email);
-            localStorage.setItem('smart_outlet_id', userInfo.outlet_id);
-            commit('setUser', userInfo);
-
-            const DAYSLEFT = userInfo.company_info.days_left;
-            const PACKAGE = userInfo.package;
-
-            if (DAYSLEFT <= 0) {
-              dispatch('setError', 'Sorry, your license expired');
-              dispatch();
-              router.replace({ name: 'login' });
-              commit('toggleLoading', false);
-              return;
-            }
-
-            dispatch('settings/fetchOutletSettings',
-              { get_access_controls: 'all', outlet: userInfo.outlet_id }, { root: true });
-
-            if ([1, 2, 3].includes(PACKAGE)) {
-              if (userInfo.role === 4) {
-                router.push({ name: 'kds' });
-              } else {
-                router.push({ name: 'pos' });
-              }
-              dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
-            } else if (PACKAGE === 4) {
-              router.push({ name: 'tenants' });
-            } else {
-              dispatch('setError', 'Sorry, you have no access to this section');
-              dispatch('performLogout');
-            }
+            router.push({ name: 'pos' });
           }
-        })
-        .catch((e) => {
-          console.error('error', e);
-        })
-        .finally(() => {
-          commit('toggleLoading', false);
-        });
+          dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
+        } else if (PACKAGE === 4) {
+          router.push({ name: 'tenants' });
+        } else {
+          dispatch('setError', 'Sorry, you have no access to this section');
+          dispatch('performLogout');
+        }
+      }
     },
     async getUserById({ dispatch, commit }, payload = null) {
       const loggedinUser = payload ? payload.user_id : localStorage.getItem('smart_user_id');
@@ -258,10 +259,8 @@ export default {
       commit('toggleLoading', true);
       const params = new FormData();
       params.append('auth_by_id', loggedinUser);
-      const authData = await API.smart(PATH, params).catch((e) => {
-        commit('toggleLoading', false);
-        return null;
-      });
+      const authData = await API.smart(PATH, params).catch((e) => null);
+      commit('toggleLoading', false);
       if (authData && authData.error) {
         dispatch('setError', authData.message);
         if (authData.verification_error) {
@@ -271,48 +270,8 @@ export default {
         }
       } else {
         const userInfo = authData.data;
-        localStorage.setItem('smart_user_id', userInfo.id);
-        localStorage.setItem('smart_user_name', userInfo.user_name);
-        localStorage.setItem('smart_user_role', userInfo.role);
-        localStorage.setItem('smart_company_id', userInfo.company_info.company_id);
-        localStorage.setItem('smart_company_day_open', userInfo.company_info.day_open);
-        localStorage.setItem('smart_company_email', userInfo.company_info.company_email);
-        localStorage.setItem('smart_outlet_id', userInfo.outlet_id);
-        commit('setUser', userInfo);
-
-        const DAYSLEFT = userInfo.company_info.days_left;
-        const PACKAGE = userInfo.package;
-
-        if (DAYSLEFT <= 0) {
-          commit('toggleLoading', false);
-          dispatch('setError', 'Sorry, your license expired');
-          dispatch('performLogout');
-          return;
-        }
-
-        await dispatch('settings/fetchOutletSettings',
-          { get_access_controls: 'all', outlet: userInfo.outlet_id }, { root: true });
-
-        const CurrentPath = router.currentRoute.name; // window.location.pathname;
-        if (CurrentPath === 'login') {
-          if (payload && payload.new_account === 'new account') {
-            router.push({ name: 'company_settings' });
-          } else if ([1, 2, 3].includes(PACKAGE)) {
-            if (userInfo.role === 4) {
-              router.push({ name: 'kds' });
-            } else {
-              router.push({ name: 'pos' });
-            }
-            dispatch('settings/fetch', { get_access_controls: 'all' }, { root: true });
-          } else if (PACKAGE === 4) {
-            router.push({ name: 'tenants' });
-          } else {
-            dispatch('setError', 'Sorry, you have no access to this section');
-            dispatch('performLogout');
-          }
-        }
+        dispatch('auth/verifyAuth', { userInfo, payload }, { root: true });
       }
-      commit('toggleLoading', false);
     },
     performLogout({ commit }) {
       localStorage.removeItem('smart_user_id');
