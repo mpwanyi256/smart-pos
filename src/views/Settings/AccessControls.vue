@@ -23,12 +23,13 @@
                     <td>
                       <p>
                         <strong>
-                          {{ setting.title }} {{ setting.set_code }}
+                          {{ setting.title }}
                         </strong>
                       </p>
                       <div class="setting_description" v-html="setting.description" />
                     </td>
                     <td>
+                      <template v-if="setting.type == 1">
                       <v-btn
                         @click="toggleAction(!setting.status, setting)"
                         :disabled="loading"
@@ -37,6 +38,10 @@
                       >
                         {{ setting.status ? 'YES' : 'NO' }}
                       </v-btn>
+                      </template>
+                      <template v-else>
+                        <SettingUpdate :setting="setting" @update="updateSettingCount" />
+                      </template>
                     </td>
                 </tr>
             </template>
@@ -47,12 +52,14 @@
 import { mapActions, mapMutations } from 'vuex';
 import Table from '@/components/generics/new/Table.vue';
 import BaseTextfield from '@/components/generics/BaseTextfield.vue';
+import SettingUpdate from './SettingUpdate.vue';
 
 export default {
   name: 'AccessControls',
   components: {
     Table,
     BaseTextfield,
+    SettingUpdate,
   },
   data() {
     return {
@@ -102,15 +109,8 @@ export default {
       this.loading = false;
     },
 
-    async toggleAction(status, setting) {
-      this.loading = true;
-      const filter = {
-        update_access_setting: setting.outlet_access_id,
-        setting_id: setting.id,
-        outlet_id: this.selectedOutlet,
-        status: status ? 'YES' : 'NO',
-      };
-      this.post(filter)
+    async triggerSettingUpdate(payload) {
+      this.post(payload)
         .then(async () => {
           await this.getAccessControls();
         })
@@ -119,6 +119,26 @@ export default {
         }).finally(() => {
           this.loading = false;
         });
+    },
+
+    updateSettingCount(payload) {
+      const { setting, value } = payload;
+      this.triggerSettingUpdate({
+        update_access_setting: setting.outlet_access_id,
+        setting_id: setting.id,
+        outlet_id: this.selectedOutlet,
+        status: value,
+      });
+    },
+
+    async toggleAction(status, setting) {
+      this.loading = true;
+      this.triggerSettingUpdate({
+        update_access_setting: setting.outlet_access_id,
+        setting_id: setting.id,
+        outlet_id: this.selectedOutlet,
+        status: status ? 'YES' : 'NO',
+      });
     },
   },
 };

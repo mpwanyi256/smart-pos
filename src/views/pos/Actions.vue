@@ -21,6 +21,7 @@
     </div>
 </template>
 <script>
+/* eslint-disable no-case-declarations */
 import { mapGetters, mapActions } from 'vuex';
 import ControlsMixin from '@/mixins/ControlsMixin';
 import PrintMixin from '@/mixins/PrintingMixin';
@@ -31,11 +32,11 @@ export default {
   data() {
     return {
       actions: [
-        { name: 'Confirm', icon: 'mdi-thumb-up-outline', allow: true },
-        { name: 'Bill', icon: 'mdi-note-outline', allow: this.waiterCanPrintBill },
-        { name: 'Settle', icon: 'mdi-credit-card-outline', allow: true },
-        { name: 'Discount', icon: 'mdi-sale', allow: true },
-        { name: 'VAT', icon: 'mdi-bookmark-minus-outline', allow: this.allowAddVAT },
+        { name: 'Confirm', icon: 'mdi-thumb-up-outline' },
+        { name: 'Bill', icon: 'mdi-note-outline' },
+        { name: 'Settle', icon: 'mdi-credit-card-outline' },
+        { name: 'Discount', icon: 'mdi-sale' },
+        { name: 'VAT', icon: 'mdi-bookmark-minus-outline' },
       ],
       errorMessage: '',
     };
@@ -46,10 +47,6 @@ export default {
 
     userRole() {
       return this.user.role;
-    },
-
-    userCanDiscount() {
-      return [1, 2, 5].includes(this.userRole);
     },
 
     allowAddWaiter() {
@@ -141,7 +138,13 @@ export default {
           else this.$eventBus.$emit('add-waiter');
           break;
         case 'Bill':
-          this.$eventBus.$emit('print-bill');
+          const billPrintCount = this.runningOrder.bill_printed;
+          const allowedPrintTimes = this.numberOfTimesUserCanPrintABill;
+          if (billPrintCount < allowedPrintTimes) {
+            this.$eventBus.$emit('print-bill');
+          } else {
+            this.$eventBus.$emit('show-snackbar', `Sorry, you can only print a bill ${allowedPrintTimes} times.`);
+          }
           break;
         case 'Discount':
           this.$emit('discount');

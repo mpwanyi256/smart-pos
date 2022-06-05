@@ -33,6 +33,14 @@ export default {
       return this.userRole === 1;
     },
 
+    isCashier() {
+      return this.userRole === 2;
+    },
+
+    isWaiter() {
+      return this.userRole === 2;
+    },
+
     companyType() {
       return this.user ? this.user.company_info.business_type : 0;
     },
@@ -53,6 +61,24 @@ export default {
     allowAddVAT() {
       const setting = this.getSetting('ENVAT');
       return setting ? setting.status : false;
+    },
+
+    numberOfTimesUserCanPrintABill() {
+      const cashiersCount = this.getSetting('NUMOTCPRBILL');
+      const managersCount = this.getSetting('NUMOTMPRBILL');
+      const waitersCount = this.getSetting('NUMOTWCNPRBILL');
+      let userBillCount = 0;
+
+      if (this.isCashier) {
+        userBillCount = cashiersCount.status;
+      } else if (this.isManager) {
+        userBillCount = managersCount.status;
+      } else if (this.isSuperUser) {
+        userBillCount = 1000;
+      } else if (this.isWaiter) {
+        userBillCount = waitersCount.status;
+      }
+      return userBillCount;
     },
 
     showVatCalcular() {
