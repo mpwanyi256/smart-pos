@@ -20,7 +20,7 @@
             v-model="display"
           />
           <v-text-field dense outlined label="Item price" v-model="price" />
-          <v-btn block type="submit" dense>Update</v-btn>
+          <v-btn block type="submit" class="mt-3" dense>Update</v-btn>
         </v-form>
       </div>
       <LinearLoader v-if="loading" />
@@ -64,7 +64,7 @@ export default {
     if (!this.item) this.$emit('close');
     this.name = this.item.name;
     this.categoryId = parseInt(this.item.category_id, 10);
-    this.display = String(this.item.display);
+    this.display = parseInt(this.item.display, 10);
     this.price = this.item.price;
   },
   methods: {
