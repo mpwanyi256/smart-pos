@@ -257,6 +257,7 @@ export default {
     },
 
     async fetchOrderItems() {
+      console.log('Fetch Running Orde');
       const items = await this.getOrderItems(this.runningOrderId);
       if (!items.error) this.orderItems = items.data.sort((a, b) => a.status - b.status);
     },

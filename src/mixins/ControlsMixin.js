@@ -14,6 +14,8 @@ export default {
       allowManagerDeleteCODE: 'AMDIBS',
       allowManagerViewSales: 'AAVSR',
       allowManagerCreateNewOrder: 'AMMODZ',
+      WaiterkotPrintCount: 'NOTWCPKOTS',
+      ManagerkotPrintCount: 'NOTWCPKOTS',
     };
   },
 
@@ -39,6 +41,43 @@ export default {
 
     isWaiter() {
       return this.userRole === 2;
+    },
+
+    userKotPrintParams() {
+      let settingConfigKey;
+
+      if (this.isWaiter) {
+        settingConfigKey = 'NOTWCPKOTS';
+      } else if (this.isCashier) {
+        settingConfigKey = 'NOTCCPKOTS';
+      } else if (this.isManager) {
+        settingConfigKey = 'NOTMCPKOTS';
+      } else if (this.isSuperUser) {
+        settingConfigKey = 'allow';
+      }
+
+      return {
+        outlet: this.user.outlet_id,
+        is_super: this.isSuperUser,
+        setting: this.getSetting(settingConfigKey),
+      };
+    },
+
+    numberOfTimesUserCanPrintKOT() {
+      let settingConfigKey;
+
+      if (this.isWaiter) {
+        settingConfigKey = 'NOTWCPKOTS';
+      } else if (this.isCashier) {
+        settingConfigKey = 'NOTCCPKOTS';
+      } else if (this.isManager) {
+        settingConfigKey = 'NOTMCPKOTS';
+      } else if (this.isSuperUser) {
+        settingConfigKey = 'allow';
+      }
+      const setting = this.getSetting(settingConfigKey);
+
+      return this.isSuperUser ? 1000 : setting.status;
     },
 
     companyType() {
