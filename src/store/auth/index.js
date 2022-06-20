@@ -36,7 +36,7 @@ export default {
         icon: 'mdi-bed', name: 'RealEstates', path: 'tenants', allowedUsers: [1, 2, 3, 4, 5, 6, 7, 8], packages: [4],
       },
       {
-        icon: 'mdi-monitor', name: 'kds', path: 'kds', allowedUsers: [1, 2, 3, 4, 5, 6, 7, 8], packages: [1, 2, 3],
+        icon: 'mdi-monitor', name: 'kds', path: 'kds', allowedUsers: [1, 2, 4, 5, 6, 7, 8], packages: [1, 2, 3],
       },
       {
         icon: 'mdi-cog', name: 'Settings', path: 'access_controls', allowedUsers: [5], packages: [1, 2, 3],

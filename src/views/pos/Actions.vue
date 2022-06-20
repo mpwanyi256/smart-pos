@@ -91,7 +91,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions('pos', ['addOrderItem']),
+    ...mapActions('pos', ['addOrderItem', 'filterOrders']),
 
     addWaiterAction() {
       if (this.companyType === 1) {
@@ -134,8 +134,36 @@ export default {
       this.$eventBus.$emit('fetch-orders');
       switch (action) {
         case 'Confirm':
-          if (this.hasWaiter) this.performKotPrint();
-          else this.$eventBus.$emit('add-waiter');
+          this.$nextTick(async () => {
+            if (this.hasWaiter) {
+              const controlParams = this.userKotPrintParams;
+              if (controlParams.is_super) {
+                this.performKotPrint();
+              } else {
+                // Refactor to use API CALL
+                this.filterOrders({
+                  bill_no: this.runningOrderId,
+                  from: '',
+                  to: '',
+                  client_id: '',
+                  outlet_id: this.outletId,
+                  running: true,
+                }).then((Order) => {
+                  const orderInfo = Order.data.orders[0];
+
+                  if (!orderInfo) throw new Error('Please check or select order');
+
+                  if (orderInfo.last_kot_print_count < controlParams.setting.status) {
+                    this.performKotPrint();
+                  } else {
+                    this.$eventBus.$emit('show-snackbar', `Sorry, you can only print a kot ${this.numberOfTimesUserCanPrintKOT} times.`);
+                  }
+                }).catch((e) => {
+                  this.$eventBus.$emit('show-snackbar', e.message);
+                });
+              }
+            } else this.$eventBus.$emit('add-waiter');
+          });
           break;
         case 'Bill':
           const billPrintCount = this.runningOrder.bill_printed;
@@ -165,8 +193,8 @@ export default {
       const params = {
         confirm_order: this.orderId,
       };
-      const addItem = await this.addOrderItem(params);
-      if (addItem.error) console.info(addItem.message);
+      const CONFIRM = await this.addOrderItem(params);
+      if (CONFIRM.error) this.$eventBus.$emit('show-snackbar', CONFIRM.message);
       else this.$eventBus.$emit('fetch-items');
     },
   },
