@@ -102,7 +102,7 @@ export default {
       timeNow: '',
       switchDay: false,
       errorMessage: '',
-      loading: true,
+      loading: false,
       openLicenseModal: false,
       persistLicense: false,
       syncData: false,
@@ -185,6 +185,7 @@ export default {
   async created() {
     if (!this.user) return;
     // await this.fetchOrders();
+    this.loading = true;
     await this.fetchTables();
     this.loading = false;
 
@@ -257,14 +258,15 @@ export default {
       this.getReport({
         close_day: this.dayOpen,
         open_day: datePicked,
-      }).then((res) => {
+      }).then(async (res) => {
         if (res.error) {
           this.$eventBus.$emit('show-snackbar', res.message);
           return;
         }
         this.errorMessage = '';
-        this.getUserById();
-        this.sendReportViaEmail('END OF DAY SALES REPORT');
+        await this.getUserById();
+        // ::TODO Add report sending after Fixing SMTP
+        // this.sendReportViaEmail('END OF DAY SALES REPORT');
         this.loading = false;
         window.location.reload();
       })
