@@ -79,7 +79,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "smartpos"
+            "name": "smartPOS"
           }
         },
         {
