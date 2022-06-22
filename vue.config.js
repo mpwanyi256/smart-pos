@@ -11,10 +11,14 @@ module.exports = {
       // List them all here so that VCP Electron Builder can find them
       nodeModulesPath: ['../../node_modules', './node_modules'],
       builderOptions: {
-        // provider: 'github',
-        // owner: 'mpwanyi256',
-        // Change to true and set repo to private
-        // private: false,
+        publish: [
+          {
+            provider: 'github',
+            owner: 'mpwanyi256',
+            private: false,
+          },
+        ],
+
       },
       preload: 'src/preload.js',
     },

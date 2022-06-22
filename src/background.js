@@ -59,7 +59,6 @@ async function createWindow() {
   }
 
   // Auto update
-  process.env.GH_TOKEN = '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';
   autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdates();
 }

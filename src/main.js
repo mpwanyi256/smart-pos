@@ -15,6 +15,8 @@ import idb from './mixins/idb';
 import 'firebase/firebase-analytics';
 import 'firebase/firestore';
 
+require('dotenv').config();
+
 // Api server address set
 const IPAddress = localStorage.getItem('smartpos_ipaddress_set');
 axios.defaults.baseURL = IPAddress ? `${IPAddress}/papi/` : 'http://localhost/papi/';
