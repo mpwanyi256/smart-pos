@@ -1,7 +1,9 @@
+/* global __static */
 /* eslint-disable import/no-extraneous-dependencies */
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+import path from 'path';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -16,7 +18,7 @@ async function createWindow() {
     width: 1400,
     height: 800,
     title: 'SmartPOS',
-    // icon: './assets/logo/icon.png',
+    icon: path.join(__static, 'icon.png'),
 
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
