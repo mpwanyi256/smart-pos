@@ -69,7 +69,6 @@ export default {
       if (e.srcElement.scrollTop + e.srcElement.offsetHeight + 1 >= e.srcElement.scrollHeight) {
         if (!this.hasMore) return;
         this.$emit('fetch-more');
-        console.log('Fetch more');
       }
     },
   },

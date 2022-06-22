@@ -188,7 +188,7 @@ export default {
       const authData = await API.smart(PATH, params).catch((e) => null);
       commit('toggleLoading', false);
       if (!authData || authData.error) {
-        const message = authData ? authData.error : 'Sorry, there was an error. Please check server Connection';
+        const message = authData ? authData.message : 'Sorry, there was an error. Please check server Connection';
         dispatch('setError', message);
 
         // For one time users

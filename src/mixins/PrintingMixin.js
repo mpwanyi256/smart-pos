@@ -34,10 +34,13 @@ export default {
         .then((res) => {
           if (res.printed) {
             this.printBill();
+          } else {
+            this.$eventBus.$emit('show-snackbar', 'Please Check Bill Printer');
           }
         })
         .catch(() => {
           this.errorMessage = 'Error printing bill';
+          this.$eventBus.$emit('show-snackbar', 'Please Check Bill Printer');
         });
     },
 
