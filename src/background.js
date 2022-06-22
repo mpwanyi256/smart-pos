@@ -1,11 +1,23 @@
 /* global __static */
 /* eslint-disable import/no-extraneous-dependencies */
+import path from 'path';
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import path from 'path';
+import * as electronLog from 'electron-log';
+import { autoUpdater } from 'electron-updater';
+
+// Auto update logs
+autoUpdater.logger = electronLog;
+autoUpdater.logger.transports.file.level = 'info';
+
+/* Update log locations
+  - on macOS: ~/Library/Logs/{app name}/{process type}.log
+  - on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
+*/
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+let win;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -14,7 +26,7 @@ protocol.registerSchemesAsPrivileged([
 
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1400,
     height: 800,
     title: 'SmartPOS',
@@ -26,6 +38,7 @@ async function createWindow() {
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
@@ -33,11 +46,22 @@ async function createWindow() {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
     if (!process.env.IS_TEST) win.webContents.openDevTools();
+
+    // dev-update file
+    autoUpdater.updateConfigPath = path.join(
+      __dirname,
+      '../dev-app-update.yml',
+    );
   } else {
     createProtocol('app');
     // Load the index.html when not in development
     win.loadURL('app://./index.html');
   }
+
+  // Auto update
+  process.env.GH_TOKEN = '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';
+  autoUpdater.autoDownload = false;
+  autoUpdater.checkForUpdates();
 }
 
 // Quit when all windows are closed.
@@ -68,6 +92,16 @@ app.on('ready', async () => {
     }
   }
   createWindow();
+});
+
+// Notify user when update is available
+autoUpdater.on('update-available', () => {
+  console.info('“update_available”');
+  win.webContents.send('updater', 'update_available');
+});
+autoUpdater.on('update-not-available', () => {
+  console.info('update_not_available');
+  win.webContents.send('updater', 'update_not_available');
 });
 
 // Exit cleanly on request from parent process in development mode.

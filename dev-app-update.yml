@@ -1,0 +1,6 @@
+// dev-app-update.yml
+provider: github
+private: true
+owner: mpwanyi256
+repo: smart-pos
+token: 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

@@ -10,6 +10,13 @@ module.exports = {
       // If you are using Yarn Workspaces, you may have multiple node_modules folders
       // List them all here so that VCP Electron Builder can find them
       nodeModulesPath: ['../../node_modules', './node_modules'],
+      builderOptions: {
+        // provider: 'github',
+        // owner: 'mpwanyi256',
+        // Change to true and set repo to private
+        // private: false,
+      },
+      preload: 'src/preload.js',
     },
   },
 };
