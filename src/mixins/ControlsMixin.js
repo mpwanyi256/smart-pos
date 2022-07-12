@@ -40,7 +40,7 @@ export default {
     },
 
     isWaiter() {
-      return this.userRole === 2;
+      return this.userRole === 3;
     },
 
     userKotPrintParams() {
@@ -56,10 +56,11 @@ export default {
         settingConfigKey = 'allow';
       }
 
+      const control = this.getSetting(settingConfigKey);
       return {
         outlet: this.user.outlet_id,
         is_super: this.isSuperUser,
-        setting: this.getSetting(settingConfigKey),
+        setting: control,
       };
     },
 
@@ -227,7 +228,8 @@ export default {
     },
 
     getSetting(CODE) {
-      return this.controls.find((Control) => Control.set_code === CODE);
+      const control = this.controls.find((Control) => Control.set_code === CODE);
+      return control || { status: 0, set_code: CODE };
     },
   },
 };

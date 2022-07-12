@@ -30,12 +30,19 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['user', 'company']),
+
+    currentRoute() {
+      return this.$route.name;
+    },
   },
   watch: {
-    async user(val) {
-      if (val && val.company_id) {
-        this.loadHomeDefaults();
-      }
+    user: {
+      handler(val) {
+        if (val && val.company_id) {
+          this.loadHomeDefaults();
+        }
+      },
+      immediate: true,
     },
   },
   async created() {
@@ -47,22 +54,6 @@ export default {
   eventBusCallbacks: {
     'show-snackbar': 'showSnackBar',
   },
-
-  // mounted() {
-  //   window.ipcRenderer.on('updater', (event, message) => {
-  //     switch (message) {
-  //       case 'update_available':
-  //         this.state = 'Available';
-  //         break;
-  //       case 'update_not_available':
-  //         this.state = 'Not Available';
-  //         break;
-  //       default:
-  //         console.log('Def');
-  //         break;
-  //     }
-  //   });
-  // },
 
   methods: {
     ...mapActions('auth', ['getDayOpen', 'getActiveLicense', 'getFirebaseInfo']),
@@ -76,6 +67,10 @@ export default {
       await this.getDayOpen(this.user.company_id);
       await this.getActiveLicense(this.user.company_info.company_email);
       await this.getFirebaseInfo();
+      // Check route
+      if (this.currentRoute === 'login') {
+        this.$router.replace({ name: 'pos' });
+      }
     },
 
     async getAccessControls() {

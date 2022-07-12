@@ -44,8 +44,12 @@ async function createWindow() {
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
+    try {
+      await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
+      if (!process.env.IS_TEST) win.webContents.openDevTools();
+    } catch (e) {
+      console.log('Error', e);
+    }
 
     // dev-update file
     // autoUpdater.updateConfigPath = path.join(

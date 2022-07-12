@@ -70,7 +70,7 @@ export default {
     ...mapGetters('pos', ['runningOrder', 'runningOrderId']),
 
     daysLeft() {
-      return this.user ? this.user.company_info.days_left : '';
+      return this.user ? this.user?.company_info.days_left : '';
     },
   },
   eventBusCallbacks: {
