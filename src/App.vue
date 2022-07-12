@@ -48,21 +48,21 @@ export default {
     'show-snackbar': 'showSnackBar',
   },
 
-  mounted() {
-    window.ipcRenderer.on('updater', (event, message) => {
-      switch (message) {
-        case 'update_available':
-          this.state = 'Available';
-          break;
-        case 'update_not_available':
-          this.state = 'Not Available';
-          break;
-        default:
-          console.log('Def');
-          break;
-      }
-    });
-  },
+  // mounted() {
+  //   window.ipcRenderer.on('updater', (event, message) => {
+  //     switch (message) {
+  //       case 'update_available':
+  //         this.state = 'Available';
+  //         break;
+  //       case 'update_not_available':
+  //         this.state = 'Not Available';
+  //         break;
+  //       default:
+  //         console.log('Def');
+  //         break;
+  //     }
+  //   });
+  // },
 
   methods: {
     ...mapActions('auth', ['getDayOpen', 'getActiveLicense', 'getFirebaseInfo']),

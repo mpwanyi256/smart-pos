@@ -4,12 +4,12 @@ import path from 'path';
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import * as electronLog from 'electron-log';
-import { autoUpdater } from 'electron-updater';
+// import * as electronLog from 'electron-log';
+// import { autoUpdater } from 'electron-updater';
 
 // Auto update logs
-autoUpdater.logger = electronLog;
-autoUpdater.logger.transports.file.level = 'info';
+// autoUpdater.logger = electronLog;
+// autoUpdater.logger.transports.file.level = 'info';
 
 /* Update log locations
   - on macOS: ~/Library/Logs/{app name}/{process type}.log
@@ -48,10 +48,10 @@ async function createWindow() {
     if (!process.env.IS_TEST) win.webContents.openDevTools();
 
     // dev-update file
-    autoUpdater.updateConfigPath = path.join(
-      __dirname,
-      '../dev-app-update.yml',
-    );
+    // autoUpdater.updateConfigPath = path.join(
+    //   __dirname,
+    //   '../dev-app-update.yml',
+    // );
   } else {
     createProtocol('app');
     // Load the index.html when not in development
@@ -59,8 +59,12 @@ async function createWindow() {
   }
 
   // Auto update
-  autoUpdater.autoDownload = false;
-  autoUpdater.checkForUpdates();
+  // try {
+  //   autoUpdater.autoDownload = false;
+  //   autoUpdater.checkForUpdates();
+  // } catch (e) {
+  //   console.log('Auto update error', e);
+  // }
 }
 
 // Quit when all windows are closed.
@@ -94,14 +98,14 @@ app.on('ready', async () => {
 });
 
 // Notify user when update is available
-autoUpdater.on('update-available', () => {
-  console.info('“update_available”');
-  win.webContents.send('updater', 'update_available');
-});
-autoUpdater.on('update-not-available', () => {
-  console.info('update_not_available');
-  win.webContents.send('updater', 'update_not_available');
-});
+// autoUpdater.on('update-available', () => {
+//   console.info('“update_available”');
+//   win.webContents.send('updater', 'update_available');
+// });
+// autoUpdater.on('update-not-available', () => {
+//   console.info('update_not_available');
+//   win.webContents.send('updater', 'update_not_available');
+// });
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
